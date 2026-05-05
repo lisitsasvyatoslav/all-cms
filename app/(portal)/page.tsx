@@ -7,7 +7,7 @@ import {
   getPortalSources,
 } from "@/lib/content";
 
-/** Файловый контент (content/) — перечитывать при каждом запросе в dev. */
+/** Файловый контент (data/) — перечитывать при каждом запросе в dev. */
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
@@ -31,7 +31,7 @@ export default async function Home() {
           className="scroll-mt-24 flex flex-col gap-3 border-b border-zinc-100 pb-12 dark:border-zinc-900"
         >
           <p className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
-            Тестовый портал · файловый контент (как Astro Content Collections)
+            Тестовый портал · JSON в data/, документация в /docs
           </p>
           <h1 className="text-3xl font-semibold tracking-tight text-zinc-950 dark:text-zinc-50">
             Дизайн-система
@@ -39,7 +39,7 @@ export default async function Home() {
           <p className="text-lg leading-relaxed text-zinc-600 dark:text-zinc-400">
             Данные ниже из JSON в папке{" "}
             <code className="rounded bg-zinc-100 px-1 font-mono text-sm dark:bg-zinc-800">
-              content/
+              data/
             </code>
             . Редактируйте файлы в репозитории и обновите страницу. Навигация слева —
             якоря по разделам.
@@ -63,7 +63,7 @@ export default async function Home() {
             {repo ? <SourceChip href={repo} label="Репозиторий" /> : null}
             {!figma && !storybook && !docsUrl && !repo ? (
               <span className="text-sm text-zinc-500">
-                Задайте URL в <code className="font-mono text-xs">content/portal-sources.json</code>
+                Задайте URL в <code className="font-mono text-xs">data/portal-sources.json</code>
                 .
               </span>
             ) : null}
@@ -76,7 +76,7 @@ export default async function Home() {
           </h2>
           {components.length === 0 ? (
             <p className="text-sm text-zinc-500 dark:text-zinc-400">
-              Пусто. Добавьте файлы в <strong>content/components/*.json</strong>.
+              Пусто. Добавьте файлы в <strong>data/components/*.json</strong>.
             </p>
           ) : (
             <ul className="flex flex-col gap-4">
@@ -121,7 +121,7 @@ export default async function Home() {
           </h2>
           {colors.length === 0 ? (
             <p className="text-sm text-zinc-500 dark:text-zinc-400">
-              Пусто. Заполните <strong>content/colors.json</strong>.
+              Пусто. Заполните <strong>data/colors.json</strong>.
             </p>
           ) : (
             <ul className="grid gap-3 sm:grid-cols-2">
@@ -156,7 +156,7 @@ export default async function Home() {
           </h2>
           {icons.length === 0 ? (
             <p className="text-sm text-zinc-500 dark:text-zinc-400">
-              Пусто. Заполните <strong>content/icons.json</strong> и при необходимости укажите{" "}
+              Пусто. Заполните <strong>data/icons.json</strong> и при необходимости укажите{" "}
               <code className="font-mono text-xs">previewUrl</code> (путь из public/).
             </p>
           ) : (

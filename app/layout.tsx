@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Design System · Portal",
   description:
-    "Тестовый портал дизайн-системы — контент из content/ (подход как у Astro Content Collections)",
+    "Тестовый портал дизайн-системы — JSON в data/, документация MDX в /docs (Nextra)",
 };
 
 export default function RootLayout({
@@ -25,7 +25,8 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
+      lang="ru"
+      suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>

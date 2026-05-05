@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-/** Модель как у Astro Content Collections: схемы для JSON в `content/`. */
+/** Схемы для JSON портала в каталоге `data/`. */
 
 export const portalSourcesSchema = z.object({
   figmaLibraryUrl: z.string().optional().nullable(),

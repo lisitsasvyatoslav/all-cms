@@ -1,8 +1,0 @@
-{
-  "name": "Button",
-  "slug": "button",
-  "description": "Кнопка для основных действий. Контент задаётся JSON в content/components — по аналогии с Astro Content Collections.",
-  "figmaUrl": "https://www.figma.com/",
-  "storybookUrl": "https://storybook.js.org/",
-  "docsUrl": "https://docs.astro.build/"
-}

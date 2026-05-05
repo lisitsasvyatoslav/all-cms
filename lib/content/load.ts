@@ -12,7 +12,7 @@ import {
   type PortalSourcesContent,
 } from "./schemas";
 
-const ROOT = path.join(process.cwd(), "content");
+const ROOT = path.join(process.cwd(), "data");
 
 async function readJson<T>(file: string): Promise<T | null> {
   try {

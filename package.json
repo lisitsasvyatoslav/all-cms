@@ -8,12 +8,13 @@
     "build": "cross-env NODE_OPTIONS=--no-deprecation next build",
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
     "lint": "eslint",
-    "dev:cms": "npm run dev --prefix astro-cms",
-    "build:cms": "npm run build --prefix astro-cms"
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "cross-env": "^10.1.0",
     "next": "16.2.4",
+    "nextra": "^4.6.1",
+    "nextra-theme-docs": "^4.6.1",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "zod": "^3.24.0"
@@ -25,6 +26,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.4",
+    "patch-package": "^8.0.1",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

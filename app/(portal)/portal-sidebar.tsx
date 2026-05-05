@@ -54,6 +54,16 @@ export function PortalSidebar({ components }: Props) {
         <NavAnchor href="/#sources" active={onHome && hash === "#sources"}>
           Источники
         </NavAnchor>
+        <Link
+          href="/docs"
+          className={`rounded-md px-2 py-1.5 text-sm transition-colors ${
+            pathname.startsWith("/docs")
+              ? "bg-zinc-200/80 font-medium text-zinc-950 dark:bg-zinc-800 dark:text-zinc-50"
+              : "text-zinc-600 hover:bg-zinc-100/80 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-900 dark:hover:text-zinc-50"
+          }`}
+        >
+          Документация (Nextra)
+        </Link>
 
         <p className="mb-1 mt-4 px-2 text-[11px] font-medium uppercase tracking-wide text-zinc-400">
           Компоненты
@@ -88,10 +98,11 @@ export function PortalSidebar({ components }: Props) {
         <p className="rounded-md px-2 py-1.5 text-xs leading-snug text-zinc-500 dark:text-zinc-400">
           Контент: правьте JSON в{" "}
           <code className="font-mono text-[11px] text-zinc-700 dark:text-zinc-300">
-            content/
+            data/
           </code>
           <span className="mt-1 block text-[11px] text-zinc-400">
-            Модель как у Astro Content Collections.
+            MDX-доки — в <code className="font-mono">content/</code>, URL{" "}
+            <code className="font-mono">/docs</code>.
           </span>
         </p>
       </div>
