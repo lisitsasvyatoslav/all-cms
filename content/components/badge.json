@@ -1,0 +1,7 @@
+{
+  "name": "Badge",
+  "slug": "badge",
+  "description": "Компактный индикатор: статус, счётчик, тег. Не интерактивен или ведёт на деталь по клику в варианте link.",
+  "figmaUrl": "https://www.figma.com/",
+  "storybookUrl": "https://storybook.js.org/"
+}

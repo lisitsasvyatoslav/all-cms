@@ -1,0 +1,7 @@
+{
+  "name": "Select",
+  "slug": "select",
+  "description": "Выпадающий список для выбора одного значения. Для многострочного выбора — Combobox / multiselect отдельно.",
+  "figmaUrl": "https://www.figma.com/",
+  "storybookUrl": "https://storybook.js.org/"
+}

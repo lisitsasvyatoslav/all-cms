@@ -1,7 +1,7 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-# dependencies
-/node_modules
+# dependencies (включая вложенные пакеты)
+node_modules/
 /.pnp
 .pnp.*
 .yarn/*
@@ -30,8 +30,10 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# env files — шаблоны можно коммитить (в т.ч. во вложенных пакетах)
 .env*
+!.env.example
+!**/.env.example
 
 # vercel
 .vercel
@@ -40,6 +42,14 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# Payload (local SQLite trial)
+# кэши инструментов
+.turbo
+.eslintcache
+
+# legacy / локальные артефакты
 /payload.sqlite
 /media
+
+# Astro CMS (подпроект)
+astro-cms/dist/
+astro-cms/.astro/

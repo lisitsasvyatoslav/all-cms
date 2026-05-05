@@ -8,6 +8,7 @@ export function ComponentLiveDemos({ slug }: { slug: string }) {
     case "button":
       return <ButtonDemos />;
     case "input":
+    case "text-field":
       return <InputDemos />;
     default:
       return (

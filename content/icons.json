@@ -1,0 +1,48 @@
+[
+  {
+    "name": "Arrow right",
+    "slug": "arrow-right",
+    "figmaUrl": "https://www.figma.com/",
+    "storybookUrl": "https://storybook.js.org/",
+    "notes": "Добавьте previewUrl — путь из public/, например /portal-icons/arrow.svg"
+  },
+  {
+    "name": "Check",
+    "slug": "check",
+    "figmaUrl": "https://www.figma.com/"
+  },
+  {
+    "name": "Close",
+    "slug": "close",
+    "figmaUrl": "https://www.figma.com/"
+  },
+  {
+    "name": "Menu",
+    "slug": "menu",
+    "figmaUrl": "https://www.figma.com/"
+  },
+  {
+    "name": "Search",
+    "slug": "search",
+    "figmaUrl": "https://www.figma.com/",
+    "notes": "Поиск, поле фильтра"
+  },
+  {
+    "name": "Chevron down",
+    "slug": "chevron-down",
+    "figmaUrl": "https://www.figma.com/",
+    "notes": "Раскрытие select / accordion"
+  },
+  {
+    "name": "Plus",
+    "slug": "plus",
+    "figmaUrl": "https://www.figma.com/",
+    "notes": "Добавить запись"
+  },
+  {
+    "name": "Copy",
+    "slug": "copy",
+    "figmaUrl": "https://www.figma.com/",
+    "notes": "Копировать в буфер"
+  }
+]

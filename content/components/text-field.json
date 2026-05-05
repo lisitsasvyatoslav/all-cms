@@ -1,0 +1,8 @@
+{
+  "name": "Text Field",
+  "slug": "text-field",
+  "description": "Поле ввода текста в формах.",
+  "figmaUrl": "https://www.figma.com/",
+  "storybookUrl": "https://storybook.js.org/",
+  "docsUrl": "https://docs.astro.build/"
+}

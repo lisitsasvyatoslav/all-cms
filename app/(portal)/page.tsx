@@ -1,45 +1,27 @@
 import Link from "next/link";
-import { getPayload } from "payload";
 
-import config from "@payload-config";
+import {
+  getColors,
+  getComponents,
+  getIcons,
+  getPortalSources,
+} from "@/lib/content";
 
-/** CMS-backed page: do not bake content into the static shell at build time. */
+/** Файловый контент (content/) — перечитывать при каждом запросе в dev. */
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const payload = await getPayload({ config });
-
-  const [
-    sources,
-    { docs: components },
-    { docs: colors },
-    { docs: icons },
-  ] = await Promise.all([
-    payload.findGlobal({ slug: "portal-sources" }),
-    payload.find({
-      collection: "components",
-      depth: 0,
-      limit: 50,
-      sort: "name",
-    }),
-    payload.find({
-      collection: "colors",
-      depth: 0,
-      limit: 50,
-      sort: "sortOrder",
-    }),
-    payload.find({
-      collection: "icons",
-      depth: 1,
-      limit: 50,
-      sort: "name",
-    }),
+  const [sources, components, colors, icons] = await Promise.all([
+    getPortalSources(),
+    getComponents(),
+    getColors(),
+    getIcons(),
   ]);
 
-  const figma = sources?.figmaLibraryUrl as string | undefined;
-  const storybook = sources?.storybookUrl as string | undefined;
-  const docsUrl = sources?.documentationUrl as string | undefined;
-  const repo = sources?.repositoryUrl as string | undefined;
+  const figma = sources?.figmaLibraryUrl ?? undefined;
+  const storybook = sources?.storybookUrl ?? undefined;
+  const docsUrl = sources?.documentationUrl ?? undefined;
+  const repo = sources?.repositoryUrl ?? undefined;
 
   return (
     <div className="bg-white dark:bg-black">
@@ -49,17 +31,18 @@ export default async function Home() {
           className="scroll-mt-24 flex flex-col gap-3 border-b border-zinc-100 pb-12 dark:border-zinc-900"
         >
           <p className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
-            Тестовый портал · Payload + Next.js
+            Тестовый портал · файловый контент (как Astro Content Collections)
           </p>
           <h1 className="text-3xl font-semibold tracking-tight text-zinc-950 dark:text-zinc-50">
             Дизайн-система
           </h1>
           <p className="text-lg leading-relaxed text-zinc-600 dark:text-zinc-400">
-            Данные ниже из коллекций CMS. Редактирование в{" "}
-            <Link className="font-medium underline" href="/admin">
-              /admin
-            </Link>
-            . Навигация слева — якоря по разделам (как в доках Radix).
+            Данные ниже из JSON в папке{" "}
+            <code className="rounded bg-zinc-100 px-1 font-mono text-sm dark:bg-zinc-800">
+              content/
+            </code>
+            . Редактируйте файлы в репозитории и обновите страницу. Навигация слева —
+            якоря по разделам.
           </p>
         </section>
 
@@ -80,10 +63,7 @@ export default async function Home() {
             {repo ? <SourceChip href={repo} label="Репозиторий" /> : null}
             {!figma && !storybook && !docsUrl && !repo ? (
               <span className="text-sm text-zinc-500">
-                Задайте URL в Globals → «Ссылки на источники» или выполните{" "}
-                <code className="rounded bg-zinc-100 px-1.5 font-mono text-xs dark:bg-zinc-800">
-                  npm run seed:portal
-                </code>
+                Задайте URL в <code className="font-mono text-xs">content/portal-sources.json</code>
                 .
               </span>
             ) : null}
@@ -96,8 +76,7 @@ export default async function Home() {
           </h2>
           {components.length === 0 ? (
             <p className="text-sm text-zinc-500 dark:text-zinc-400">
-              Пусто. Запустите <code className="font-mono text-xs">npm run seed:portal</code>{" "}
-              или добавьте записи в <strong>Components</strong>.
+              Пусто. Добавьте файлы в <strong>content/components/*.json</strong>.
             </p>
           ) : (
             <ul className="flex flex-col gap-4">
@@ -142,7 +121,7 @@ export default async function Home() {
           </h2>
           {colors.length === 0 ? (
             <p className="text-sm text-zinc-500 dark:text-zinc-400">
-              Пусто. Seed или коллекция <strong>Colors</strong>.
+              Пусто. Заполните <strong>content/colors.json</strong>.
             </p>
           ) : (
             <ul className="grid gap-3 sm:grid-cols-2">
@@ -177,7 +156,8 @@ export default async function Home() {
           </h2>
           {icons.length === 0 ? (
             <p className="text-sm text-zinc-500 dark:text-zinc-400">
-              Пусто. Seed или коллекция <strong>Icons</strong> (+ превью в Media).
+              Пусто. Заполните <strong>content/icons.json</strong> и при необходимости укажите{" "}
+              <code className="font-mono text-xs">previewUrl</code> (путь из public/).
             </p>
           ) : (
             <ul className="flex flex-col gap-4">

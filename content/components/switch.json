@@ -1,0 +1,7 @@
+{
+  "name": "Switch",
+  "slug": "switch",
+  "description": "Переключатель вкл/выкл с немедленным эффектом (в отличие от Checkbox в группах фильтров).",
+  "figmaUrl": "https://www.figma.com/",
+  "storybookUrl": "https://storybook.js.org/"
+}

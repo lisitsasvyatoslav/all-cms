@@ -1,0 +1,8 @@
+{
+  "name": "Dialog",
+  "slug": "dialog",
+  "description": "Модальное окно: фокус-ловушка, закрытие по Esc и клику по оверлею, объявление для скринридеров (role=dialog, aria-modal).",
+  "figmaUrl": "https://www.figma.com/",
+  "storybookUrl": "https://storybook.js.org/",
+  "docsUrl": "https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/"
+}

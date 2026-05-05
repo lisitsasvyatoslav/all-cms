@@ -1,8 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getPayload } from "payload";
 
-import config from "@payload-config";
+import { getComponentBySlug } from "@/lib/content";
 
 import { getComponentDoc } from "@/lib/component-docs";
 
@@ -14,14 +13,7 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: Props) {
   const { slug } = await params;
-  const payload = await getPayload({ config });
-  const { docs } = await payload.find({
-    collection: "components",
-    where: { slug: { equals: slug } },
-    limit: 1,
-    depth: 0,
-  });
-  const doc = docs[0];
+  const doc = await getComponentBySlug(slug);
   return {
     title: doc ? `${doc.name} · Design System` : "Компонент",
     description: doc?.description ?? "",
@@ -30,14 +22,7 @@ export async function generateMetadata({ params }: Props) {
 
 export default async function ComponentDocPage({ params }: Props) {
   const { slug } = await params;
-  const payload = await getPayload({ config });
-  const { docs } = await payload.find({
-    collection: "components",
-    where: { slug: { equals: slug } },
-    limit: 1,
-    depth: 0,
-  });
-  const doc = docs[0];
+  const doc = await getComponentBySlug(slug);
   if (!doc) notFound();
 
   const staticDoc = getComponentDoc(slug);

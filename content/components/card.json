@@ -1,0 +1,8 @@
+{
+  "name": "Card",
+  "slug": "card",
+  "description": "Контейнер для группировки контента: заголовок, тело, действия. Часто используется в списках и дашбордах.",
+  "figmaUrl": "https://www.figma.com/",
+  "storybookUrl": "https://storybook.js.org/",
+  "docsUrl": "https://example.com"
+}

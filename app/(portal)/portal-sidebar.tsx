@@ -85,12 +85,15 @@ export function PortalSidebar({ components }: Props) {
         </NavAnchor>
       </nav>
       <div className="border-t border-zinc-200 p-3 dark:border-zinc-800">
-        <Link
-          href="/admin"
-          className="block rounded-md px-2 py-1.5 text-sm text-zinc-500 hover:bg-zinc-100/80 hover:text-zinc-900 dark:hover:bg-zinc-900 dark:hover:text-zinc-300"
-        >
-          Payload Admin →
-        </Link>
+        <p className="rounded-md px-2 py-1.5 text-xs leading-snug text-zinc-500 dark:text-zinc-400">
+          Контент: правьте JSON в{" "}
+          <code className="font-mono text-[11px] text-zinc-700 dark:text-zinc-300">
+            content/
+          </code>
+          <span className="mt-1 block text-[11px] text-zinc-400">
+            Модель как у Astro Content Collections.
+          </span>
+        </p>
       </div>
     </aside>
   );

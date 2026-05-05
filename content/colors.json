@@ -1,0 +1,86 @@
+[
+  {
+    "name": "Primary",
+    "tokenKey": "color.primary",
+    "hex": "#2563eb",
+    "sortOrder": 0,
+    "caption": "Основной акцент"
+  },
+  {
+    "name": "Surface",
+    "tokenKey": "color.surface",
+    "hex": "#fafafa",
+    "sortOrder": 1,
+    "caption": "Фон карточек (light)"
+  },
+  {
+    "name": "Danger",
+    "tokenKey": "color.danger",
+    "hex": "#dc2626",
+    "sortOrder": 2,
+    "caption": "Ошибка / деструктивное действие"
+  },
+  {
+    "name": "Success",
+    "tokenKey": "color.success",
+    "hex": "#16a34a",
+    "sortOrder": 3,
+    "caption": "Успех"
+  },
+  {
+    "name": "Warning",
+    "tokenKey": "color.warning",
+    "hex": "#ca8a04",
+    "sortOrder": 4,
+    "caption": "Предупреждение"
+  },
+  {
+    "name": "Info",
+    "tokenKey": "color.info",
+    "hex": "#0ea5e9",
+    "sortOrder": 5,
+    "caption": "Информация, подсказки"
+  },
+  {
+    "name": "Text primary",
+    "tokenKey": "color.text.primary",
+    "hex": "#18181b",
+    "sortOrder": 6,
+    "caption": "Основной текст"
+  },
+  {
+    "name": "Text muted",
+    "tokenKey": "color.text.muted",
+    "hex": "#71717a",
+    "sortOrder": 7,
+    "caption": "Второстепенный текст"
+  },
+  {
+    "name": "Border",
+    "tokenKey": "color.border",
+    "hex": "#e4e4e7",
+    "sortOrder": 8,
+    "caption": "Границы"
+  },
+  {
+    "name": "Focus ring",
+    "tokenKey": "color.focus.ring",
+    "hex": "#3b82f6",
+    "sortOrder": 9,
+    "caption": "Обводка фокуса :focus-visible"
+  },
+  {
+    "name": "Overlay",
+    "tokenKey": "color.overlay",
+    "hex": "rgba(0,0,0,0.45)",
+    "sortOrder": 10,
+    "caption": "Затемнение под модалками"
+  },
+  {
+    "name": "Brand muted",
+    "tokenKey": "color.brand.muted",
+    "hex": "#dbeafe",
+    "sortOrder": 11,
+    "caption": "Фон подсветки под primary"
+  }
+]
