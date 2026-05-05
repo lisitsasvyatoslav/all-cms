@@ -8,9 +8,11 @@ export type SidebarComponent = { slug: string; name: string };
 
 type Props = {
   components: SidebarComponent[];
+  /** URL админки Strapi, например http://127.0.0.1:1337/admin */
+  adminHref: string;
 };
 
-export function PortalSidebar({ components }: Props) {
+export function PortalSidebar({ components, adminHref }: Props) {
   const pathname = usePathname();
   const [hash, setHash] = useState("#overview");
 
@@ -85,12 +87,14 @@ export function PortalSidebar({ components }: Props) {
         </NavAnchor>
       </nav>
       <div className="border-t border-zinc-200 p-3 dark:border-zinc-800">
-        <Link
-          href="/admin"
+        <a
+          href={adminHref}
+          target="_blank"
+          rel="noopener noreferrer"
           className="block rounded-md px-2 py-1.5 text-sm text-zinc-500 hover:bg-zinc-100/80 hover:text-zinc-900 dark:hover:bg-zinc-900 dark:hover:text-zinc-300"
         >
-          Payload Admin →
-        </Link>
+          Strapi Admin →
+        </a>
       </div>
     </aside>
   );

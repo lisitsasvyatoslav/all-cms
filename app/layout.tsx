@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Design System · Portal",
-  description: "Тестовый портал дизайн-системы (Payload + Next.js)",
+  description: "Тестовый портал дизайн-системы (Strapi + Next.js)",
 };
 
 export default function RootLayout({

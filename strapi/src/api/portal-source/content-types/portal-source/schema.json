@@ -1,0 +1,27 @@
+{
+  "kind": "singleType",
+  "collectionName": "portal_sources",
+  "info": {
+    "singularName": "portal-source",
+    "pluralName": "portal-sources",
+    "displayName": "Portal sources"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "figmaLibraryUrl": {
+      "type": "string"
+    },
+    "storybookUrl": {
+      "type": "string"
+    },
+    "documentationUrl": {
+      "type": "string"
+    },
+    "repositoryUrl": {
+      "type": "string"
+    }
+  }
+}

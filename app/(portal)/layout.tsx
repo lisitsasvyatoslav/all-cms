@@ -1,6 +1,7 @@
-import { getPayload } from "payload";
-
-import config from "@payload-config";
+import {
+  getComponents,
+  getStrapiAdminUrl,
+} from "@/lib/strapi";
 
 import { PortalSidebar } from "./portal-sidebar";
 
@@ -9,23 +10,23 @@ export default async function PortalLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const payload = await getPayload({ config });
-  const { docs } = await payload.find({
-    collection: "components",
-    depth: 0,
-    limit: 100,
-    sort: "name",
-    overrideAccess: true,
-  });
-
-  const componentNav = docs.map((d) => ({
-    slug: String(d.slug),
-    name: String(d.name),
-  }));
+  let componentNav: { slug: string; name: string }[] = [];
+  try {
+    const docs = await getComponents();
+    componentNav = docs.map((d) => ({
+      slug: String(d.slug),
+      name: String(d.name),
+    }));
+  } catch {
+    componentNav = [];
+  }
 
   return (
     <div className="flex min-h-full flex-1 flex-row bg-zinc-50 dark:bg-black">
-      <PortalSidebar components={componentNav} />
+      <PortalSidebar
+        components={componentNav}
+        adminHref={getStrapiAdminUrl()}
+      />
       <div className="min-h-full min-w-0 flex-1">{children}</div>
     </div>
   );

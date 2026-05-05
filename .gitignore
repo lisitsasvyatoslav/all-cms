@@ -1,7 +1,8 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-# dependencies
-/node_modules
+# dependencies (root + nested e.g. strapi/)
+node_modules/
+
 /.pnp
 .pnp.*
 .yarn/*
@@ -30,8 +31,10 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# env files — секреты не коммитим; *.example исключены
 .env*
+!.env.example
+!**/.env.example
 
 # vercel
 .vercel
@@ -40,6 +43,15 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# Payload (local SQLite trial)
-/payload.sqlite
-/media
+# tooling caches
+.turbo
+.eslintcache
+
+# Strapi (nested app)
+strapi/.tmp/
+strapi/.cache/
+strapi/build/
+strapi/dist/
+strapi/.strapi-updater.json
+strapi/.strapi/
+strapi/public/uploads/

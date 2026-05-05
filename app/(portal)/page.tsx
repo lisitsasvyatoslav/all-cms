@@ -1,64 +1,94 @@
 import Link from "next/link";
-import { getPayload } from "payload";
 
-import config from "@payload-config";
+import {
+  getColors,
+  getComponents,
+  getIcons,
+  getPortalSources,
+  getStrapiAdminUrl,
+} from "@/lib/strapi";
 
 /** CMS-backed page: do not bake content into the static shell at build time. */
 export const dynamic = "force-dynamic";
 
-export default async function Home() {
-  const payload = await getPayload({ config });
-
-  const [
-    sources,
-    { docs: components },
-    { docs: colors },
-    { docs: icons },
-  ] = await Promise.all([
-    payload.findGlobal({ slug: "portal-sources" }),
-    payload.find({
-      collection: "components",
-      depth: 0,
-      limit: 50,
-      sort: "name",
-    }),
-    payload.find({
-      collection: "colors",
-      depth: 0,
-      limit: 50,
-      sort: "sortOrder",
-    }),
-    payload.find({
-      collection: "icons",
-      depth: 1,
-      limit: 50,
-      sort: "name",
-    }),
+async function loadPortalData() {
+  const [r0, r1, r2, r3] = await Promise.allSettled([
+    getPortalSources(),
+    getComponents(),
+    getColors(),
+    getIcons(),
   ]);
 
-  const figma = sources?.figmaLibraryUrl as string | undefined;
-  const storybook = sources?.storybookUrl as string | undefined;
-  const docsUrl = sources?.documentationUrl as string | undefined;
-  const repo = sources?.repositoryUrl as string | undefined;
+  const sources = r0.status === "fulfilled" ? r0.value : null;
+  const components = r1.status === "fulfilled" ? r1.value : [];
+  const colors = r2.status === "fulfilled" ? r2.value : [];
+  const icons = r3.status === "fulfilled" ? r3.value : [];
+
+  const failures = [r0, r1, r2, r3].filter(
+    (r): r is PromiseRejectedResult => r.status === "rejected",
+  );
+  const error =
+    failures.length > 0
+      ? failures
+          .map((r) =>
+            r.reason instanceof Error ? r.reason.message : String(r.reason),
+          )
+          .join(" · ")
+      : "";
+
+  return {
+    ok: failures.length === 0,
+    sources,
+    components,
+    colors,
+    icons,
+    error,
+  };
+}
+
+export default async function Home() {
+  const { ok, sources, components, colors, icons, error } = await loadPortalData();
+  const adminUrl = getStrapiAdminUrl();
+
+  const figma = sources?.figmaLibraryUrl;
+  const storybook = sources?.storybookUrl;
+  const docsUrl = sources?.documentationUrl;
+  const repo = sources?.repositoryUrl;
 
   return (
     <div className="bg-white dark:bg-black">
       <main className="mx-auto flex max-w-3xl flex-col gap-14 px-8 py-12 lg:py-16">
+        {!ok ? (
+          <div
+            className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-100"
+            role="alert"
+          >
+            Не удалось загрузить данные из Strapi: {error}. Убедитесь, что Strapi
+            запущен (<code className="font-mono text-xs">127.0.0.1:1337</code>) и у роли
+            Public включены права на чтение коллекций.
+          </div>
+        ) : null}
+
         <section
           id="overview"
           className="scroll-mt-24 flex flex-col gap-3 border-b border-zinc-100 pb-12 dark:border-zinc-900"
         >
           <p className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
-            Тестовый портал · Payload + Next.js
+            Тестовый портал · Strapi + Next.js
           </p>
           <h1 className="text-3xl font-semibold tracking-tight text-zinc-950 dark:text-zinc-50">
             Дизайн-система
           </h1>
           <p className="text-lg leading-relaxed text-zinc-600 dark:text-zinc-400">
-            Данные ниже из коллекций CMS. Редактирование в{" "}
-            <Link className="font-medium underline" href="/admin">
-              /admin
-            </Link>
+            Данные ниже из коллекций Strapi. Редактирование в{" "}
+            <a
+              className="font-medium underline"
+              href={adminUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              админке Strapi
+            </a>
             . Навигация слева — якоря по разделам (как в доках Radix).
           </p>
         </section>
@@ -80,11 +110,7 @@ export default async function Home() {
             {repo ? <SourceChip href={repo} label="Репозиторий" /> : null}
             {!figma && !storybook && !docsUrl && !repo ? (
               <span className="text-sm text-zinc-500">
-                Задайте URL в Globals → «Ссылки на источники» или выполните{" "}
-                <code className="rounded bg-zinc-100 px-1.5 font-mono text-xs dark:bg-zinc-800">
-                  npm run seed:portal
-                </code>
-                .
+                Задайте URL в single type «Portal source» в Strapi или добавьте записи вручную.
               </span>
             ) : null}
           </nav>
@@ -96,8 +122,7 @@ export default async function Home() {
           </h2>
           {components.length === 0 ? (
             <p className="text-sm text-zinc-500 dark:text-zinc-400">
-              Пусто. Запустите <code className="font-mono text-xs">npm run seed:portal</code>{" "}
-              или добавьте записи в <strong>Components</strong>.
+              Пусто. Добавьте записи в коллекцию <strong>Components</strong> в Strapi.
             </p>
           ) : (
             <ul className="flex flex-col gap-4">
@@ -142,7 +167,7 @@ export default async function Home() {
           </h2>
           {colors.length === 0 ? (
             <p className="text-sm text-zinc-500 dark:text-zinc-400">
-              Пусто. Seed или коллекция <strong>Colors</strong>.
+              Пусто. Добавьте записи в коллекцию <strong>Colors</strong> в Strapi.
             </p>
           ) : (
             <ul className="grid gap-3 sm:grid-cols-2">
@@ -177,7 +202,8 @@ export default async function Home() {
           </h2>
           {icons.length === 0 ? (
             <p className="text-sm text-zinc-500 dark:text-zinc-400">
-              Пусто. Seed или коллекция <strong>Icons</strong> (+ превью в Media).
+              Пусто. Добавьте записи в коллекцию <strong>Icons</strong> и при необходимости
+              поле превью (медиа).
             </p>
           ) : (
             <ul className="flex flex-col gap-4">
