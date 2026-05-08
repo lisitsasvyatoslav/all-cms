@@ -74,11 +74,16 @@ export interface Config {
     icons: Icon;
     notes: Note;
     'payload-kv': PayloadKv;
+    'payload-folders': FolderInterface;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
   };
-  collectionsJoins: {};
+  collectionsJoins: {
+    'payload-folders': {
+      documentsAndFolders: 'payload-folders' | 'components';
+    };
+  };
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
@@ -87,6 +92,7 @@ export interface Config {
     icons: IconsSelect<false> | IconsSelect<true>;
     notes: NotesSelect<false> | NotesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
+    'payload-folders': PayloadFoldersSelect<false> | PayloadFoldersSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -135,6 +141,12 @@ export interface UserAuthOperations {
  */
 export interface User {
   id: number;
+  firstName: string;
+  lastName: string;
+  /**
+   * Права пользователя в CMS.
+   */
+  role: 'admin' | 'viewer' | 'designer' | 'developer' | 'pm';
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -190,6 +202,33 @@ export interface Component {
   figmaUrl?: string | null;
   storybookUrl?: string | null;
   docsUrl?: string | null;
+  folder?: (number | null) | FolderInterface;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-folders".
+ */
+export interface FolderInterface {
+  id: number;
+  name: string;
+  folder?: (number | null) | FolderInterface;
+  documentsAndFolders?: {
+    docs?: (
+      | {
+          relationTo?: 'payload-folders';
+          value: number | FolderInterface;
+        }
+      | {
+          relationTo?: 'components';
+          value: number | Component;
+        }
+    )[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
+  folderType?: 'components'[] | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -290,6 +329,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'notes';
         value: number | Note;
+      } | null)
+    | ({
+        relationTo: 'payload-folders';
+        value: number | FolderInterface;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -338,6 +381,9 @@ export interface PayloadMigration {
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
+  firstName?: T;
+  lastName?: T;
+  role?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -384,6 +430,7 @@ export interface ComponentsSelect<T extends boolean = true> {
   figmaUrl?: T;
   storybookUrl?: T;
   docsUrl?: T;
+  folder?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -431,6 +478,18 @@ export interface NotesSelect<T extends boolean = true> {
 export interface PayloadKvSelect<T extends boolean = true> {
   key?: T;
   data?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-folders_select".
+ */
+export interface PayloadFoldersSelect<T extends boolean = true> {
+  name?: T;
+  folder?: T;
+  documentsAndFolders?: T;
+  folderType?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

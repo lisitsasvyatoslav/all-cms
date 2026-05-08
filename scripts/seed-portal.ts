@@ -42,6 +42,11 @@ const components = [
   },
 ];
 
+const componentFolderBySlug: Record<string, string> = {
+  button: "Actions",
+  input: "Forms",
+};
+
 const colors = [
   { name: "Neutral 50", tokenKey: "color.neutral.50", hex: "#fafafa", sortOrder: 0 },
   { name: "Neutral 500", tokenKey: "color.neutral.500", hex: "#71717a", sortOrder: 1 },
@@ -119,6 +124,7 @@ async function ensureIconMedia(
 async function upsertComponent(
   payload: Awaited<ReturnType<typeof getPayload>>,
   data: (typeof components)[number],
+  folderId?: number,
 ) {
   const found = await payload.find({
     collection: "components",
@@ -127,20 +133,56 @@ async function upsertComponent(
     overrideAccess: true,
   });
   const doc = found.docs[0];
+  const dataWithFolder = {
+    ...data,
+    ...(folderId ? { folder: folderId } : {}),
+  };
   if (doc) {
     await payload.update({
       collection: "components",
       id: doc.id,
-      data,
+      data: dataWithFolder,
       overrideAccess: true,
     });
   } else {
     await payload.create({
       collection: "components",
-      data,
+      data: dataWithFolder,
       overrideAccess: true,
     });
   }
+}
+
+async function ensureComponentFolder(
+  payload: Awaited<ReturnType<typeof getPayload>>,
+  name: string,
+): Promise<number> {
+  const existing = await payload.find({
+    collection: "payload-folders",
+    limit: 100,
+    overrideAccess: true,
+  });
+
+  const found = existing.docs.find(
+    (doc: any) =>
+      doc.name === name &&
+      Array.isArray(doc.folderType) &&
+      doc.folderType.includes("components") &&
+      !doc.folder,
+  );
+
+  if (found) return Number(found.id);
+
+  const created = await payload.create({
+    collection: "payload-folders",
+    data: {
+      name,
+      folderType: ["components"],
+    },
+    overrideAccess: true,
+  });
+
+  return Number(created.id);
 }
 
 type IconDoc = (typeof icons)[number] & { preview: number };
@@ -208,8 +250,19 @@ async function main() {
     overrideAccess: true,
   });
 
+  const actionsFolderId = await ensureComponentFolder(payload, "Actions");
+  const formsFolderId = await ensureComponentFolder(payload, "Forms");
+  await ensureComponentFolder(payload, "Feedback");
+
+  const folderIdByName: Record<string, number> = {
+    Actions: actionsFolderId,
+    Forms: formsFolderId,
+  };
+
   for (const row of components) {
-    await upsertComponent(payload, row);
+    const folderName = componentFolderBySlug[row.slug];
+    const folderId = folderName ? folderIdByName[folderName] : undefined;
+    await upsertComponent(payload, row, folderId);
   }
 
   for (const row of colors) {

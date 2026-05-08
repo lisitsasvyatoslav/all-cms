@@ -1,7 +1,7 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-# dependencies
-/node_modules
+# dependencies (включая вложенные пакеты)
+node_modules/
 /.pnp
 .pnp.*
 .yarn/*
@@ -13,9 +13,10 @@
 # testing
 /coverage
 
-# next.js
-/.next/
-/out/
+# next.js (включая вложенные app-пакеты)
+.next/
+out/
+.swc/
 
 # production
 /build
@@ -32,6 +33,8 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
+!**/.env.example
 
 # vercel
 .vercel
@@ -42,4 +45,11 @@ next-env.d.ts
 
 # Payload (local SQLite trial)
 /payload.sqlite
+/payload.sqlite-shm
+/payload.sqlite-wal
 /media
+
+# Astro / Vite artifacts in subprojects
+**/.astro/
+**/dist/
+**/.vite/

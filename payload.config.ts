@@ -1,5 +1,7 @@
 import { sqliteAdapter } from "@payloadcms/db-sqlite";
 import { lexicalEditor } from "@payloadcms/richtext-lexical";
+import { en } from "@payloadcms/translations/languages/en";
+import { ru } from "@payloadcms/translations/languages/ru";
 import path from "path";
 import type { CollectionConfig, GlobalConfig } from "payload";
 import { buildConfig } from "payload";
@@ -9,19 +11,92 @@ import sharp from "sharp";
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
 
+type UserRole = "admin" | "viewer" | "designer" | "developer" | "pm";
+
+const isAdmin = ({ req }: any) =>
+  // Backward compatibility: old users may not have `role` yet.
+  req.user?.role === "admin" || (!!req.user && !req.user.role);
+
+const hasRole =
+  (roles: UserRole[]) =>
+  ({ req }: any) =>
+    roles.includes(req.user?.role);
+
+const isLoggedIn = ({ req }: any) => !!req.user;
+
+const isAdminOrSelf = ({ req }: any) => {
+  if (isAdmin({ req })) return true;
+  if (!req.user?.id) return false;
+  return { id: { equals: req.user.id } };
+};
+
 const Users: CollectionConfig = {
   slug: "users",
   admin: {
     useAsTitle: "email",
   },
   auth: true,
-  fields: [],
+  access: {
+    // Any authenticated role can access /admin.
+    admin: isLoggedIn,
+    create: isAdmin,
+    read: isAdminOrSelf,
+    update: isAdminOrSelf,
+    delete: isAdmin,
+  },
+  fields: [
+    {
+      name: "firstName",
+      type: "text",
+      required: true,
+      label: "Имя",
+    },
+    {
+      name: "lastName",
+      type: "text",
+      required: true,
+      label: "Фамилия",
+    },
+    {
+      name: "role",
+      type: "select",
+      required: true,
+      defaultValue: "viewer",
+      options: [
+        { label: "Admin", value: "admin" },
+        { label: "Viewer", value: "viewer" },
+        { label: "Designer", value: "designer" },
+        { label: "Developer", value: "developer" },
+        { label: "PM", value: "pm" },
+      ],
+      admin: {
+        description: "Права пользователя в CMS.",
+      },
+    },
+  ],
+  hooks: {
+    beforeChange: [
+      async ({ data, operation, req }) => {
+        // Bootstrap: the first user created without authenticated req becomes admin.
+        if (operation === "create" && !req.user) {
+          return {
+            ...data,
+            role: "admin",
+          };
+        }
+        return data;
+      },
+    ],
+  },
 };
 
 const Media: CollectionConfig = {
   slug: "media",
   access: {
     read: () => true,
+    create: hasRole(["admin", "designer", "developer"]),
+    update: hasRole(["admin", "designer", "developer"]),
+    delete: isAdmin,
   },
   fields: [
     {
@@ -41,6 +116,9 @@ const Notes: CollectionConfig = {
   },
   access: {
     read: () => true,
+    create: hasRole(["admin", "pm", "developer"]),
+    update: hasRole(["admin", "pm", "developer"]),
+    delete: isAdmin,
   },
   fields: [
     {
@@ -58,6 +136,7 @@ const Notes: CollectionConfig = {
 /** Демо-портал: карточка компонента + ссылки на артефакты. */
 const Components: CollectionConfig = {
   slug: "components",
+  folders: true,
   admin: {
     useAsTitle: "name",
     defaultColumns: ["name", "slug", "updatedAt"],
@@ -66,6 +145,9 @@ const Components: CollectionConfig = {
   },
   access: {
     read: () => true,
+    create: hasRole(["admin", "designer", "developer", "pm"]),
+    update: hasRole(["admin", "designer", "developer", "pm"]),
+    delete: isAdmin,
   },
   fields: [
     {
@@ -114,6 +196,9 @@ const Colors: CollectionConfig = {
   },
   access: {
     read: () => true,
+    create: hasRole(["admin", "designer"]),
+    update: hasRole(["admin", "designer"]),
+    delete: isAdmin,
   },
   fields: [
     {
@@ -158,6 +243,9 @@ const Icons: CollectionConfig = {
   },
   access: {
     read: () => true,
+    create: hasRole(["admin", "designer"]),
+    update: hasRole(["admin", "designer"]),
+    delete: isAdmin,
   },
   fields: [
     {
@@ -205,6 +293,7 @@ const PortalSources: GlobalConfig = {
   },
   access: {
     read: () => true,
+    update: hasRole(["admin", "pm"]),
   },
   fields: [
     {
@@ -236,6 +325,16 @@ export default buildConfig({
     importMap: {
       baseDir: path.resolve(dirname),
     },
+  },
+  i18n: {
+    fallbackLanguage: "ru",
+    supportedLanguages: {
+      ru,
+      en,
+    },
+  },
+  folders: {
+    browseByFolder: true,
   },
   collections: [Users, Media, Components, Colors, Icons, Notes],
   globals: [PortalSources],
