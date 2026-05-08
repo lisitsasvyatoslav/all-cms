@@ -4,6 +4,9 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 
+const sanityStudioUrl =
+  process.env.NEXT_PUBLIC_SANITY_STUDIO_URL ?? "http://localhost:3333";
+
 export type SidebarComponent = { slug: string; name: string };
 
 type Props = {
@@ -85,12 +88,14 @@ export function PortalSidebar({ components }: Props) {
         </NavAnchor>
       </nav>
       <div className="border-t border-zinc-200 p-3 dark:border-zinc-800">
-        <Link
-          href="/admin"
+        <a
+          href={sanityStudioUrl}
+          target="_blank"
+          rel="noopener noreferrer"
           className="block rounded-md px-2 py-1.5 text-sm text-zinc-500 hover:bg-zinc-100/80 hover:text-zinc-900 dark:hover:bg-zinc-900 dark:hover:text-zinc-300"
         >
-          Payload Admin →
-        </Link>
+          Sanity Studio →
+        </a>
       </div>
     </aside>
   );

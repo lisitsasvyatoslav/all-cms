@@ -1,6 +1,4 @@
-import { getPayload } from "payload";
-
-import config from "@payload-config";
+import { getComponents } from "@/lib/sanity/content";
 
 import { PortalSidebar } from "./portal-sidebar";
 
@@ -9,18 +7,10 @@ export default async function PortalLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const payload = await getPayload({ config });
-  const { docs } = await payload.find({
-    collection: "components",
-    depth: 0,
-    limit: 100,
-    sort: "name",
-    overrideAccess: true,
-  });
-
-  const componentNav = docs.map((d) => ({
-    slug: String(d.slug),
-    name: String(d.name),
+  const docs = await getComponents();
+  const componentNav = docs.map((component) => ({
+    slug: component.slug,
+    name: component.name,
   }));
 
   return (

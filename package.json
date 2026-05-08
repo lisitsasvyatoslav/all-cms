@@ -8,24 +8,22 @@
     "build": "cross-env NODE_OPTIONS=--no-deprecation next build",
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
     "lint": "eslint",
-    "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
-    "generate:importmap": "cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap",
-    "generate:types": "cross-env NODE_OPTIONS=--no-deprecation payload generate:types",
-    "payload:migrate": "cross-env NODE_OPTIONS=--no-deprecation payload migrate",
-    "seed:portal": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/seed-portal.ts"
+    "sanity:dev": "cross-env NODE_TLS_REJECT_UNAUTHORIZED=0 sanity dev --host 0.0.0.0 --port 3333",
+    "sanity:build": "cross-env NODE_TLS_REJECT_UNAUTHORIZED=0 sanity build",
+    "sanity:deploy": "cross-env NODE_TLS_REJECT_UNAUTHORIZED=0 sanity deploy"
   },
   "dependencies": {
-    "@payloadcms/db-sqlite": "^3.84.1",
-    "@payloadcms/next": "^3.84.1",
-    "@payloadcms/richtext-lexical": "^3.84.1",
+    "@sanity/client": "^7.22.0",
+    "@sanity/icons": "^3.7.4",
+    "@sanity/image-url": "^2.1.1",
+    "@sanity/vision": "^5.24.0",
     "cross-env": "^10.1.0",
-    "dotenv": "^17.4.2",
-    "graphql": "^16.13.2",
     "next": "16.2.4",
-    "payload": "^3.84.1",
+    "next-sanity": "^12.4.5",
     "react": "19.2.4",
     "react-dom": "19.2.4",
-    "sharp": "^0.34.5"
+    "sanity": "^5.24.0",
+    "styled-components": "^6.4.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

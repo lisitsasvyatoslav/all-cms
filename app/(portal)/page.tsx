@@ -1,45 +1,33 @@
 import Link from "next/link";
-import { getPayload } from "payload";
-
-import config from "@payload-config";
+import {
+  getColors,
+  getComponents,
+  getIcons,
+  getPortalSource,
+  sanityConfigured,
+  sanityStudioUrl,
+} from "@/lib/sanity/content";
 
 /** CMS-backed page: do not bake content into the static shell at build time. */
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const payload = await getPayload({ config });
-
   const [
     sources,
-    { docs: components },
-    { docs: colors },
-    { docs: icons },
+    components,
+    colors,
+    icons,
   ] = await Promise.all([
-    payload.findGlobal({ slug: "portal-sources" }),
-    payload.find({
-      collection: "components",
-      depth: 0,
-      limit: 50,
-      sort: "name",
-    }),
-    payload.find({
-      collection: "colors",
-      depth: 0,
-      limit: 50,
-      sort: "sortOrder",
-    }),
-    payload.find({
-      collection: "icons",
-      depth: 1,
-      limit: 50,
-      sort: "name",
-    }),
+    getPortalSource(),
+    getComponents(),
+    getColors(),
+    getIcons(),
   ]);
 
-  const figma = sources?.figmaLibraryUrl as string | undefined;
-  const storybook = sources?.storybookUrl as string | undefined;
-  const docsUrl = sources?.documentationUrl as string | undefined;
-  const repo = sources?.repositoryUrl as string | undefined;
+  const figma = sources?.figmaLibraryUrl;
+  const storybook = sources?.storybookUrl;
+  const docsUrl = sources?.documentationUrl;
+  const repo = sources?.repositoryUrl;
 
   return (
     <div className="bg-white dark:bg-black">
@@ -49,16 +37,21 @@ export default async function Home() {
           className="scroll-mt-24 flex flex-col gap-3 border-b border-zinc-100 pb-12 dark:border-zinc-900"
         >
           <p className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
-            Тестовый портал · Payload + Next.js
+            Тестовый портал · Sanity + Next.js
           </p>
           <h1 className="text-3xl font-semibold tracking-tight text-zinc-950 dark:text-zinc-50">
             Дизайн-система
           </h1>
           <p className="text-lg leading-relaxed text-zinc-600 dark:text-zinc-400">
-            Данные ниже из коллекций CMS. Редактирование в{" "}
-            <Link className="font-medium underline" href="/admin">
-              /admin
-            </Link>
+            Данные ниже из документов Sanity. Редактирование в{" "}
+            <a
+              className="font-medium underline"
+              href={sanityStudioUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Sanity Studio
+            </a>
             . Навигация слева — якоря по разделам (как в доках Radix).
           </p>
         </section>
@@ -80,11 +73,9 @@ export default async function Home() {
             {repo ? <SourceChip href={repo} label="Репозиторий" /> : null}
             {!figma && !storybook && !docsUrl && !repo ? (
               <span className="text-sm text-zinc-500">
-                Задайте URL в Globals → «Ссылки на источники» или выполните{" "}
-                <code className="rounded bg-zinc-100 px-1.5 font-mono text-xs dark:bg-zinc-800">
-                  npm run seed:portal
-                </code>
-                .
+                {sanityConfigured
+                  ? "Заполните документ `Portal Sources` в Sanity Studio."
+                  : "Укажите SANITY_PROJECT_ID и SANITY_DATASET в .env."}
               </span>
             ) : null}
           </nav>
@@ -96,14 +87,15 @@ export default async function Home() {
           </h2>
           {components.length === 0 ? (
             <p className="text-sm text-zinc-500 dark:text-zinc-400">
-              Пусто. Запустите <code className="font-mono text-xs">npm run seed:portal</code>{" "}
-              или добавьте записи в <strong>Components</strong>.
+              {sanityConfigured
+                ? "Пусто. Добавьте документы в Sanity (`component`)."
+                : "Sanity не настроен: добавьте SANITY_PROJECT_ID и SANITY_DATASET."}
             </p>
           ) : (
             <ul className="flex flex-col gap-4">
               {components.map((c) => (
                 <li
-                  key={c.id}
+                  key={c._id}
                   className="rounded-xl border border-zinc-200 bg-zinc-50/50 p-4 dark:border-zinc-800 dark:bg-zinc-950/50"
                 >
                   <div className="flex flex-wrap items-baseline justify-between gap-2">
@@ -142,13 +134,13 @@ export default async function Home() {
           </h2>
           {colors.length === 0 ? (
             <p className="text-sm text-zinc-500 dark:text-zinc-400">
-              Пусто. Seed или коллекция <strong>Colors</strong>.
+              Пусто. Добавьте документы `color` в Sanity.
             </p>
           ) : (
             <ul className="grid gap-3 sm:grid-cols-2">
               {colors.map((color) => (
                 <li
-                  key={color.id}
+                  key={color._id}
                   className="flex items-center gap-3 rounded-xl border border-zinc-200 bg-zinc-50/50 p-3 dark:border-zinc-800 dark:bg-zinc-950/50"
                 >
                   <span
@@ -177,22 +169,16 @@ export default async function Home() {
           </h2>
           {icons.length === 0 ? (
             <p className="text-sm text-zinc-500 dark:text-zinc-400">
-              Пусто. Seed или коллекция <strong>Icons</strong> (+ превью в Media).
+              Пусто. Добавьте документы `icon` в Sanity.
             </p>
           ) : (
             <ul className="flex flex-col gap-4">
               {icons.map((icon) => {
-                const prev =
-                  icon.preview &&
-                  typeof icon.preview === "object" &&
-                  "url" in icon.preview &&
-                  typeof icon.preview.url === "string"
-                    ? icon.preview.url
-                    : null;
+                const prev = icon.previewUrl ?? null;
 
                 return (
                   <li
-                    key={icon.id}
+                    key={icon._id}
                     className="flex gap-4 rounded-xl border border-zinc-200 bg-zinc-50/50 p-4 dark:border-zinc-800 dark:bg-zinc-950/50"
                   >
                     <div className="relative size-12 shrink-0 overflow-hidden rounded-lg bg-zinc-100 dark:bg-zinc-900">
