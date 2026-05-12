@@ -1,7 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { getComponentBySlug } from "@/lib/strapi";
+import {
+  COMPONENT_GROUP_LABELS,
+  getComponentBySlug,
+  normalizeComponentGroup,
+} from "@/lib/strapi";
 
 import { getComponentDoc } from "@/lib/component-docs";
 
@@ -53,6 +57,9 @@ export default async function ComponentDocPage({ params }: Props) {
           <h1 className="text-3xl font-semibold tracking-tight text-zinc-950 dark:text-zinc-50">
             {doc.name}
           </h1>
+          <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
+            {COMPONENT_GROUP_LABELS[normalizeComponentGroup(doc.componentGroup as string | undefined)]}
+          </p>
           {doc.description ? (
             <p className="mt-3 text-lg leading-relaxed text-zinc-600 dark:text-zinc-400">
               {doc.description}

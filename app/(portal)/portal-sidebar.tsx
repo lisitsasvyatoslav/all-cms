@@ -4,7 +4,18 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 
-export type SidebarComponent = { slug: string; name: string };
+import {
+  COMPONENT_GROUP_LABELS,
+  COMPONENT_GROUP_ORDER,
+  type ComponentGroupSlug,
+  normalizeComponentGroup,
+} from "@/lib/strapi";
+
+export type SidebarComponent = {
+  slug: string;
+  name: string;
+  componentGroup?: ComponentGroupSlug | null;
+};
 
 type Props = {
   components: SidebarComponent[];
@@ -60,20 +71,35 @@ export function PortalSidebar({ components, adminHref }: Props) {
         <p className="mb-1 mt-4 px-2 text-[11px] font-medium uppercase tracking-wide text-zinc-400">
           Компоненты
         </p>
-        <div className="flex flex-col gap-0.5">
-          {components.map((c) => (
-            <Link
-              key={c.slug}
-              href={`/components/${c.slug}`}
-              className={`rounded-md px-2 py-1.5 text-sm transition-colors ${
-                activeComponentSlug === c.slug
-                  ? "bg-zinc-200/80 font-medium text-zinc-950 dark:bg-zinc-800 dark:text-zinc-50"
-                  : "text-zinc-600 hover:bg-zinc-100/80 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-900 dark:hover:text-zinc-50"
-              }`}
-            >
-              {c.name}
-            </Link>
-          ))}
+        <div className="mt-1 flex flex-col gap-3">
+          {COMPONENT_GROUP_ORDER.map((group) => {
+            const items = components.filter(
+              (c) => normalizeComponentGroup(c.componentGroup ?? undefined) === group,
+            );
+            if (items.length === 0) return null;
+            return (
+              <div key={group}>
+                <p className="mb-1 px-2 text-[11px] font-medium uppercase tracking-wide text-zinc-400">
+                  {COMPONENT_GROUP_LABELS[group]}
+                </p>
+                <div className="flex flex-col gap-0.5">
+                  {items.map((c) => (
+                    <Link
+                      key={c.slug}
+                      href={`/components/${c.slug}`}
+                      className={`rounded-md px-2 py-1.5 text-sm transition-colors ${
+                        activeComponentSlug === c.slug
+                          ? "bg-zinc-200/80 font-medium text-zinc-950 dark:bg-zinc-800 dark:text-zinc-50"
+                          : "text-zinc-600 hover:bg-zinc-100/80 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-900 dark:hover:text-zinc-50"
+                      }`}
+                    >
+                      {c.name}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
         </div>
 
         <p className="mb-1 mt-4 px-2 text-[11px] font-medium uppercase tracking-wide text-zinc-400">

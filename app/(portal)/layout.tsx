@@ -1,6 +1,9 @@
+import type { ComponentGroupSlug } from "@/lib/strapi";
 import {
   getComponents,
   getStrapiAdminUrl,
+  isComponentNavSlug,
+  normalizeComponentGroup,
 } from "@/lib/strapi";
 
 import { PortalSidebar } from "./portal-sidebar";
@@ -10,13 +13,22 @@ export default async function PortalLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  let componentNav: { slug: string; name: string }[] = [];
+  let componentNav: {
+    slug: string;
+    name: string;
+    componentGroup: ComponentGroupSlug;
+  }[] = [];
   try {
     const docs = await getComponents();
-    componentNav = docs.map((d) => ({
-      slug: String(d.slug),
-      name: String(d.name),
-    }));
+    componentNav = docs
+      .filter((d) => isComponentNavSlug(String(d.slug)))
+      .map((d) => ({
+        slug: String(d.slug),
+        name: String(d.name),
+        componentGroup: normalizeComponentGroup(
+          d.componentGroup as string | undefined,
+        ),
+      }));
   } catch {
     componentNav = [];
   }

@@ -19,6 +19,36 @@ type StrapiItemResponse<T> = {
   data: T;
 };
 
+/** Значения поля `componentGroup` в Strapi (категория компонента). */
+export const COMPONENT_GROUP_SLUGS = [
+  "data_display",
+  "feedback",
+  "inputs",
+  "layout",
+  "navigation",
+] as const;
+
+export type ComponentGroupSlug = (typeof COMPONENT_GROUP_SLUGS)[number];
+
+export const COMPONENT_GROUP_LABELS: Record<ComponentGroupSlug, string> = {
+  data_display: "Data display",
+  feedback: "Feedback",
+  inputs: "Inputs",
+  layout: "Layout",
+  navigation: "Navigation",
+};
+
+export const COMPONENT_GROUP_ORDER: readonly ComponentGroupSlug[] =
+  COMPONENT_GROUP_SLUGS;
+
+/** Минимальные поля связанного компонента (родитель / дочерние). */
+export type StrapiComponentRef = {
+  id: number;
+  documentId?: string;
+  name: string;
+  slug: string;
+};
+
 /** Плоский документ Strapi 5 (поля на верхнем уровне data) */
 export type StrapiComponent = {
   id: number;
@@ -29,7 +59,38 @@ export type StrapiComponent = {
   figmaUrl?: string | null;
   storybookUrl?: string | null;
   docsUrl?: string | null;
+  componentGroup?: ComponentGroupSlug | null;
+  parent?: StrapiComponentRef | null;
+  children?: StrapiComponentRef[] | null;
 };
+
+/** Корневые slug с префиксом `cat-*` (старый демо-сид) — скрываем в навигации портала. */
+export function isComponentNavSlug(slug: string): boolean {
+  return !slug.startsWith("cat-");
+}
+
+function isComponentGroupSlug(v: string): v is ComponentGroupSlug {
+  return (COMPONENT_GROUP_SLUGS as readonly string[]).includes(v);
+}
+
+/** Приводит значение из API к одному из slug группы (для записей без поля — layout). */
+export function normalizeComponentGroup(
+  raw: string | null | undefined,
+): ComponentGroupSlug {
+  if (raw && isComponentGroupSlug(raw)) return raw;
+  return "layout";
+}
+
+export function sortComponentsByGroup(list: StrapiComponent[]): StrapiComponent[] {
+  const rank = (g: ComponentGroupSlug) => COMPONENT_GROUP_ORDER.indexOf(g);
+  return [...list].sort((a, b) => {
+    const ga = normalizeComponentGroup(a.componentGroup ?? undefined);
+    const gb = normalizeComponentGroup(b.componentGroup ?? undefined);
+    const d = rank(ga) - rank(gb);
+    if (d !== 0) return d;
+    return a.name.localeCompare(b.name, "ru");
+  });
+}
 
 export type StrapiColor = {
   id: number;
@@ -134,13 +195,17 @@ export function normalizeIconPreview(icon: StrapiIcon): StrapiIcon {
 /** GET /api/components?sort=name:asc */
 export async function getComponents(): Promise<StrapiComponent[]> {
   const qs = new URLSearchParams({
-    "sort": "name:asc",
+    sort: "name:asc",
     "pagination[pageSize]": "100",
+    "populate[parent][fields][0]": "name",
+    "populate[parent][fields][1]": "slug",
+    "populate[children][fields][0]": "name",
+    "populate[children][fields][1]": "slug",
   });
   const json = await strapiFetch<StrapiListResponse<StrapiComponent>>(
     `/api/components?${qs}`,
   );
-  return mapList<StrapiComponent>(json.data);
+  return sortComponentsByGroup(mapList<StrapiComponent>(json.data));
 }
 
 export async function getComponentBySlug(slug: string): Promise<StrapiComponent | null> {

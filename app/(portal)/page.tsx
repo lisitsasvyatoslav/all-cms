@@ -1,11 +1,15 @@
 import Link from "next/link";
 
 import {
+  COMPONENT_GROUP_LABELS,
+  COMPONENT_GROUP_ORDER,
   getColors,
   getComponents,
   getIcons,
   getPortalSources,
   getStrapiAdminUrl,
+  isComponentNavSlug,
+  normalizeComponentGroup,
 } from "@/lib/strapi";
 
 /** CMS-backed page: do not bake content into the static shell at build time. */
@@ -20,7 +24,8 @@ async function loadPortalData() {
   ]);
 
   const sources = r0.status === "fulfilled" ? r0.value : null;
-  const components = r1.status === "fulfilled" ? r1.value : [];
+  const componentsRaw = r1.status === "fulfilled" ? r1.value : [];
+  const components = componentsRaw.filter((c) => isComponentNavSlug(String(c.slug)));
   const colors = r2.status === "fulfilled" ? r2.value : [];
   const icons = r3.status === "fulfilled" ? r3.value : [];
 
@@ -125,39 +130,60 @@ export default async function Home() {
               Пусто. Добавьте записи в коллекцию <strong>Components</strong> в Strapi.
             </p>
           ) : (
-            <ul className="flex flex-col gap-4">
-              {components.map((c) => (
-                <li
-                  key={c.id}
-                  className="rounded-xl border border-zinc-200 bg-zinc-50/50 p-4 dark:border-zinc-800 dark:bg-zinc-950/50"
-                >
-                  <div className="flex flex-wrap items-baseline justify-between gap-2">
-                    <p className="font-medium text-zinc-900 dark:text-zinc-50">
-                      {c.name}
-                    </p>
-                    <code className="rounded bg-zinc-200/80 px-2 py-0.5 text-xs text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
-                      {c.slug}
-                    </code>
+            <div className="flex flex-col gap-10">
+              {COMPONENT_GROUP_ORDER.map((group) => {
+                const inGroup = components.filter(
+                  (c) =>
+                    normalizeComponentGroup(c.componentGroup ?? undefined) === group,
+                );
+                if (inGroup.length === 0) return null;
+                return (
+                  <div key={group} className="flex flex-col gap-4">
+                    <h3 className="text-sm font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+                      {COMPONENT_GROUP_LABELS[group]}
+                    </h3>
+                    <ul className="flex flex-col gap-4">
+                      {inGroup.map((c) => (
+                        <li
+                          key={c.id}
+                          className="rounded-xl border border-zinc-200 bg-zinc-50/50 p-4 dark:border-zinc-800 dark:bg-zinc-950/50"
+                        >
+                          <div className="flex flex-wrap items-baseline justify-between gap-2">
+                            <p className="font-medium text-zinc-900 dark:text-zinc-50">
+                              {c.name}
+                            </p>
+                            <code className="rounded bg-zinc-200/80 px-2 py-0.5 text-xs text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
+                              {c.slug}
+                            </code>
+                          </div>
+                          {c.parent?.name ? (
+                            <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+                              Родитель в CMS: {c.parent.name}
+                            </p>
+                          ) : null}
+                          {c.description ? (
+                            <p className="mt-2 whitespace-pre-wrap text-sm text-zinc-600 dark:text-zinc-400">
+                              {c.description}
+                            </p>
+                          ) : null}
+                          <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
+                            <Link
+                              href={`/components/${c.slug}`}
+                              className="font-medium text-zinc-900 underline decoration-zinc-300 underline-offset-2 hover:decoration-zinc-500 dark:text-zinc-100"
+                            >
+                              Документация и превью →
+                            </Link>
+                            <OptionalLink href={c.figmaUrl} label="Figma" />
+                            <OptionalLink href={c.storybookUrl} label="Storybook" />
+                            <OptionalLink href={c.docsUrl} label="Доки" />
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
-                  {c.description ? (
-                    <p className="mt-2 whitespace-pre-wrap text-sm text-zinc-600 dark:text-zinc-400">
-                      {c.description}
-                    </p>
-                  ) : null}
-                  <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
-                    <Link
-                      href={`/components/${c.slug}`}
-                      className="font-medium text-zinc-900 underline decoration-zinc-300 underline-offset-2 hover:decoration-zinc-500 dark:text-zinc-100"
-                    >
-                      Документация и превью →
-                    </Link>
-                    <OptionalLink href={c.figmaUrl} label="Figma" />
-                    <OptionalLink href={c.storybookUrl} label="Storybook" />
-                    <OptionalLink href={c.docsUrl} label="Доки" />
-                  </div>
-                </li>
-              ))}
-            </ul>
+                );
+              })}
+            </div>
           )}
         </section>
 

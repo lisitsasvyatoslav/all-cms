@@ -31,6 +31,24 @@
     },
     "docsUrl": {
       "type": "string"
+    },
+    "componentGroup": {
+      "type": "enumeration",
+      "enum": ["data_display", "feedback", "inputs", "layout", "navigation"],
+      "default": "layout",
+      "required": false
+    },
+    "parent": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::component.component",
+      "inversedBy": "children"
+    },
+    "children": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::component.component",
+      "mappedBy": "parent"
     }
   }
 }

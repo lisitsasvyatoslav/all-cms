@@ -54,4 +54,6 @@ strapi/build/
 strapi/dist/
 strapi/.strapi-updater.json
 strapi/.strapi/
-strapi/public/uploads/
+# загруженные файлы не в git, но папка должна существовать после клона
+strapi/public/uploads/**
+!strapi/public/uploads/.gitkeep
