@@ -1,4 +1,5 @@
 import { sqliteAdapter } from "@payloadcms/db-sqlite";
+import { mcpPlugin } from "@payloadcms/plugin-mcp";
 import { lexicalEditor } from "@payloadcms/richtext-lexical";
 import { en } from "@payloadcms/translations/languages/en";
 import { ru } from "@payloadcms/translations/languages/ru";
@@ -7,6 +8,9 @@ import type { CollectionConfig, GlobalConfig } from "payload";
 import { buildConfig } from "payload";
 import { fileURLToPath } from "url";
 import sharp from "sharp";
+
+import { componentDocumentationBlocks } from "./collections/componentDocumentationBlocks";
+import { FieldShowcaseCollection } from "./collections/fieldShowcase";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -133,7 +137,7 @@ const Notes: CollectionConfig = {
   ],
 };
 
-/** Демо-портал: карточка компонента + ссылки на артефакты. */
+/** Демо-портал: карточка компонента + ссылки; вкладка с блоками документации (как в Notion / Uber Base). */
 const Components: CollectionConfig = {
   slug: "components",
   folders: true,
@@ -141,48 +145,80 @@ const Components: CollectionConfig = {
     useAsTitle: "name",
     defaultColumns: ["name", "slug", "updatedAt"],
     description:
-      "Компоненты UI-kit: описание и ссылки на Figma / Storybook / доку.",
+      "Карточка и ссылки; вкладка «Документация» — блоки для портала (визуал на сайте). Все типы полей Payload — коллекция «Справочник полей».",
   },
   access: {
-    read: () => true,
-    create: hasRole(["admin", "designer", "developer", "pm"]),
-    update: hasRole(["admin", "designer", "developer", "pm"]),
+    read: hasRole(["admin", "pm"]),
+    create: hasRole(["admin","pm"]),
+    update: hasRole(["admin", "pm"]),
     delete: isAdmin,
   },
   fields: [
     {
-      name: "name",
-      type: "text",
-      required: true,
-      label: "Название",
-    },
-    {
-      name: "slug",
-      type: "text",
-      required: true,
-      unique: true,
-      label: "Slug (URL)",
-      admin: { description: "Латиница, без пробелов — для будущих страниц /components/[slug]" },
-    },
-    {
-      name: "description",
-      type: "textarea",
-      label: "Описание",
-    },
-    {
-      name: "figmaUrl",
-      type: "text",
-      label: "Ссылка на Figma",
-    },
-    {
-      name: "storybookUrl",
-      type: "text",
-      label: "Ссылка на Storybook",
-    },
-    {
-      name: "docsUrl",
-      type: "text",
-      label: "Документация (внешняя или внутренняя)",
+      type: "tabs",
+      tabs: [
+        {
+          label: "Карточка",
+          fields: [
+            {
+              name: "name",
+              type: "text",
+              required: true,
+              label: "Название",
+            },
+            {
+              name: "slug",
+              type: "text",
+              required: true,
+              unique: true,
+              label: "Slug (URL)",
+              admin: {
+                description:
+                  "Латиница, без пробелов — страница портала /components/[slug]",
+              },
+            },
+            {
+              name: "description",
+              type: "textarea",
+              label: "Краткое описание",
+              admin: { description: "Лид под заголовком на портале." },
+            },
+            {
+              name: "figmaUrl",
+              type: "text",
+              label: "Ссылка на Figma",
+            },
+            {
+              name: "storybookUrl",
+              type: "text",
+              label: "Ссылка на Storybook",
+            },
+            {
+              name: "docsUrl",
+              type: "text",
+              label: "Документация (внешняя или внутренняя)",
+            },
+          ],
+        },
+        {
+          label: "Документация",
+          description:
+            "Здесь — только данные (формы). Красивый макет рисуется на портале /components/[slug]. Справочник по типам полей Payload — коллекция «Справочник полей».",
+          fields: [
+            {
+              name: "documentation",
+              type: "blocks",
+              label: "Контент со страницы",
+              blocks: componentDocumentationBlocks,
+              admin: {
+                initCollapsed: false,
+                description:
+                  "Все типы контент-блоков (в т.ч. richText, code, upload, relationship, point, …). Порядок = порядок на портале.",
+              },
+            },
+          ],
+        },
+      ],
     },
   ],
 };
@@ -336,7 +372,7 @@ export default buildConfig({
   folders: {
     browseByFolder: true,
   },
-  collections: [Users, Media, Components, Colors, Icons, Notes],
+  collections: [Users, Media, Components, Colors, Icons, Notes, FieldShowcaseCollection],
   globals: [PortalSources],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",
@@ -349,5 +385,37 @@ export default buildConfig({
     },
   }),
   sharp,
-  plugins: [],
+  plugins: [
+    mcpPlugin({
+      collections: {
+        components: {
+          description:
+            "Компоненты UI-kit: карточка (имя, slug, ссылки) и blocks documentation для портала.",
+          enabled: { find: true, create: true, update: true, delete: false },
+        },
+        colors: {
+          description: "Цветовые токены портала.",
+          enabled: { find: true, create: true, update: true, delete: false },
+        },
+        icons: {
+          description: "Иконки и превью (Media).",
+          enabled: { find: true, create: true, update: true, delete: false },
+        },
+        media: {
+          description: "Загрузки (превью иконок и др.).",
+          enabled: { find: true, create: true, update: true, delete: false },
+        },
+        notes: {
+          description: "Заметки / черновики.",
+          enabled: { find: true, create: true, update: true, delete: false },
+        },
+      },
+      globals: {
+        "portal-sources": {
+          description: "Глобальные ссылки: Figma library, Storybook, документация, репозиторий.",
+          enabled: { find: true, update: true },
+        },
+      },
+    }),
+  ],
 });

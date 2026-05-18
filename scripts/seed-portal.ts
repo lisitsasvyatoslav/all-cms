@@ -1,8 +1,8 @@
 /**
- * Заполняет демо-данные: 2 компонента, 8 цветов, 4 иконки (+ файлы SVG в Media), глобальные ссылки.
- * Запуск: `npm run seed:portal` (нужен `.env` с PAYLOAD_SECRET и DATABASE_URI).
+ * Заполняет демо-данные: 2 компонента, 8 цветов, 4 иконки (+ SVG в Media), глобальные ссылки, справочник field-showcase.
+ * Запуск: `npm run seed:portal` (нужен `PAYLOAD_SECRET` и `DATABASE_URI` в `.env` или `.env.local`).
  */
-import "dotenv/config";
+import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
 import { getPayload } from "payload";
@@ -12,6 +12,9 @@ import config from "../payload.config";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const projectRoot = path.join(__dirname, "..");
+
+dotenv.config({ path: path.join(projectRoot, ".env") });
+dotenv.config({ path: path.join(projectRoot, ".env.local"), override: true });
 const iconAssetsDir = path.join(projectRoot, "public", "icon-assets");
 
 const demoSources = {
@@ -20,6 +23,254 @@ const demoSources = {
   documentationUrl: "https://payloadcms.com/docs",
   repositoryUrl: "https://github.com/payloadcms/payload",
 };
+
+/** Базовая документация Button; после сида цветов/иконок к ней дописываются демо-блоки с relationship/upload и др. */
+const buttonDocumentationSeedBase = [
+  {
+    blockType: "section" as const,
+    heading: "Когда использовать",
+    body: "Button — для явного действия в интерфейсе: отправка формы, подтверждение в модалке, запуск процесса. Текст кнопки должен отвечать на вопрос «что произойдёт?»",
+  },
+  {
+    blockType: "doDont" as const,
+    dos: [
+      { text: "Один основной (primary) акцент на логический экран или модалку." },
+      { text: "Используйте глагол: «Сохранить», «Отправить», а не «OK»." },
+      { text: "Для destructive-действий используйте variant danger и явный текст." },
+    ],
+    donts: [
+      { text: "Не ставьте две primary-кнопки рядом без приоритета." },
+      { text: "Не маскируйте навигацию между страницами как button, если достаточно ссылки." },
+    ],
+  },
+  {
+    blockType: "callout" as const,
+    tone: "warning" as const,
+    text: "Для перехода на другую страницу без побочных эффектов предпочтительнее текстовая ссылка или Link — кнопка ожидается как действие в текущем контексте.",
+  },
+  {
+    blockType: "divider" as const,
+    caption: "Параметры",
+  },
+  {
+    blockType: "propsTable" as const,
+    title: "Основные пропсы (пример таблицы из CMS)",
+    rows: [
+      {
+        name: "variant",
+        type: '"primary" | "secondary" | …',
+        defaultValue: '"primary"',
+        description: "Визуальный стиль.",
+      },
+      {
+        name: "size",
+        type: '"sm" | "md" | "lg"',
+        defaultValue: '"md"',
+        description: "Размер кнопки.",
+      },
+      {
+        name: "disabled",
+        type: "boolean",
+        defaultValue: "—",
+        description: "Отключает взаимодействие.",
+      },
+    ],
+  },
+  {
+    blockType: "resourceLinks" as const,
+    links: [
+      { label: "Payload — Blocks", url: "https://payloadcms.com/docs/fields/blocks" },
+      { label: "Payload — Tabs", url: "https://payloadcms.com/docs/fields/tabs" },
+    ],
+  },
+  {
+    blockType: "quote" as const,
+    body: "Кнопка — самый сильный призыв к действию на экране: не тратьте его зря.",
+    attribution: "Руководство по UI (пример)",
+  },
+  {
+    blockType: "codeExample" as const,
+    title: "Минимальный пример",
+    code: `<Button variant="primary" type="submit">
+  Сохранить
+</Button>`,
+  },
+];
+
+const lexicalDemoParagraph = {
+  root: {
+    type: "root",
+    format: "",
+    indent: 0,
+    version: 1,
+    children: [
+      {
+        type: "paragraph",
+        format: "",
+        indent: 0,
+        version: 1,
+        children: [
+          {
+            type: "text",
+            format: 0,
+            style: "",
+            detail: 0,
+            mode: "normal",
+            text: "Абзац из поля Rich Text (Lexical). Ниже на странице — ещё примеры типов полей Payload из сида.",
+            version: 1,
+          },
+        ],
+        direction: null,
+        textStyle: "",
+        textFormat: 0,
+      },
+    ],
+    direction: "ltr",
+  },
+};
+
+function buildExtraButtonDocumentationBlocks(opts: {
+  colorId?: number;
+  iconId?: number;
+  mediaId?: number;
+}) {
+  const blocks: Record<string, unknown>[] = [
+    { blockType: "divider", caption: "Ещё примеры полей (после сида)" },
+    {
+      blockType: "richTextSection",
+      title: "Rich Text",
+      body: lexicalDemoParagraph,
+    },
+    {
+      blockType: "codeMonaco",
+      title: "Поле Code (Monaco)",
+      snippet: `export function ping() {\n  return "pong";\n}`,
+    },
+  ];
+  if (opts.colorId != null) {
+    blocks.push({ blockType: "relColor", color: opts.colorId });
+  }
+  if (opts.iconId != null) {
+    blocks.push({ blockType: "relIcon", icon: opts.iconId });
+  }
+  if (opts.mediaId != null) {
+    blocks.push({
+      blockType: "mediaFigure",
+      image: opts.mediaId,
+      caption: "Загрузка из Media (превью иконки из сида).",
+    });
+  }
+  blocks.push(
+    {
+      blockType: "geoPoint",
+      label: "Точка на карте (Point)",
+      location: [37.6173, 55.7558],
+    },
+    {
+      blockType: "calendarDate",
+      title: "Релиз / проверка (Date)",
+      at: new Date().toISOString(),
+    },
+    {
+      blockType: "emailLine",
+      label: "Контакт дизайн-системы",
+      address: "design-system@example.com",
+    },
+    { blockType: "numberStat", label: "Версия доки (Number)", value: 1 },
+    {
+      blockType: "radioPick",
+      mode: "normal" as const,
+      hint: "Пример поля Radio внутри блока.",
+    },
+    {
+      blockType: "multiSelect",
+      tags: ["a11y", "forms"] as ("a11y" | "forms" | "layout" | "motion")[],
+      note: "Select с несколькими значениями.",
+    },
+    {
+      blockType: "flagBox",
+      enabled: true,
+      flagLabel: "Компонент стабилен (Checkbox)",
+    },
+    {
+      blockType: "jsonBlock",
+      title: "Произвольный JSON",
+      payload: { source: "seed", component: "button" },
+    },
+    {
+      blockType: "groupStrip",
+      bundle: {
+        gTitle: "Сводка (Group)",
+        gCount: 3,
+        gOn: true,
+      },
+    },
+    {
+      blockType: "nestedStack",
+      intro: "Вложенные blocks (array of block rows):",
+      items: [
+        { blockType: "nestLine" as const, line: "Проверить контраст текста на кнопке." },
+        { blockType: "nestLine" as const, line: "Проверить focus ring при клавиатуре." },
+      ],
+    },
+    {
+      blockType: "namedTabsStrip",
+      tabSummary: { brief: "Именованные Tabs: кратко — один объект tabSummary в JSON." },
+      tabDetail: {
+        detail: "Во втором табе — tabDetail. В админке переключение вкладок, на портале оба блока показаны рядом.",
+      },
+    },
+    { blockType: "callout", tone: "success" as const, text: "Все эти блоки можно менять в Payload; порядок на портале совпадает с порядком в форме." },
+  );
+  return blocks;
+}
+
+async function finalizeButtonDocumentation(
+  payload: Awaited<ReturnType<typeof getPayload>>,
+) {
+  const foundBtn = await payload.find({
+    collection: "components",
+    where: { slug: { equals: "button" } },
+    limit: 1,
+    overrideAccess: true,
+  });
+  const btn = foundBtn.docs[0];
+  if (!btn) return;
+
+  const firstColor = await payload.find({
+    collection: "colors",
+    limit: 1,
+    sort: "sortOrder",
+    overrideAccess: true,
+  });
+  const searchIcon = await payload.find({
+    collection: "icons",
+    where: { slug: { equals: "search" } },
+    limit: 1,
+    overrideAccess: true,
+  });
+  const firstMedia = await payload.find({
+    collection: "media",
+    limit: 1,
+    overrideAccess: true,
+  });
+
+  const colorId = firstColor.docs[0]?.id != null ? Number(firstColor.docs[0].id) : undefined;
+  const iconId = searchIcon.docs[0]?.id != null ? Number(searchIcon.docs[0].id) : undefined;
+  const mediaId = firstMedia.docs[0]?.id != null ? Number(firstMedia.docs[0].id) : undefined;
+
+  const documentation = [
+    ...buttonDocumentationSeedBase,
+    ...buildExtraButtonDocumentationBlocks({ colorId, iconId, mediaId }),
+  ];
+
+  await payload.update({
+    collection: "components",
+    id: btn.id,
+    data: { documentation },
+    overrideAccess: true,
+  });
+}
 
 const components = [
   {
@@ -30,6 +281,7 @@ const components = [
     figmaUrl: "https://www.figma.com/design/",
     storybookUrl: "https://storybook.js.org/docs",
     docsUrl: "https://payloadcms.com/docs",
+    documentation: [...buttonDocumentationSeedBase],
   },
   {
     name: "Input",
@@ -214,6 +466,67 @@ async function upsertIcon(
   }
 }
 
+async function upsertFieldShowcaseDoc(payload: Awaited<ReturnType<typeof getPayload>>) {
+  const title = "Все типы полей Payload (Data Fields)";
+  const found = await payload.find({
+    collection: "field-showcase",
+    where: { title: { equals: title } },
+    limit: 1,
+    overrideAccess: true,
+  });
+  const firstColor = await payload.find({
+    collection: "colors",
+    limit: 1,
+    sort: "sortOrder",
+    overrideAccess: true,
+  });
+  const colorId = firstColor.docs[0] ? Number(firstColor.docs[0].id) : undefined;
+
+  const data = {
+    title,
+    demoText: "Пример Text",
+    demoTextarea: "Пример Textarea — несколько строк.",
+    demoNumber: 42,
+    demoCheckbox: true,
+    demoEmail: "design-system@example.com",
+    demoRadio: "b" as const,
+    demoSelect: ["red", "blue"] as ("red" | "green" | "blue")[],
+    demoCode: "const ok = true;",
+    demoJson: { seeded: true, purpose: "поле type: json" },
+    demoPoint: [37.6173, 55.7558] as [number, number],
+    demoArray: [
+      { label: "Первый элемент array", count: 1 },
+      { label: "Второй", count: 2 },
+    ],
+    demoGroup: {
+      groupTitle: "Заголовок group",
+      groupNote: "Поля group лежат в объекте demoGroup.",
+    },
+    demoBlocks: [
+      { blockType: "line" as const, key: "role", value: "demo" },
+      { blockType: "tag" as const, label: "blocks-field" },
+    ],
+    tabMeta: { metaSlug: "field-showcase-demo" },
+    tabMetrics: { score: 100 },
+    ...(colorId ? { demoRelationship: colorId } : {}),
+  };
+
+  if (found.docs[0]) {
+    await payload.update({
+      collection: "field-showcase",
+      id: found.docs[0].id,
+      data,
+      overrideAccess: true,
+    });
+  } else {
+    await payload.create({
+      collection: "field-showcase",
+      data,
+      overrideAccess: true,
+    });
+  }
+}
+
 async function upsertColor(
   payload: Awaited<ReturnType<typeof getPayload>>,
   data: (typeof colors)[number],
@@ -242,6 +555,18 @@ async function upsertColor(
 }
 
 async function main() {
+  if (!process.env.PAYLOAD_SECRET?.trim()) {
+    console.error(`
+Не задан PAYLOAD_SECRET — Payload не инициализируется.
+
+Добавьте в корень проекта в файл .env или .env.local (см. .env.example):
+  PAYLOAD_SECRET=<случайная строка не короче 32 символов>
+
+Затем снова: npm run seed:portal
+`);
+    process.exit(1);
+  }
+
   const payload = await getPayload({ config });
 
   await payload.updateGlobal({
@@ -269,6 +594,8 @@ async function main() {
     await upsertColor(payload, row);
   }
 
+  await upsertFieldShowcaseDoc(payload);
+
   for (const row of icons) {
     const file = iconFileBySlug[row.slug];
     if (!file) {
@@ -278,7 +605,11 @@ async function main() {
     await upsertIcon(payload, { ...row, preview });
   }
 
-  console.log("Seed OK: portal-sources, components×2, colors×8, icons×4 + SVG в Media.");
+  await finalizeButtonDocumentation(payload);
+
+  console.log(
+    "Seed OK: portal-sources, components×2, colors×8, icons×4, field-showcase×1 + SVG в Media.",
+  );
   process.exit(0);
 }
 

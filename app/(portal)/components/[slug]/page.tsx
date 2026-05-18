@@ -3,9 +3,11 @@ import { notFound } from "next/navigation";
 import { getPayload } from "payload";
 
 import config from "@payload-config";
+import type { PortalSource } from "@/payload-types";
 
 import { getComponentDoc } from "@/lib/component-docs";
 
+import { ComponentDocumentation } from "./documentation";
 import { ComponentLiveDemos } from "./live-demos";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -19,7 +21,7 @@ export async function generateMetadata({ params }: Props) {
     collection: "components",
     where: { slug: { equals: slug } },
     limit: 1,
-    depth: 0,
+    depth: 2,
   });
   const doc = docs[0];
   return {
@@ -35,12 +37,13 @@ export default async function ComponentDocPage({ params }: Props) {
     collection: "components",
     where: { slug: { equals: slug } },
     limit: 1,
-    depth: 0,
+    depth: 2,
   });
   const doc = docs[0];
   if (!doc) notFound();
 
   const staticDoc = getComponentDoc(slug);
+  const portalSources = await payload.findGlobal({ slug: "portal-sources" });
 
   return (
     <div className="min-h-full bg-white dark:bg-black">
@@ -77,12 +80,18 @@ export default async function ComponentDocPage({ params }: Props) {
           </div>
         </header>
 
+        <ComponentMetaRow doc={doc} />
+
+        <PortalLibraryStrip sources={portalSources} />
+
         <section className="mb-14">
           <h2 className="mb-4 text-lg font-semibold text-zinc-900 dark:text-zinc-50">
             Превью
           </h2>
           <ComponentLiveDemos slug={slug} />
         </section>
+
+        <ComponentDocumentation blocks={doc.documentation} />
 
         {staticDoc ? (
           <>
@@ -170,6 +179,75 @@ export default async function ComponentDocPage({ params }: Props) {
         )}
       </article>
     </div>
+  );
+}
+
+function ComponentMetaRow({
+  doc,
+}: {
+  doc: {
+    createdAt: string;
+    updatedAt: string;
+    folder?: unknown;
+  };
+}) {
+  const folder =
+    doc.folder &&
+    typeof doc.folder === "object" &&
+    doc.folder !== null &&
+    "name" in doc.folder &&
+    typeof (doc.folder as { name: unknown }).name === "string"
+      ? (doc.folder as { name: string }).name
+      : null;
+
+  return (
+    <div className="mb-8 flex flex-wrap gap-x-8 gap-y-2 border-b border-zinc-100 pb-8 text-sm dark:border-zinc-900">
+      <div>
+        <span className="text-zinc-500">Создано в CMS</span>
+        <span className="ml-2 font-medium text-zinc-800 dark:text-zinc-200">
+          {new Date(doc.createdAt).toLocaleString("ru-RU")}
+        </span>
+      </div>
+      <div>
+        <span className="text-zinc-500">Обновлено</span>
+        <span className="ml-2 font-medium text-zinc-800 dark:text-zinc-200">
+          {new Date(doc.updatedAt).toLocaleString("ru-RU")}
+        </span>
+      </div>
+      {folder ? (
+        <div>
+          <span className="text-zinc-500">Папка</span>
+          <span className="ml-2 font-medium text-zinc-800 dark:text-zinc-200">{folder}</span>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function PortalLibraryStrip({ sources }: { sources: PortalSource }) {
+  const links: { href: string; label: string }[] = [];
+  if (sources.figmaLibraryUrl) links.push({ label: "Figma library", href: sources.figmaLibraryUrl });
+  if (sources.storybookUrl) links.push({ label: "Storybook (глобально)", href: sources.storybookUrl });
+  if (sources.documentationUrl) links.push({ label: "Документация", href: sources.documentationUrl });
+  if (sources.repositoryUrl) links.push({ label: "Репозиторий", href: sources.repositoryUrl });
+  if (!links.length) return null;
+
+  return (
+    <section className="mb-10 rounded-2xl border border-dashed border-zinc-300 bg-zinc-50/50 px-4 py-4 dark:border-zinc-700 dark:bg-zinc-900/30">
+      <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-zinc-500">
+        Общие ссылки портала (глобальные)
+      </h2>
+      <p className="mb-3 text-xs text-zinc-600 dark:text-zinc-400">
+        Из глобала «Ссылки на источники» в Payload — одни и те же URL для всего портала.
+      </p>
+      <ul className="flex flex-wrap gap-2">
+        {links.map((l) => (
+          <li key={l.href}>
+            <SourceLink href={l.href}>{l.label}</SourceLink>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
 

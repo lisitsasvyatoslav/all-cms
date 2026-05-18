@@ -64,6 +64,7 @@ export type SupportedTimezones =
 export interface Config {
   auth: {
     users: UserAuthOperations;
+    'payload-mcp-api-keys': PayloadMcpApiKeyAuthOperations;
   };
   blocks: {};
   collections: {
@@ -73,6 +74,8 @@ export interface Config {
     colors: Color;
     icons: Icon;
     notes: Note;
+    'field-showcase': FieldShowcase;
+    'payload-mcp-api-keys': PayloadMcpApiKey;
     'payload-kv': PayloadKv;
     'payload-folders': FolderInterface;
     'payload-locked-documents': PayloadLockedDocument;
@@ -91,6 +94,8 @@ export interface Config {
     colors: ColorsSelect<false> | ColorsSelect<true>;
     icons: IconsSelect<false> | IconsSelect<true>;
     notes: NotesSelect<false> | NotesSelect<true>;
+    'field-showcase': FieldShowcaseSelect<false> | FieldShowcaseSelect<true>;
+    'payload-mcp-api-keys': PayloadMcpApiKeysSelect<false> | PayloadMcpApiKeysSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-folders': PayloadFoldersSelect<false> | PayloadFoldersSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -111,13 +116,31 @@ export interface Config {
   widgets: {
     collections: CollectionsWidget;
   };
-  user: User;
+  user: User | PayloadMcpApiKey;
   jobs: {
     tasks: unknown;
     workflows: unknown;
   };
 }
 export interface UserAuthOperations {
+  forgotPassword: {
+    email: string;
+    password: string;
+  };
+  login: {
+    email: string;
+    password: string;
+  };
+  registerFirstUser: {
+    email: string;
+    password: string;
+  };
+  unlock: {
+    email: string;
+    password: string;
+  };
+}
+export interface PayloadMcpApiKeyAuthOperations {
   forgotPassword: {
     email: string;
     password: string;
@@ -186,7 +209,7 @@ export interface Media {
   focalY?: number | null;
 }
 /**
- * Компоненты UI-kit: описание и ссылки на Figma / Storybook / доку.
+ * Карточка и ссылки; вкладка «Документация» — блоки для портала (визуал на сайте). Все типы полей Payload — коллекция «Справочник полей».
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "components".
@@ -195,40 +218,248 @@ export interface Component {
   id: number;
   name: string;
   /**
-   * Латиница, без пробелов — для будущих страниц /components/[slug]
+   * Латиница, без пробелов — страница портала /components/[slug]
    */
   slug: string;
+  /**
+   * Лид под заголовком на портале.
+   */
   description?: string | null;
   figmaUrl?: string | null;
   storybookUrl?: string | null;
   docsUrl?: string | null;
+  /**
+   * Все типы контент-блоков (в т.ч. richText, code, upload, relationship, point, …). Порядок = порядок на портале.
+   */
+  documentation?:
+    | (
+        | {
+            heading: string;
+            body?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'section';
+          }
+        | {
+            dos?:
+              | {
+                  text: string;
+                  id?: string | null;
+                }[]
+              | null;
+            donts?:
+              | {
+                  text: string;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'doDont';
+          }
+        | {
+            tone: 'info' | 'warning' | 'success';
+            text: string;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'callout';
+          }
+        | {
+            title?: string | null;
+            code: string;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'codeExample';
+          }
+        | {
+            title?: string | null;
+            snippet: string;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'codeMonaco';
+          }
+        | {
+            title?: string | null;
+            body?: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            } | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'richTextSection';
+          }
+        | {
+            title?: string | null;
+            rows?:
+              | {
+                  name: string;
+                  type: string;
+                  defaultValue?: string | null;
+                  description?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'propsTable';
+          }
+        | {
+            links?:
+              | {
+                  label: string;
+                  url: string;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'resourceLinks';
+          }
+        | {
+            image: number | Media;
+            caption?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'mediaFigure';
+          }
+        | {
+            color?: (number | null) | Color;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'relColor';
+          }
+        | {
+            icon?: (number | null) | Icon;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'relIcon';
+          }
+        | {
+            label?: string | null;
+            /**
+             * @minItems 2
+             * @maxItems 2
+             */
+            location?: [number, number] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'geoPoint';
+          }
+        | {
+            title?: string | null;
+            at?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'calendarDate';
+          }
+        | {
+            label?: string | null;
+            address?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'emailLine';
+          }
+        | {
+            label?: string | null;
+            value?: number | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'numberStat';
+          }
+        | {
+            mode?: ('fast' | 'normal' | 'precise') | null;
+            hint?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'radioPick';
+          }
+        | {
+            tags?: ('a11y' | 'forms' | 'layout' | 'motion')[] | null;
+            note?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'multiSelect';
+          }
+        | {
+            enabled?: boolean | null;
+            flagLabel?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'flagBox';
+          }
+        | {
+            title?: string | null;
+            payload?:
+              | {
+                  [k: string]: unknown;
+                }
+              | unknown[]
+              | string
+              | number
+              | boolean
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'jsonBlock';
+          }
+        | {
+            bundle?: {
+              gTitle?: string | null;
+              gCount?: number | null;
+              gOn?: boolean | null;
+            };
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'groupStrip';
+          }
+        | {
+            intro?: string | null;
+            items?:
+              | {
+                  line: string;
+                  id?: string | null;
+                  blockName?: string | null;
+                  blockType: 'nestLine';
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'nestedStack';
+          }
+        | {
+            tabSummary?: ComponentDocTabSummary;
+            tabDetail?: ComponentDocTabDetail;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'namedTabsStrip';
+          }
+        | {
+            caption?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'divider';
+          }
+        | {
+            body: string;
+            attribution?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'quote';
+          }
+      )[]
+    | null;
   folder?: (number | null) | FolderInterface;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "payload-folders".
- */
-export interface FolderInterface {
-  id: number;
-  name: string;
-  folder?: (number | null) | FolderInterface;
-  documentsAndFolders?: {
-    docs?: (
-      | {
-          relationTo?: 'payload-folders';
-          value: number | FolderInterface;
-        }
-      | {
-          relationTo?: 'components';
-          value: number | Component;
-        }
-    )[];
-    hasNextPage?: boolean;
-    totalDocs?: number;
-  };
-  folderType?: 'components'[] | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -273,6 +504,46 @@ export interface Icon {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ComponentDocTabSummary".
+ */
+export interface ComponentDocTabSummary {
+  brief?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ComponentDocTabDetail".
+ */
+export interface ComponentDocTabDetail {
+  detail?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-folders".
+ */
+export interface FolderInterface {
+  id: number;
+  name: string;
+  folder?: (number | null) | FolderInterface;
+  documentsAndFolders?: {
+    docs?: (
+      | {
+          relationTo?: 'payload-folders';
+          value: number | FolderInterface;
+        }
+      | {
+          relationTo?: 'components';
+          value: number | Component;
+        }
+    )[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
+  folderType?: 'components'[] | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "notes".
  */
 export interface Note {
@@ -281,6 +552,209 @@ export interface Note {
   body?: string | null;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * Один документ на команду: все типы полей данных Payload (array, blocks, checkbox, code, …) для ориентира в админке.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "field-showcase".
+ */
+export interface FieldShowcase {
+  id: number;
+  title: string;
+  demoText?: string | null;
+  demoTextarea?: string | null;
+  demoNumber?: number | null;
+  demoCheckbox?: boolean | null;
+  demoEmail?: string | null;
+  demoDate?: string | null;
+  demoRadio?: ('a' | 'b') | null;
+  demoSelect?: ('red' | 'green' | 'blue')[] | null;
+  demoCode?: string | null;
+  demoJson?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * @minItems 2
+   * @maxItems 2
+   */
+  demoPoint?: [number, number] | null;
+  demoRichText?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  demoRelationship?: (number | null) | Color;
+  demoUpload?: (number | null) | Media;
+  demoArray?:
+    | {
+        label: string;
+        count?: number | null;
+        id?: string | null;
+      }[]
+    | null;
+  demoGroup?: {
+    groupTitle?: string | null;
+    groupNote?: string | null;
+  };
+  demoBlocks?:
+    | (
+        | {
+            key: string;
+            value?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'line';
+          }
+        | {
+            label: string;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'tag';
+          }
+      )[]
+    | null;
+  tabMeta?: FieldShowcaseTabMeta;
+  tabMetrics?: FieldShowcaseTabMetrics;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FieldShowcaseTabMeta".
+ */
+export interface FieldShowcaseTabMeta {
+  metaSlug?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FieldShowcaseTabMetrics".
+ */
+export interface FieldShowcaseTabMetrics {
+  score?: number | null;
+}
+/**
+ * API keys control which collections, resources, tools, and prompts MCP clients can access
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-mcp-api-keys".
+ */
+export interface PayloadMcpApiKey {
+  id: number;
+  /**
+   * The user that the API key is associated with.
+   */
+  user: number | User;
+  /**
+   * A useful label for the API key.
+   */
+  label?: string | null;
+  /**
+   * The purpose of the API key.
+   */
+  description?: string | null;
+  components?: {
+    /**
+     * Allow clients to find components.
+     */
+    find?: boolean | null;
+    /**
+     * Allow clients to create components.
+     */
+    create?: boolean | null;
+    /**
+     * Allow clients to update components.
+     */
+    update?: boolean | null;
+  };
+  colors?: {
+    /**
+     * Allow clients to find colors.
+     */
+    find?: boolean | null;
+    /**
+     * Allow clients to create colors.
+     */
+    create?: boolean | null;
+    /**
+     * Allow clients to update colors.
+     */
+    update?: boolean | null;
+  };
+  icons?: {
+    /**
+     * Allow clients to find icons.
+     */
+    find?: boolean | null;
+    /**
+     * Allow clients to create icons.
+     */
+    create?: boolean | null;
+    /**
+     * Allow clients to update icons.
+     */
+    update?: boolean | null;
+  };
+  media?: {
+    /**
+     * Allow clients to find media.
+     */
+    find?: boolean | null;
+    /**
+     * Allow clients to create media.
+     */
+    create?: boolean | null;
+    /**
+     * Allow clients to update media.
+     */
+    update?: boolean | null;
+  };
+  notes?: {
+    /**
+     * Allow clients to find notes.
+     */
+    find?: boolean | null;
+    /**
+     * Allow clients to create notes.
+     */
+    create?: boolean | null;
+    /**
+     * Allow clients to update notes.
+     */
+    update?: boolean | null;
+  };
+  portalSources?: {
+    /**
+     * Allow clients to find portal-sources global.
+     */
+    find?: boolean | null;
+    /**
+     * Allow clients to update portal-sources global.
+     */
+    update?: boolean | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+  enableAPIKey?: boolean | null;
+  apiKey?: string | null;
+  apiKeyIndex?: string | null;
+  collection: 'payload-mcp-api-keys';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -331,14 +805,27 @@ export interface PayloadLockedDocument {
         value: number | Note;
       } | null)
     | ({
+        relationTo: 'field-showcase';
+        value: number | FieldShowcase;
+      } | null)
+    | ({
+        relationTo: 'payload-mcp-api-keys';
+        value: number | PayloadMcpApiKey;
+      } | null)
+    | ({
         relationTo: 'payload-folders';
         value: number | FolderInterface;
       } | null);
   globalSlug?: string | null;
-  user: {
-    relationTo: 'users';
-    value: number | User;
-  };
+  user:
+    | {
+        relationTo: 'users';
+        value: number | User;
+      }
+    | {
+        relationTo: 'payload-mcp-api-keys';
+        value: number | PayloadMcpApiKey;
+      };
   updatedAt: string;
   createdAt: string;
 }
@@ -348,10 +835,15 @@ export interface PayloadLockedDocument {
  */
 export interface PayloadPreference {
   id: number;
-  user: {
-    relationTo: 'users';
-    value: number | User;
-  };
+  user:
+    | {
+        relationTo: 'users';
+        value: number | User;
+      }
+    | {
+        relationTo: 'payload-mcp-api-keys';
+        value: number | PayloadMcpApiKey;
+      };
   key?: string | null;
   value?:
     | {
@@ -430,9 +922,254 @@ export interface ComponentsSelect<T extends boolean = true> {
   figmaUrl?: T;
   storybookUrl?: T;
   docsUrl?: T;
+  documentation?:
+    | T
+    | {
+        section?:
+          | T
+          | {
+              heading?: T;
+              body?: T;
+              id?: T;
+              blockName?: T;
+            };
+        doDont?:
+          | T
+          | {
+              dos?:
+                | T
+                | {
+                    text?: T;
+                    id?: T;
+                  };
+              donts?:
+                | T
+                | {
+                    text?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        callout?:
+          | T
+          | {
+              tone?: T;
+              text?: T;
+              id?: T;
+              blockName?: T;
+            };
+        codeExample?:
+          | T
+          | {
+              title?: T;
+              code?: T;
+              id?: T;
+              blockName?: T;
+            };
+        codeMonaco?:
+          | T
+          | {
+              title?: T;
+              snippet?: T;
+              id?: T;
+              blockName?: T;
+            };
+        richTextSection?:
+          | T
+          | {
+              title?: T;
+              body?: T;
+              id?: T;
+              blockName?: T;
+            };
+        propsTable?:
+          | T
+          | {
+              title?: T;
+              rows?:
+                | T
+                | {
+                    name?: T;
+                    type?: T;
+                    defaultValue?: T;
+                    description?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        resourceLinks?:
+          | T
+          | {
+              links?:
+                | T
+                | {
+                    label?: T;
+                    url?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        mediaFigure?:
+          | T
+          | {
+              image?: T;
+              caption?: T;
+              id?: T;
+              blockName?: T;
+            };
+        relColor?:
+          | T
+          | {
+              color?: T;
+              id?: T;
+              blockName?: T;
+            };
+        relIcon?:
+          | T
+          | {
+              icon?: T;
+              id?: T;
+              blockName?: T;
+            };
+        geoPoint?:
+          | T
+          | {
+              label?: T;
+              location?: T;
+              id?: T;
+              blockName?: T;
+            };
+        calendarDate?:
+          | T
+          | {
+              title?: T;
+              at?: T;
+              id?: T;
+              blockName?: T;
+            };
+        emailLine?:
+          | T
+          | {
+              label?: T;
+              address?: T;
+              id?: T;
+              blockName?: T;
+            };
+        numberStat?:
+          | T
+          | {
+              label?: T;
+              value?: T;
+              id?: T;
+              blockName?: T;
+            };
+        radioPick?:
+          | T
+          | {
+              mode?: T;
+              hint?: T;
+              id?: T;
+              blockName?: T;
+            };
+        multiSelect?:
+          | T
+          | {
+              tags?: T;
+              note?: T;
+              id?: T;
+              blockName?: T;
+            };
+        flagBox?:
+          | T
+          | {
+              enabled?: T;
+              flagLabel?: T;
+              id?: T;
+              blockName?: T;
+            };
+        jsonBlock?:
+          | T
+          | {
+              title?: T;
+              payload?: T;
+              id?: T;
+              blockName?: T;
+            };
+        groupStrip?:
+          | T
+          | {
+              bundle?:
+                | T
+                | {
+                    gTitle?: T;
+                    gCount?: T;
+                    gOn?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        nestedStack?:
+          | T
+          | {
+              intro?: T;
+              items?:
+                | T
+                | {
+                    nestLine?:
+                      | T
+                      | {
+                          line?: T;
+                          id?: T;
+                          blockName?: T;
+                        };
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        namedTabsStrip?:
+          | T
+          | {
+              tabSummary?: T | ComponentDocTabSummarySelect<T>;
+              tabDetail?: T | ComponentDocTabDetailSelect<T>;
+              id?: T;
+              blockName?: T;
+            };
+        divider?:
+          | T
+          | {
+              caption?: T;
+              id?: T;
+              blockName?: T;
+            };
+        quote?:
+          | T
+          | {
+              body?: T;
+              attribution?: T;
+              id?: T;
+              blockName?: T;
+            };
+      };
   folder?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ComponentDocTabSummary_select".
+ */
+export interface ComponentDocTabSummarySelect<T extends boolean = true> {
+  brief?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ComponentDocTabDetail_select".
+ */
+export interface ComponentDocTabDetailSelect<T extends boolean = true> {
+  detail?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -470,6 +1207,132 @@ export interface NotesSelect<T extends boolean = true> {
   body?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "field-showcase_select".
+ */
+export interface FieldShowcaseSelect<T extends boolean = true> {
+  title?: T;
+  demoText?: T;
+  demoTextarea?: T;
+  demoNumber?: T;
+  demoCheckbox?: T;
+  demoEmail?: T;
+  demoDate?: T;
+  demoRadio?: T;
+  demoSelect?: T;
+  demoCode?: T;
+  demoJson?: T;
+  demoPoint?: T;
+  demoRichText?: T;
+  demoRelationship?: T;
+  demoUpload?: T;
+  demoArray?:
+    | T
+    | {
+        label?: T;
+        count?: T;
+        id?: T;
+      };
+  demoGroup?:
+    | T
+    | {
+        groupTitle?: T;
+        groupNote?: T;
+      };
+  demoBlocks?:
+    | T
+    | {
+        line?:
+          | T
+          | {
+              key?: T;
+              value?: T;
+              id?: T;
+              blockName?: T;
+            };
+        tag?:
+          | T
+          | {
+              label?: T;
+              id?: T;
+              blockName?: T;
+            };
+      };
+  tabMeta?: T | FieldShowcaseTabMetaSelect<T>;
+  tabMetrics?: T | FieldShowcaseTabMetricsSelect<T>;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FieldShowcaseTabMeta_select".
+ */
+export interface FieldShowcaseTabMetaSelect<T extends boolean = true> {
+  metaSlug?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FieldShowcaseTabMetrics_select".
+ */
+export interface FieldShowcaseTabMetricsSelect<T extends boolean = true> {
+  score?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-mcp-api-keys_select".
+ */
+export interface PayloadMcpApiKeysSelect<T extends boolean = true> {
+  user?: T;
+  label?: T;
+  description?: T;
+  components?:
+    | T
+    | {
+        find?: T;
+        create?: T;
+        update?: T;
+      };
+  colors?:
+    | T
+    | {
+        find?: T;
+        create?: T;
+        update?: T;
+      };
+  icons?:
+    | T
+    | {
+        find?: T;
+        create?: T;
+        update?: T;
+      };
+  media?:
+    | T
+    | {
+        find?: T;
+        create?: T;
+        update?: T;
+      };
+  notes?:
+    | T
+    | {
+        find?: T;
+        create?: T;
+        update?: T;
+      };
+  portalSources?:
+    | T
+    | {
+        find?: T;
+        update?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  enableAPIKey?: T;
+  apiKey?: T;
+  apiKeyIndex?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

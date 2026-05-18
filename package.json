@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "cross-env NODE_OPTIONS=--no-deprecation next dev",
+    "dev": "cross-env NODE_OPTIONS=--no-deprecation next dev -H 127.0.0.1 -p 3000",
     "build": "cross-env NODE_OPTIONS=--no-deprecation next build",
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
     "lint": "eslint",
@@ -17,6 +17,7 @@
   "dependencies": {
     "@payloadcms/db-sqlite": "^3.84.1",
     "@payloadcms/next": "^3.84.1",
+    "@payloadcms/plugin-mcp": "^3.84.1",
     "@payloadcms/richtext-lexical": "^3.84.1",
     "cross-env": "^10.1.0",
     "dotenv": "^17.4.2",

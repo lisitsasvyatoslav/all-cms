@@ -36,6 +36,9 @@ yarn-error.log*
 !.env.example
 !**/.env.example
 
+# Cursor: локальный MCP с Bearer-ключом Payload (шаблон — .cursor/mcp.payload.example.json)
+.cursor/mcp.json
+
 # vercel
 .vercel
 
