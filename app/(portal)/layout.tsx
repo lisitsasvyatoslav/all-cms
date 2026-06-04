@@ -4,9 +4,14 @@ import { getPayload } from "payload";
 
 import config from "@payload-config";
 
+import { PortalThemeProvider } from "@/components/providers/portal-theme-provider";
+import { portalAppearanceInitScript } from "@/lib/radix/portal-appearance";
+
 import { PortalSidebar } from "./portal-sidebar";
 
+import "@radix-ui/themes/styles.css";
 import "../globals.css";
+import "../radix-themes.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -46,12 +51,18 @@ export default async function PortalLayout({
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: portalAppearanceInitScript }} />
+      </head>
       <body className="min-h-full flex flex-col">
-        <div className="flex min-h-full flex-1 flex-row bg-zinc-50 dark:bg-black">
-          <PortalSidebar components={componentNav} />
-          <div className="min-h-full min-w-0 flex-1">{children}</div>
-        </div>
+        <PortalThemeProvider>
+          <div className="flex min-h-full flex-1 flex-row bg-zinc-50 dark:bg-black">
+            <PortalSidebar components={componentNav} />
+            <div className="min-h-full min-w-0 flex-1">{children}</div>
+          </div>
+        </PortalThemeProvider>
       </body>
     </html>
   );

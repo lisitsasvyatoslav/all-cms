@@ -9,8 +9,13 @@ import { buildConfig } from "payload";
 import { fileURLToPath } from "url";
 import sharp from "sharp";
 
-import { componentDocumentationBlocks } from "./collections/componentDocumentationBlocks";
+import {
+  documentationBlocksForColors,
+  documentationBlocksForComponents,
+} from "./collections/componentDocumentationBlocks";
+import { isPortalDocumentationReadable } from "./lib/payload/documentation-access";
 import { FieldShowcaseCollection } from "./collections/fieldShowcase";
+import { componentAgentMcpTools } from "./lib/mcp/components-agent";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -143,7 +148,7 @@ const Components: CollectionConfig = {
   folders: true,
   admin: {
     useAsTitle: "name",
-    defaultColumns: ["name", "slug", "updatedAt"],
+    defaultColumns: ["name", "slug", "status", "updatedAt"],
     description:
       "Карточка и ссылки; вкладка «Документация» — блоки для портала (визуал на сайте). Все типы полей Payload — коллекция «Справочник полей».",
   },
@@ -198,6 +203,83 @@ const Components: CollectionConfig = {
               type: "text",
               label: "Документация (внешняя или внутренняя)",
             },
+            {
+              name: "status",
+              type: "select",
+              label: "Статус",
+              defaultValue: "stable",
+              options: [
+                { label: "Stable", value: "stable" },
+                { label: "Beta", value: "beta" },
+                { label: "Deprecated", value: "deprecated" },
+                { label: "Draft", value: "draft" },
+              ],
+            },
+            {
+              name: "statusNote",
+              type: "textarea",
+              label: "Примечание к статусу",
+              admin: {
+                description: "Текст бейджа или предупреждения на портале.",
+              },
+            },
+            {
+              name: "parentComponent",
+              type: "relationship",
+              relationTo: "components",
+              label: "Родительский компонент",
+              admin: {
+                description: "Вариант или часть семейства (отдельная страница-родитель).",
+              },
+              filterOptions: ({ id }) =>
+                id ? { id: { not_equals: id } } : true,
+            },
+            {
+              name: "subcomponents",
+              type: "relationship",
+              relationTo: "components",
+              hasMany: true,
+              label: "Состоит из",
+              admin: {
+                description: "Дочерние компоненты со своими страницами в портале.",
+              },
+              filterOptions: ({ id }) =>
+                id ? { id: { not_equals: id } } : true,
+            },
+            {
+              name: "relatedComponents",
+              type: "relationship",
+              relationTo: "components",
+              hasMany: true,
+              label: "Связанные компоненты",
+              admin: {
+                description: "Смежные компоненты (часто используют вместе).",
+              },
+              filterOptions: ({ id }) =>
+                id ? { id: { not_equals: id } } : true,
+            },
+            {
+              name: "replacedBy",
+              type: "relationship",
+              relationTo: "components",
+              label: "Заменён на",
+              admin: {
+                description: "Для deprecated — куда перейти вместо этого компонента.",
+              },
+              filterOptions: ({ id }) =>
+                id ? { id: { not_equals: id } } : true,
+            },
+            {
+              name: "showTOC",
+              type: "checkbox",
+              label: "Показывать оглавление",
+              defaultValue: true,
+              admin: {
+                position: "sidebar",
+                description:
+                  "Правая колонка «На этой странице». Список строится из заголовков H2 на странице.",
+              },
+            },
           ],
         },
         {
@@ -209,11 +291,14 @@ const Components: CollectionConfig = {
               name: "documentation",
               type: "blocks",
               label: "Контент со страницы",
-              blocks: componentDocumentationBlocks,
+              blocks: documentationBlocksForComponents,
+              access: {
+                read: isPortalDocumentationReadable,
+              },
               admin: {
                 initCollapsed: false,
                 description:
-                  "Все типы контент-блоков (в т.ч. richText, code, upload, relationship, point, …). Порядок = порядок на портале.",
+                  "Все 24 типа контент-блоков. Порядок = порядок на портале.",
               },
             },
           ],
@@ -228,7 +313,8 @@ const Colors: CollectionConfig = {
   admin: {
     useAsTitle: "name",
     defaultColumns: ["name", "hex", "sortOrder"],
-    description: "Цветовые токены / образцы палитры для портала.",
+    description:
+      "Цветовые токены / образцы палитры; вкладка «Документация» — те же 24 блока, что у components.",
   },
   access: {
     read: () => true,
@@ -238,34 +324,65 @@ const Colors: CollectionConfig = {
   },
   fields: [
     {
-      name: "name",
-      type: "text",
-      required: true,
-      label: "Название",
-    },
-    {
-      name: "tokenKey",
-      type: "text",
-      label: "Ключ в коде",
-      admin: { description: "Например color.primary или palette.blue.500" },
-    },
-    {
-      name: "hex",
-      type: "text",
-      required: true,
-      label: "HEX",
-      admin: { description: "#RRGGBB" },
-    },
-    {
-      name: "sortOrder",
-      type: "number",
-      label: "Порядок сортировки",
-      defaultValue: 0,
-    },
-    {
-      name: "caption",
-      type: "textarea",
-      label: "Подпись",
+      type: "tabs",
+      tabs: [
+        {
+          label: "Карточка",
+          fields: [
+            {
+              name: "name",
+              type: "text",
+              required: true,
+              label: "Название",
+            },
+            {
+              name: "tokenKey",
+              type: "text",
+              label: "Ключ в коде",
+              admin: { description: "Например color.primary или palette.blue.500" },
+            },
+            {
+              name: "hex",
+              type: "text",
+              required: true,
+              label: "HEX",
+              admin: { description: "#RRGGBB" },
+            },
+            {
+              name: "sortOrder",
+              type: "number",
+              label: "Порядок сортировки",
+              defaultValue: 0,
+            },
+            {
+              name: "caption",
+              type: "textarea",
+              label: "Подпись",
+            },
+          ],
+        },
+        {
+          label: "Документация",
+          description:
+            "Те же типы контент-блоков, что у components. Макет на портале — /colors/[id].",
+          fields: [
+            {
+              name: "documentation",
+              type: "blocks",
+              label: "Контент со страницы",
+              blocks: documentationBlocksForColors,
+              access: {
+                read: isPortalDocumentationReadable,
+              },
+              admin: {
+                initCollapsed: false,
+                description:
+                  "8 типов блоков для документации цвета (секция, заметка, rich text, код, Do/Don't, ссылки, изображение, связанный цвет).",
+              },
+            },
+          ],
+        },
+      ],
     },
   ],
 };
@@ -387,11 +504,14 @@ export default buildConfig({
   sharp,
   plugins: [
     mcpPlugin({
+      mcp: {
+        tools: componentAgentMcpTools,
+      },
       collections: {
         components: {
           description:
-            "Компоненты UI-kit: карточка (имя, slug, ссылки) и blocks documentation для портала.",
-          enabled: { find: true, create: true, update: true, delete: false },
+            "UI-kit: getComponent / listComponents — карточка; listComponentsFull — все поля и documentation.",
+          enabled: { find: false, create: false, update: false, delete: false },
         },
         colors: {
           description: "Цветовые токены портала.",

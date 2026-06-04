@@ -1,20 +1,18 @@
 /**
  * Заполняет демо-данные: 2 компонента, 8 цветов, 4 иконки (+ SVG в Media), глобальные ссылки, справочник field-showcase.
- * Запуск: `npm run seed:portal` (нужен `PAYLOAD_SECRET` и `DATABASE_URI` в `.env` или `.env.local`).
+ * Запуск: `npm run seed:portal` (нужен `PAYLOAD_SECRET` в `.env` или `.env.local`, см. `.env.example`).
  */
-import dotenv from "dotenv";
+import "./load-env.js";
 import path from "path";
 import { fileURLToPath } from "url";
 import { getPayload } from "payload";
 
 import config from "../payload.config";
+import { storybookStoryUrl } from "../lib/storybook/portal-preview-config";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const projectRoot = path.join(__dirname, "..");
-
-dotenv.config({ path: path.join(projectRoot, ".env") });
-dotenv.config({ path: path.join(projectRoot, ".env.local"), override: true });
 const iconAssetsDir = path.join(projectRoot, "public", "icon-assets");
 
 const demoSources = {
@@ -24,15 +22,55 @@ const demoSources = {
   repositoryUrl: "https://github.com/payloadcms/payload",
 };
 
-/** Базовая документация Button; после сида цветов/иконок к ней дописываются демо-блоки с relationship/upload и др. */
-const buttonDocumentationSeedBase = [
+const storybookBase =
+  process.env.NEXT_PUBLIC_STORYBOOK_URL?.replace(/\/$/, "") ||
+  "http://127.0.0.1:6006";
+
+function storybookEmbedSeed(
+  componentSlug: string,
+  storyId: string,
+  title: string,
+  frameHeight: number,
+  args?: string,
+) {
+  return {
+    blockType: "storybookEmbed" as const,
+    showLLM: false,
+    title,
+    storybookUrl: storybookStoryUrl(storybookBase, componentSlug, storyId, args),
+    frameHeight,
+  };
+}
+
+/** Превью на портале — блоки Storybook (URL), порядок = секция «Превью». */
+const buttonStorybookPreviewSeed = [
+  storybookEmbedSeed("button", "Default", "По умолчанию", 200),
+  storybookEmbedSeed("button", "PortalSync", "Синхронизация", 130),
+  storybookEmbedSeed("button", "Variants", "Варианты", 180),
+  storybookEmbedSeed("button", "Sizes", "Размеры", 180),
+  storybookEmbedSeed("button", "Disabled", "Disabled", 160),
+];
+
+const inputStorybookPreviewSeed = [
+  storybookEmbedSeed("input", "Default", "По умолчанию", 200),
+  storybookEmbedSeed("input", "WithLabel", "С label", 200),
+  storybookEmbedSeed("input", "Sizes", "Размеры", 220),
+  storybookEmbedSeed("input", "Invalid", "Ошибка", 200),
+  storybookEmbedSeed("input", "Disabled", "Disabled", 160),
+];
+
+/** Документация Button — превью Storybook + контентные блоки. */
+const buttonDocumentationSeed = [
+  ...buttonStorybookPreviewSeed,
   {
     blockType: "section" as const,
+    showLLM: true,
     heading: "Когда использовать",
     body: "Button — для явного действия в интерфейсе: отправка формы, подтверждение в модалке, запуск процесса. Текст кнопки должен отвечать на вопрос «что произойдёт?»",
   },
   {
     blockType: "doDont" as const,
+    showLLM: true,
     dos: [
       { text: "Один основной (primary) акцент на логический экран или модалку." },
       { text: "Используйте глагол: «Сохранить», «Отправить», а не «OK»." },
@@ -45,16 +83,14 @@ const buttonDocumentationSeedBase = [
   },
   {
     blockType: "callout" as const,
+    showLLM: true,
     tone: "warning" as const,
     text: "Для перехода на другую страницу без побочных эффектов предпочтительнее текстовая ссылка или Link — кнопка ожидается как действие в текущем контексте.",
   },
   {
-    blockType: "divider" as const,
-    caption: "Параметры",
-  },
-  {
     blockType: "propsTable" as const,
-    title: "Основные пропсы (пример таблицы из CMS)",
+    showLLM: true,
+    title: "Основные пропсы",
     rows: [
       {
         name: "variant",
@@ -77,226 +113,160 @@ const buttonDocumentationSeedBase = [
     ],
   },
   {
-    blockType: "resourceLinks" as const,
-    links: [
-      { label: "Payload — Blocks", url: "https://payloadcms.com/docs/fields/blocks" },
-      { label: "Payload — Tabs", url: "https://payloadcms.com/docs/fields/tabs" },
-    ],
-  },
-  {
-    blockType: "quote" as const,
-    body: "Кнопка — самый сильный призыв к действию на экране: не тратьте его зря.",
-    attribution: "Руководство по UI (пример)",
-  },
-  {
     blockType: "codeExample" as const,
+    showLLM: true,
     title: "Минимальный пример",
     code: `<Button variant="primary" type="submit">
   Сохранить
 </Button>`,
   },
+  {
+    blockType: "resourceLinks" as const,
+    showLLM: true,
+    links: [
+      { label: "Storybook", url: "https://storybook.js.org/docs" },
+      { label: "Figma", url: "https://www.figma.com/design/" },
+    ],
+  },
 ];
 
-const lexicalDemoParagraph = {
-  root: {
-    type: "root",
-    format: "",
-    indent: 0,
-    version: 1,
-    children: [
-      {
-        type: "paragraph",
-        format: "",
-        indent: 0,
-        version: 1,
-        children: [
-          {
-            type: "text",
-            format: 0,
-            style: "",
-            detail: 0,
-            mode: "normal",
-            text: "Абзац из поля Rich Text (Lexical). Ниже на странице — ещё примеры типов полей Payload из сида.",
-            version: 1,
-          },
-        ],
-        direction: null,
-        textStyle: "",
-        textFormat: 0,
-      },
-    ],
-    direction: "ltr",
+const inputDocumentationSeed = [
+  ...inputStorybookPreviewSeed,
+  {
+    blockType: "section" as const,
+    heading: "Когда использовать",
+    body: "Input — для ввода короткого текста: имя, email, поиск, число в одной строке. Всегда сопровождайте понятным label и при необходимости подсказкой или сообщением об ошибке.",
   },
-};
+  {
+    blockType: "doDont" as const,
+    dos: [
+      { text: "Связывайте label с полем (for / aria-labelledby)." },
+      { text: "Показывайте ошибку под полем и не полагайтесь только на цвет рамки." },
+      { text: "Используйте placeholder как подсказку, а не как замену label." },
+    ],
+    donts: [
+      { text: "Не используйте Input для длинного текста — для этого textarea." },
+      { text: "Не прячьте обязательность поля: отметьте required в UI." },
+    ],
+  },
+  {
+    blockType: "codeExample" as const,
+    title: "Минимальный пример",
+    code: `<Input label="Email" type="email" placeholder="name@company.com" />`,
+  },
+];
 
-function buildExtraButtonDocumentationBlocks(opts: {
-  colorId?: number;
-  iconId?: number;
-  mediaId?: number;
-}) {
-  const blocks: Record<string, unknown>[] = [
-    { blockType: "divider", caption: "Ещё примеры полей (после сида)" },
-    {
-      blockType: "richTextSection",
-      title: "Rich Text",
-      body: lexicalDemoParagraph,
-    },
-    {
-      blockType: "codeMonaco",
-      title: "Поле Code (Monaco)",
-      snippet: `export function ping() {\n  return "pong";\n}`,
-    },
-  ];
-  if (opts.colorId != null) {
-    blocks.push({ blockType: "relColor", color: opts.colorId });
-  }
-  if (opts.iconId != null) {
-    blocks.push({ blockType: "relIcon", icon: opts.iconId });
-  }
-  if (opts.mediaId != null) {
-    blocks.push({
-      blockType: "mediaFigure",
-      image: opts.mediaId,
-      caption: "Загрузка из Media (превью иконки из сида).",
-    });
-  }
-  blocks.push(
-    {
-      blockType: "geoPoint",
-      label: "Точка на карте (Point)",
-      location: [37.6173, 55.7558],
-    },
-    {
-      blockType: "calendarDate",
-      title: "Релиз / проверка (Date)",
-      at: new Date().toISOString(),
-    },
-    {
-      blockType: "emailLine",
-      label: "Контакт дизайн-системы",
-      address: "design-system@example.com",
-    },
-    { blockType: "numberStat", label: "Версия доки (Number)", value: 1 },
-    {
-      blockType: "radioPick",
-      mode: "normal" as const,
-      hint: "Пример поля Radio внутри блока.",
-    },
-    {
-      blockType: "multiSelect",
-      tags: ["a11y", "forms"] as ("a11y" | "forms" | "layout" | "motion")[],
-      note: "Select с несколькими значениями.",
-    },
-    {
-      blockType: "flagBox",
-      enabled: true,
-      flagLabel: "Компонент стабилен (Checkbox)",
-    },
-    {
-      blockType: "jsonBlock",
-      title: "Произвольный JSON",
-      payload: { source: "seed", component: "button" },
-    },
-    {
-      blockType: "groupStrip",
-      bundle: {
-        gTitle: "Сводка (Group)",
-        gCount: 3,
-        gOn: true,
-      },
-    },
-    {
-      blockType: "nestedStack",
-      intro: "Вложенные blocks (array of block rows):",
-      items: [
-        { blockType: "nestLine" as const, line: "Проверить контраст текста на кнопке." },
-        { blockType: "nestLine" as const, line: "Проверить focus ring при клавиатуре." },
-      ],
-    },
-    {
-      blockType: "namedTabsStrip",
-      tabSummary: { brief: "Именованные Tabs: кратко — один объект tabSummary в JSON." },
-      tabDetail: {
-        detail: "Во втором табе — tabDetail. В админке переключение вкладок, на портале оба блока показаны рядом.",
-      },
-    },
-    { blockType: "callout", tone: "success" as const, text: "Все эти блоки можно менять в Payload; порядок на портале совпадает с порядком в форме." },
-  );
-  return blocks;
-}
+const linkDocumentationSeed = [
+  {
+    blockType: "section" as const,
+    showLLM: true,
+    heading: "Когда использовать",
+    body: "Link — для навигации без побочного действия: переход на другую страницу, якорь, внешний URL. Не дублируйте кнопку, если не нужен акцент действия.",
+  },
+  {
+    blockType: "doDont" as const,
+    showLLM: true,
+    dos: [
+      { text: "Текст ссылки должен описывать цель («Документация», не «Подробнее» без контекста)." },
+      { text: "Внешние ссылки помечайте визуально или через aria." },
+    ],
+    donts: [
+      { text: "Не используйте Link для submit формы — для этого Button." },
+    ],
+  },
+];
 
-async function finalizeButtonDocumentation(
-  payload: Awaited<ReturnType<typeof getPayload>>,
-) {
-  const foundBtn = await payload.find({
-    collection: "components",
-    where: { slug: { equals: "button" } },
-    limit: 1,
-    overrideAccess: true,
-  });
-  const btn = foundBtn.docs[0];
-  if (!btn) return;
-
-  const firstColor = await payload.find({
-    collection: "colors",
-    limit: 1,
-    sort: "sortOrder",
-    overrideAccess: true,
-  });
-  const searchIcon = await payload.find({
-    collection: "icons",
-    where: { slug: { equals: "search" } },
-    limit: 1,
-    overrideAccess: true,
-  });
-  const firstMedia = await payload.find({
-    collection: "media",
-    limit: 1,
-    overrideAccess: true,
-  });
-
-  const colorId = firstColor.docs[0]?.id != null ? Number(firstColor.docs[0].id) : undefined;
-  const iconId = searchIcon.docs[0]?.id != null ? Number(searchIcon.docs[0].id) : undefined;
-  const mediaId = firstMedia.docs[0]?.id != null ? Number(firstMedia.docs[0].id) : undefined;
-
-  const documentation = [
-    ...buttonDocumentationSeedBase,
-    ...buildExtraButtonDocumentationBlocks({ colorId, iconId, mediaId }),
-  ];
-
-  await payload.update({
-    collection: "components",
-    id: btn.id,
-    data: { documentation },
-    overrideAccess: true,
-  });
-}
+const badgeDocumentationSeed = [
+  {
+    blockType: "section" as const,
+    showLLM: true,
+    heading: "Когда использовать",
+    body: "Badge — компактная метка статуса, счётчика или категории. Не интерактивен; для действия используйте Button или Link.",
+  },
+  {
+    blockType: "callout" as const,
+    showLLM: true,
+    tone: "info" as const,
+    text: "Не заменяет Tag/Chip с удалением — Badge только отображает информацию.",
+  },
+];
 
 const components = [
   {
     name: "Button",
     slug: "button",
+    status: "stable" as const,
     description:
       "Триггер действия: варианты primary / outline / ghost, размеры sm–lg, состояние disabled.",
     figmaUrl: "https://www.figma.com/design/",
-    storybookUrl: "https://storybook.js.org/docs",
+    storybookUrl: "http://127.0.0.1:6006/?path=/story/design-system-button--default",
     docsUrl: "https://payloadcms.com/docs",
-    documentation: [...buttonDocumentationSeedBase],
+    documentation: [...buttonDocumentationSeed],
   },
   {
     name: "Input",
     slug: "input",
+    status: "stable" as const,
     description:
       "Текстовое поле с label, ошибкой и подсказкой; размеры sm–lg, invalid state.",
     figmaUrl: "https://www.figma.com/design/",
-    storybookUrl: "https://storybook.js.org/docs",
+    storybookUrl: "http://127.0.0.1:6006/?path=/story/design-system-input--default",
     docsUrl: "https://payloadcms.com/docs/getting-started/installation",
+    documentation: [...inputDocumentationSeed],
+  },
+  {
+    name: "Link",
+    slug: "link",
+    status: "stable" as const,
+    description:
+      "Текстовая ссылка для навигации: внутренние маршруты и внешние URL, состояния hover/focus.",
+    figmaUrl: "https://www.figma.com/design/",
+    docsUrl: "https://payloadcms.com/docs",
+    documentation: [...linkDocumentationSeed],
+  },
+  {
+    name: "Badge",
+    slug: "badge",
+    status: "beta" as const,
+    description:
+      "Метка статуса или счётчика: варианты neutral / success / warning, компактный размер.",
+    figmaUrl: "https://www.figma.com/design/",
+    docsUrl: "https://payloadcms.com/docs",
+    documentation: [...badgeDocumentationSeed],
   },
 ];
+
+/** Связи по slug (применяются после создания всех записей). */
+const componentRelationsBySlug: Record<
+  string,
+  {
+    parentSlug?: string;
+    subcomponentSlugs?: string[];
+    relatedSlugs?: string[];
+    replacedBySlug?: string;
+  }
+> = {
+  button: {
+    subcomponentSlugs: ["link"],
+    relatedSlugs: ["input", "badge"],
+  },
+  input: {
+    relatedSlugs: ["button"],
+  },
+  link: {
+    parentSlug: "button",
+    relatedSlugs: ["button", "input"],
+  },
+  badge: {
+    relatedSlugs: ["button", "link"],
+  },
+};
 
 const componentFolderBySlug: Record<string, string> = {
   button: "Actions",
   input: "Forms",
+  link: "Actions",
+  badge: "Feedback",
 };
 
 const colors = [
@@ -377,7 +347,7 @@ async function upsertComponent(
   payload: Awaited<ReturnType<typeof getPayload>>,
   data: (typeof components)[number],
   folderId?: number,
-) {
+): Promise<number> {
   const found = await payload.find({
     collection: "components",
     where: { slug: { equals: data.slug } },
@@ -396,10 +366,67 @@ async function upsertComponent(
       data: dataWithFolder,
       overrideAccess: true,
     });
-  } else {
-    await payload.create({
+    return Number(doc.id);
+  }
+  const created = await payload.create({
+    collection: "components",
+    data: dataWithFolder,
+    overrideAccess: true,
+  });
+  return Number(created.id);
+}
+
+async function getComponentIdBySlug(
+  payload: Awaited<ReturnType<typeof getPayload>>,
+  slug: string,
+): Promise<number | null> {
+  const found = await payload.find({
+    collection: "components",
+    where: { slug: { equals: slug } },
+    limit: 1,
+    overrideAccess: true,
+  });
+  const doc = found.docs[0];
+  return doc ? Number(doc.id) : null;
+}
+
+async function applyComponentRelations(
+  payload: Awaited<ReturnType<typeof getPayload>>,
+) {
+  for (const [slug, rel] of Object.entries(componentRelationsBySlug)) {
+    const id = await getComponentIdBySlug(payload, slug);
+    if (!id) continue;
+
+    const parentId = rel.parentSlug
+      ? await getComponentIdBySlug(payload, rel.parentSlug)
+      : null;
+    const subIds = rel.subcomponentSlugs
+      ? (
+          await Promise.all(
+            rel.subcomponentSlugs.map((s) => getComponentIdBySlug(payload, s)),
+          )
+        ).filter((n): n is number => n != null)
+      : [];
+    const relatedIds = rel.relatedSlugs
+      ? (
+          await Promise.all(
+            rel.relatedSlugs.map((s) => getComponentIdBySlug(payload, s)),
+          )
+        ).filter((n): n is number => n != null)
+      : [];
+    const replacedById = rel.replacedBySlug
+      ? await getComponentIdBySlug(payload, rel.replacedBySlug)
+      : null;
+
+    await payload.update({
       collection: "components",
-      data: dataWithFolder,
+      id,
+      data: {
+        parentComponent: parentId,
+        subcomponents: subIds,
+        relatedComponents: relatedIds,
+        replacedBy: replacedById,
+      },
       overrideAccess: true,
     });
   }
@@ -577,11 +604,12 @@ async function main() {
 
   const actionsFolderId = await ensureComponentFolder(payload, "Actions");
   const formsFolderId = await ensureComponentFolder(payload, "Forms");
-  await ensureComponentFolder(payload, "Feedback");
+  const feedbackFolderId = await ensureComponentFolder(payload, "Feedback");
 
   const folderIdByName: Record<string, number> = {
     Actions: actionsFolderId,
     Forms: formsFolderId,
+    Feedback: feedbackFolderId,
   };
 
   for (const row of components) {
@@ -589,6 +617,8 @@ async function main() {
     const folderId = folderName ? folderIdByName[folderName] : undefined;
     await upsertComponent(payload, row, folderId);
   }
+
+  await applyComponentRelations(payload);
 
   for (const row of colors) {
     await upsertColor(payload, row);
@@ -605,10 +635,8 @@ async function main() {
     await upsertIcon(payload, { ...row, preview });
   }
 
-  await finalizeButtonDocumentation(payload);
-
   console.log(
-    "Seed OK: portal-sources, components×2, colors×8, icons×4, field-showcase×1 + SVG в Media.",
+    "Seed OK: portal-sources, components×4, colors×8, icons×4, field-showcase×1 + SVG в Media.",
   );
   process.exit(0);
 }

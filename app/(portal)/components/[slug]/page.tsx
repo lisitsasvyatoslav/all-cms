@@ -1,11 +1,23 @@
-import Link from "next/link";
+import { Button, Card, Code, Flex, Heading, Text } from "@radix-ui/themes";
 import { notFound } from "next/navigation";
 import { getPayload } from "payload";
 
 import config from "@payload-config";
 import type { PortalSource } from "@/payload-types";
 
+import { PortalBreadcrumbs } from "@/components/portal/portal-breadcrumbs";
+import { PortalCodeBlock } from "@/components/portal/portal-code-block";
+import { PortalPropsTable } from "@/components/portal/portal-props-table";
+import { PortalSourcePill } from "@/components/portal/portal-source-pill";
+import { TableOfContents } from "@/components/portal/table-of-contents";
 import { getComponentDoc } from "@/lib/component-docs";
+import { loadComponentDocument } from "@/lib/markdown/load-component-document";
+import { parseComponentRouteSlug } from "@/lib/markdown/parse-component-route-slug";
+import {
+  getComponentPageToc,
+  getContentDocumentationBlocks,
+  getTocFromBlocks,
+} from "@/lib/toc/get-toc";
 
 import { ComponentDocumentation } from "./documentation";
 import { ComponentLiveDemos } from "./live-demos";
@@ -16,167 +28,173 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: Props) {
   const { slug } = await params;
-  const payload = await getPayload({ config });
-  const { docs } = await payload.find({
-    collection: "components",
-    where: { slug: { equals: slug } },
-    limit: 1,
-    depth: 2,
-  });
-  const doc = docs[0];
+  const parsed = parseComponentRouteSlug(slug);
+  if (!parsed) return { title: "Компонент" };
+
+  const doc = await loadComponentDocument(
+    parsed.format === "markdown" ? parsed.componentSlug : parsed.slug,
+  );
+  const suffix = parsed.format === "markdown" ? " (Markdown)" : "";
   return {
-    title: doc ? `${doc.name} · Design System` : "Компонент",
+    title: doc ? `${doc.name}${suffix} · Design System` : "Компонент",
     description: doc?.description ?? "",
   };
 }
 
 export default async function ComponentDocPage({ params }: Props) {
   const { slug } = await params;
-  const payload = await getPayload({ config });
-  const { docs } = await payload.find({
-    collection: "components",
-    where: { slug: { equals: slug } },
-    limit: 1,
-    depth: 2,
-  });
-  const doc = docs[0];
+  const parsed = parseComponentRouteSlug(slug);
+  if (!parsed) notFound();
+
+  if (parsed.format === "markdown") {
+    notFound();
+  }
+
+  const componentSlug = parsed.slug;
+  const doc = await loadComponentDocument(componentSlug);
   if (!doc) notFound();
 
-  const staticDoc = getComponentDoc(slug);
+  const payload = await getPayload({ config });
+  const staticDoc = getComponentDoc(componentSlug);
   const portalSources = await payload.findGlobal({ slug: "portal-sources" });
+
+  const contentBlocks = getContentDocumentationBlocks(doc.documentation);
+  const { tocIdByIndex } = getTocFromBlocks(contentBlocks);
+  const tocItems = getComponentPageToc(doc, {
+    hasStaticProps: Boolean(staticDoc?.props?.length),
+    hasStaticInstall: Boolean(staticDoc),
+    hasStaticExamples: Boolean(staticDoc?.variantSnippets?.length),
+  });
+  const showToc =
+    doc.showTOC !== false && tocItems.length > 1;
 
   return (
     <div className="min-h-full bg-white dark:bg-black">
-      <article className="mx-auto max-w-3xl px-8 py-12 lg:py-16">
-        <nav className="mb-8 text-sm text-zinc-500">
-          <Link href="/" className="hover:text-zinc-800 dark:hover:text-zinc-300">
-            Главная
-          </Link>
-          <span className="mx-2 text-zinc-300">/</span>
-          <span className="text-zinc-800 dark:text-zinc-200">Components</span>
-          <span className="mx-2 text-zinc-300">/</span>
-          <span className="font-mono text-zinc-600 dark:text-zinc-400">{slug}</span>
-        </nav>
+      <article
+        className={`mx-auto px-8 py-12 lg:py-16 ${showToc ? "max-w-6xl" : "max-w-3xl"}`}
+      >
+        <PortalBreadcrumbs
+          items={[
+            { label: "Главная", href: "/" },
+            { label: "Components" },
+            { label: componentSlug, mono: true },
+          ]}
+        />
 
         <header className="mb-10 border-b border-zinc-100 pb-10 dark:border-zinc-900">
-          <h1 className="text-3xl font-semibold tracking-tight text-zinc-950 dark:text-zinc-50">
+          <Heading size="8" weight="medium" mb="3">
             {doc.name}
-          </h1>
+          </Heading>
           {doc.description ? (
-            <p className="mt-3 text-lg leading-relaxed text-zinc-600 dark:text-zinc-400">
+            <Text as="p" size="4" color="gray" style={{ lineHeight: 1.6 }}>
               {doc.description}
-            </p>
+            </Text>
           ) : null}
-          <div className="mt-6 flex flex-wrap gap-3">
+          <Flex gap="2" wrap="wrap" mt="4">
             {doc.figmaUrl ? (
-              <SourceLink href={doc.figmaUrl}>Figma</SourceLink>
+              <PortalSourcePill href={doc.figmaUrl}>Figma</PortalSourcePill>
             ) : null}
             {doc.storybookUrl ? (
-              <SourceLink href={doc.storybookUrl}>Storybook</SourceLink>
+              <PortalSourcePill href={doc.storybookUrl}>Storybook</PortalSourcePill>
             ) : null}
             {doc.docsUrl ? (
-              <SourceLink href={doc.docsUrl}>Документация</SourceLink>
+              <PortalSourcePill href={doc.docsUrl}>Документация</PortalSourcePill>
             ) : null}
-          </div>
+            <PortalSourcePill
+              href={`/components/${componentSlug}.md`}
+              external={false}
+            >
+              Markdown
+            </PortalSourcePill>
+          </Flex>
         </header>
 
         <ComponentMetaRow doc={doc} />
 
         <PortalLibraryStrip sources={portalSources} />
 
+        <div
+          className={
+            showToc
+              ? "grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,1fr)_11rem]"
+              : undefined
+          }
+        >
+          <div className="min-w-0">
         <section className="mb-14">
-          <h2 className="mb-4 text-lg font-semibold text-zinc-900 dark:text-zinc-50">
+          <Heading as="h2" size="4" mb="4" id="preview" className="scroll-mt-24">
             Превью
-          </h2>
-          <ComponentLiveDemos slug={slug} />
+          </Heading>
+          <ComponentLiveDemos
+            slug={componentSlug}
+            documentation={doc.documentation}
+          />
         </section>
 
-        <ComponentDocumentation blocks={doc.documentation} />
+        <ComponentDocumentation
+          blocks={doc.documentation}
+          tocIdByIndex={tocIdByIndex}
+        />
 
         {staticDoc ? (
           <>
             <section className="mb-14">
-              <h2 className="mb-4 text-lg font-semibold text-zinc-900 dark:text-zinc-50">
+              <Heading as="h2" size="4" mb="4" id="props-reference" className="scroll-mt-24">
                 Пропсы
-              </h2>
-              <div className="overflow-x-auto rounded-xl border border-zinc-200 dark:border-zinc-800">
-                <table className="w-full min-w-[32rem] text-left text-sm">
-                  <thead>
-                    <tr className="border-b border-zinc-200 bg-zinc-50/80 dark:border-zinc-800 dark:bg-zinc-900/50">
-                      <th className="px-4 py-3 font-medium text-zinc-700 dark:text-zinc-300">
-                        Имя
-                      </th>
-                      <th className="px-4 py-3 font-medium text-zinc-700 dark:text-zinc-300">
-                        Тип
-                      </th>
-                      <th className="px-4 py-3 font-medium text-zinc-700 dark:text-zinc-300">
-                        По умолч.
-                      </th>
-                      <th className="px-4 py-3 font-medium text-zinc-700 dark:text-zinc-300">
-                        Описание
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {staticDoc.props.map((row) => (
-                      <tr
-                        key={row.name}
-                        className="border-b border-zinc-100 last:border-0 dark:border-zinc-800/80"
-                      >
-                        <td className="px-4 py-3 font-mono text-xs text-zinc-800 dark:text-zinc-200">
-                          {row.name}
-                        </td>
-                        <td className="px-4 py-3 font-mono text-xs text-zinc-600 dark:text-zinc-400">
-                          {row.type}
-                        </td>
-                        <td className="px-4 py-3 font-mono text-xs text-zinc-500">
-                          {row.default ?? "—"}
-                        </td>
-                        <td className="px-4 py-3 text-zinc-600 dark:text-zinc-400">
-                          {row.description}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+              </Heading>
+              <PortalPropsTable
+                rows={staticDoc.props.map((row) => ({
+                  name: row.name,
+                  type: row.type,
+                  defaultValue: row.default,
+                  description: row.description,
+                }))}
+              />
             </section>
 
             <section className="mb-14">
-              <h2 className="mb-4 text-lg font-semibold text-zinc-900 dark:text-zinc-50">
+              <Heading as="h2" size="4" mb="4" id="installation" className="scroll-mt-24">
                 Установка
-              </h2>
-              <CodeBlock title="Импорт" code={staticDoc.importSnippet} />
+              </Heading>
+              <PortalCodeBlock title="Импорт" code={staticDoc.importSnippet} />
               <div className="mt-6">
-                <CodeBlock title="Базовый пример" code={staticDoc.basicSnippet} />
+                <PortalCodeBlock title="Базовый пример" code={staticDoc.basicSnippet} />
               </div>
             </section>
 
             <section className="mb-10">
-              <h2 className="mb-4 text-lg font-semibold text-zinc-900 dark:text-zinc-50">
+              <Heading as="h2" size="4" mb="4" id="code-examples" className="scroll-mt-24">
                 Примеры кода
-              </h2>
-              <div className="flex flex-col gap-8">
+              </Heading>
+              <Flex direction="column" gap="6">
                 {staticDoc.variantSnippets.map((block) => (
                   <div key={block.label}>
-                    <p className="mb-2 text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                    <Text as="p" size="2" weight="medium" mb="2">
                       {block.label}
-                    </p>
-                    <CodeBlock code={block.code} />
+                    </Text>
+                    <PortalCodeBlock code={block.code} />
                   </div>
                 ))}
-              </div>
+              </Flex>
             </section>
           </>
         ) : (
-          <p className="text-sm text-zinc-500">
-            Для компонента «{slug}» пока нет статической таблицы пропсов — добавьте запись в{" "}
-            <code className="rounded bg-zinc-100 px-1 font-mono text-xs dark:bg-zinc-800">
+          <Text as="p" size="2" color="gray">
+            Для компонента «{componentSlug}» пока нет статической таблицы пропсов — добавьте запись в{" "}
+            <Code size="1" variant="soft">
               lib/component-docs.ts
-            </code>
+            </Code>
             .
-          </p>
+          </Text>
         )}
+          </div>
+
+          {showToc ? (
+            <aside className="hidden lg:block">
+              <TableOfContents items={tocItems} />
+            </aside>
+          ) : null}
+        </div>
       </article>
     </div>
   );
@@ -201,26 +219,34 @@ function ComponentMetaRow({
       : null;
 
   return (
-    <div className="mb-8 flex flex-wrap gap-x-8 gap-y-2 border-b border-zinc-100 pb-8 text-sm dark:border-zinc-900">
-      <div>
-        <span className="text-zinc-500">Создано в CMS</span>
-        <span className="ml-2 font-medium text-zinc-800 dark:text-zinc-200">
+    <Flex
+      wrap="wrap"
+      gap="4"
+      mb="4"
+      pb="4"
+      className="border-b border-zinc-100 dark:border-zinc-900"
+    >
+      <Text size="2" color="gray">
+        Создано в CMS{" "}
+        <Text as="span" size="2" weight="medium" highContrast>
           {new Date(doc.createdAt).toLocaleString("ru-RU")}
-        </span>
-      </div>
-      <div>
-        <span className="text-zinc-500">Обновлено</span>
-        <span className="ml-2 font-medium text-zinc-800 dark:text-zinc-200">
+        </Text>
+      </Text>
+      <Text size="2" color="gray">
+        Обновлено{" "}
+        <Text as="span" size="2" weight="medium" highContrast>
           {new Date(doc.updatedAt).toLocaleString("ru-RU")}
-        </span>
-      </div>
+        </Text>
+      </Text>
       {folder ? (
-        <div>
-          <span className="text-zinc-500">Папка</span>
-          <span className="ml-2 font-medium text-zinc-800 dark:text-zinc-200">{folder}</span>
-        </div>
+        <Text size="2" color="gray">
+          Папка{" "}
+          <Text as="span" size="2" weight="medium" highContrast>
+            {folder}
+          </Text>
+        </Text>
       ) : null}
-    </div>
+    </Flex>
   );
 }
 
@@ -233,54 +259,20 @@ function PortalLibraryStrip({ sources }: { sources: PortalSource }) {
   if (!links.length) return null;
 
   return (
-    <section className="mb-10 rounded-2xl border border-dashed border-zinc-300 bg-zinc-50/50 px-4 py-4 dark:border-zinc-700 dark:bg-zinc-900/30">
-      <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-zinc-500">
+    <Card size="2" variant="surface" mb="4" style={{ borderStyle: "dashed" }}>
+      <Heading as="h2" size="1" mb="2" color="gray">
         Общие ссылки портала (глобальные)
-      </h2>
-      <p className="mb-3 text-xs text-zinc-600 dark:text-zinc-400">
+      </Heading>
+      <Text as="p" size="1" color="gray" mb="3">
         Из глобала «Ссылки на источники» в Payload — одни и те же URL для всего портала.
-      </p>
-      <ul className="flex flex-wrap gap-2">
+      </Text>
+      <ul className="flex flex-wrap gap-2 list-none p-0 m-0">
         {links.map((l) => (
           <li key={l.href}>
-            <SourceLink href={l.href}>{l.label}</SourceLink>
+            <PortalSourcePill href={l.href}>{l.label}</PortalSourcePill>
           </li>
         ))}
       </ul>
-    </section>
-  );
-}
-
-function SourceLink({
-  href,
-  children,
-}: {
-  href: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="inline-flex rounded-full border border-zinc-300 px-3 py-1 text-sm font-medium text-zinc-800 hover:bg-zinc-50 dark:border-zinc-600 dark:text-zinc-200 dark:hover:bg-zinc-900"
-    >
-      {children}
-    </a>
-  );
-}
-
-function CodeBlock({ title, code }: { title?: string; code: string }) {
-  return (
-    <div className="overflow-hidden rounded-xl border border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-950">
-      {title ? (
-        <div className="border-b border-zinc-200 px-4 py-2 text-xs font-medium text-zinc-500 dark:border-zinc-800">
-          {title}
-        </div>
-      ) : null}
-      <pre className="overflow-x-auto p-4 text-xs leading-relaxed text-zinc-800 dark:text-zinc-200">
-        <code>{code.trim()}</code>
-      </pre>
-    </div>
+    </Card>
   );
 }

@@ -1,7 +1,19 @@
-import type { Component, Media } from "@/payload-types";
+import { Flex, Heading, Separator, Text } from "@radix-ui/themes";
 import { RichText } from "@payloadcms/richtext-lexical/react";
 
-type DocBlock = NonNullable<Component["documentation"]>[number];
+import type { Color, Component, Media } from "@/payload-types";
+
+import { PortalCodeBlock } from "@/components/portal/portal-code-block";
+import { PortalDocCallout } from "@/components/portal/portal-doc-callout";
+import { PortalPropsTable } from "@/components/portal/portal-props-table";
+import { PortalSourcePill } from "@/components/portal/portal-source-pill";
+import { StorybookEmbedPreview } from "@/components/portal/storybook-embed-preview";
+
+export type DocumentationBlock =
+  | NonNullable<Component["documentation"]>[number]
+  | NonNullable<Color["documentation"]>[number];
+
+type DocBlock = DocumentationBlock;
 
 function mediaPublicUrl(image: number | Media): string | null {
   if (typeof image === "object" && image?.url) return image.url;
@@ -16,13 +28,44 @@ function safeJsonStringify(payload: unknown): string {
   }
 }
 
+function SectionHeading({
+  id,
+  children,
+  size = "4",
+}: {
+  id?: string;
+  children: React.ReactNode;
+  size?: "3" | "4" | "5";
+}) {
+  if (!id) {
+    return (
+      <Heading size={size} mb="4">
+        {children}
+      </Heading>
+    );
+  }
+
+  return (
+    <Heading as="h2" size={size} mb="4" id={id} className="scroll-mt-24">
+      {children}
+    </Heading>
+  );
+}
+
 /** Рендер блоков из Payload: админка = ввод данных, здесь — «док-сайт» (типографика, таблицы, карточки). */
 export function ComponentDocumentation({
   blocks,
+  tocIdByIndex,
 }: {
-  blocks: NonNullable<Component["documentation"]> | null | undefined;
+  blocks:
+    | NonNullable<Component["documentation"]>
+    | NonNullable<Color["documentation"]>
+    | null
+    | undefined;
+  tocIdByIndex?: Map<number, string>;
 }) {
-  if (!blocks?.length) return null;
+  const contentBlocks = blocks?.filter((b) => b.blockType !== "storybookEmbed") ?? [];
+  if (!contentBlocks.length) return null;
 
   return (
     <section
@@ -30,31 +73,38 @@ export function ComponentDocumentation({
       aria-labelledby="cms-docs-heading"
     >
       <header className="mb-10 border-b border-zinc-200 pb-8 dark:border-zinc-800">
-        <p className="text-xs font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-500">
+        <Text size="1" weight="medium" color="gray" style={{ letterSpacing: "0.08em", textTransform: "uppercase" }}>
           Документация
-        </p>
-        <h2
-          id="cms-docs-heading"
-          className="mt-2 text-2xl font-semibold tracking-tight text-zinc-950 dark:text-zinc-50"
-        >
+        </Text>
+        <Heading as="h2" size="6" mt="2" id="cms-docs-heading">
           Из контентной модели
-        </h2>
-        <p className="mt-2 max-w-2xl text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+        </Heading>
+        <Text as="p" size="2" color="gray" mt="2" style={{ maxWidth: "42rem", lineHeight: 1.6 }}>
           Ниже — то же содержимое, что вы настраиваете во вкладке «Документация» в Payload: здесь оно оформлено для чтения. В
           админке специально формы, а не макет страницы.
-        </p>
+        </Text>
       </header>
 
       <div className="flex flex-col gap-14">
-        {blocks.map((block, i) => (
-          <DocumentationBlock key={block.id ?? `doc-${i}`} block={block} />
+        {contentBlocks.map((block, i) => (
+          <DocumentationBlock
+            key={block.id ?? `doc-${i}`}
+            block={block}
+            tocId={tocIdByIndex?.get(i)}
+          />
         ))}
       </div>
     </section>
   );
 }
 
-function DocumentationBlock({ block }: { block: DocBlock }) {
+function DocumentationBlock({
+  block,
+  tocId,
+}: {
+  block: DocBlock;
+  tocId?: string;
+}) {
   switch (block.blockType) {
     case "section":
       return (
@@ -63,11 +113,9 @@ function DocumentationBlock({ block }: { block: DocBlock }) {
             className="absolute left-0 top-1.5 h-[calc(100%-0.25rem)] w-0.5 rounded-full bg-zinc-900 dark:bg-zinc-100"
             aria-hidden
           />
-          <h3 className="text-xl font-semibold tracking-tight text-zinc-950 dark:text-zinc-50">
-            {block.heading}
-          </h3>
+          <SectionHeading id={tocId}>{block.heading}</SectionHeading>
           {block.body ? (
-            <p className="mt-3 max-w-2xl whitespace-pre-wrap text-[15px] leading-7 text-zinc-600 dark:text-zinc-400">
+            <p className="max-w-2xl whitespace-pre-wrap text-[15px] leading-7 text-zinc-600 dark:text-zinc-400">
               {block.body}
             </p>
           ) : null}
@@ -78,7 +126,9 @@ function DocumentationBlock({ block }: { block: DocBlock }) {
       const donts = block.donts?.filter(Boolean) ?? [];
       if (!dos.length && !donts.length) return null;
       return (
-        <div className="grid gap-5 sm:grid-cols-2">
+        <div>
+          <SectionHeading id={tocId}>Do / Don&apos;t</SectionHeading>
+          <div className="grid gap-5 sm:grid-cols-2">
           {dos.length ? (
             <div className="overflow-hidden rounded-2xl border border-emerald-200/90 bg-gradient-to-b from-emerald-50/90 to-white shadow-sm dark:border-emerald-900/50 dark:from-emerald-950/50 dark:to-zinc-950">
               <div className="border-b border-emerald-200/80 bg-emerald-100/60 px-4 py-2.5 dark:border-emerald-900/40 dark:bg-emerald-950/80">
@@ -123,76 +173,27 @@ function DocumentationBlock({ block }: { block: DocBlock }) {
               </ul>
             </div>
           ) : null}
+          </div>
         </div>
       );
     }
-    case "callout": {
-      const tone =
-        block.tone === "warning"
-          ? {
-              wrap: "border-amber-200/90 bg-amber-50/80 dark:border-amber-900/50 dark:bg-amber-950/35",
-              label: "Внимание",
-            }
-          : block.tone === "success"
-            ? {
-                wrap: "border-emerald-200/90 bg-emerald-50/80 dark:border-emerald-900/50 dark:bg-emerald-950/35",
-                label: "Совет",
-              }
-            : {
-                wrap: "border-sky-200/90 bg-sky-50/80 dark:border-sky-900/50 dark:bg-sky-950/35",
-                label: "Инфо",
-              };
+    case "callout":
       return (
-        <aside
-          className={`flex gap-4 rounded-2xl border px-5 py-4 text-[15px] leading-7 shadow-sm ${tone.wrap}`}
-        >
-          <span className="select-none text-lg opacity-70" aria-hidden>
-            {block.tone === "warning" ? "!" : block.tone === "success" ? "✓" : "i"}
-          </span>
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-zinc-600 dark:text-zinc-400">
-              {tone.label}
-            </p>
-            <p className="mt-1 text-zinc-900 dark:text-zinc-100">{block.text}</p>
-          </div>
-        </aside>
+        <PortalDocCallout
+          tone={block.tone === "warning" || block.tone === "success" ? block.tone : "info"}
+          text={block.text ?? ""}
+        />
       );
-    }
     case "codeExample":
       return (
-        <figure className="overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-50 shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
-          <figcaption className="flex items-center gap-3 border-b border-zinc-200 bg-white px-4 py-2.5 dark:border-zinc-800 dark:bg-zinc-900/80">
-            <span className="flex gap-1.5" aria-hidden>
-              <span className="h-2.5 w-2.5 rounded-full bg-red-400/90" />
-              <span className="h-2.5 w-2.5 rounded-full bg-amber-400/90" />
-              <span className="h-2.5 w-2.5 rounded-full bg-emerald-400/90" />
-            </span>
-            <span className="truncate text-xs font-medium text-zinc-500">
-              {block.title ?? "tsx"}
-            </span>
-          </figcaption>
-          <pre className="overflow-x-auto p-5 text-[13px] leading-relaxed text-zinc-800 dark:text-zinc-200">
-            <code>{(block.code ?? "").trim()}</code>
-          </pre>
-        </figure>
+        <PortalCodeBlock title={block.title ?? "tsx"} code={block.code ?? ""} />
       );
     case "codeMonaco":
       return (
-        <figure className="overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-50 shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
-          <figcaption className="flex items-center gap-3 border-b border-zinc-200 bg-white px-4 py-2.5 dark:border-zinc-800 dark:bg-zinc-900/80">
-            <span className="flex gap-1.5" aria-hidden>
-              <span className="h-2.5 w-2.5 rounded-full bg-red-400/90" />
-              <span className="h-2.5 w-2.5 rounded-full bg-amber-400/90" />
-              <span className="h-2.5 w-2.5 rounded-full bg-emerald-400/90" />
-            </span>
-            <span className="truncate text-xs font-medium text-zinc-500">
-              {block.title ?? "Monaco (поле Code)"}
-            </span>
-          </figcaption>
-          <pre className="overflow-x-auto p-5 text-[13px] leading-relaxed text-zinc-800 dark:text-zinc-200">
-            <code>{(block.snippet ?? "").trim()}</code>
-          </pre>
-        </figure>
+        <PortalCodeBlock
+          title={block.title ?? "Monaco (поле Code)"}
+          code={block.snippet ?? ""}
+        />
       );
     case "richTextSection":
       if (!block.body) return null;
@@ -211,44 +212,17 @@ function DocumentationBlock({ block }: { block: DocBlock }) {
       if (!rows.length) return null;
       return (
         <div>
-          {block.title ? (
-            <h3 className="mb-4 text-lg font-semibold text-zinc-950 dark:text-zinc-50">
-              {block.title}
-            </h3>
-          ) : null}
-          <div className="overflow-x-auto rounded-2xl border border-zinc-200 shadow-sm dark:border-zinc-800">
-            <table className="w-full min-w-[36rem] text-left text-sm">
-              <thead>
-                <tr className="border-b border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900/60">
-                  <th className="px-4 py-3 font-medium text-zinc-700 dark:text-zinc-300">Имя</th>
-                  <th className="px-4 py-3 font-medium text-zinc-700 dark:text-zinc-300">Тип</th>
-                  <th className="px-4 py-3 font-medium text-zinc-700 dark:text-zinc-300">По умолч.</th>
-                  <th className="px-4 py-3 font-medium text-zinc-700 dark:text-zinc-300">Описание</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((row, i) => (
-                  <tr
-                    key={i}
-                    className="border-b border-zinc-100 last:border-0 dark:border-zinc-800/80"
-                  >
-                    <td className="px-4 py-3 font-mono text-xs text-zinc-900 dark:text-zinc-100">
-                      {row.name}
-                    </td>
-                    <td className="px-4 py-3 font-mono text-xs text-zinc-600 dark:text-zinc-400">
-                      {row.type}
-                    </td>
-                    <td className="px-4 py-3 font-mono text-xs text-zinc-500">
-                      {row.defaultValue?.trim() ? row.defaultValue : "—"}
-                    </td>
-                    <td className="px-4 py-3 text-zinc-600 dark:text-zinc-400">
-                      {row.description ?? "—"}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <SectionHeading id={tocId} size="3">
+            {block.title?.trim() || "Пропсы"}
+          </SectionHeading>
+          <PortalPropsTable
+            rows={rows.map((row) => ({
+              name: row.name,
+              type: row.type,
+              defaultValue: row.defaultValue,
+              description: row.description,
+            }))}
+          />
         </div>
       );
     }
@@ -257,21 +231,13 @@ function DocumentationBlock({ block }: { block: DocBlock }) {
       if (!links.length) return null;
       return (
         <div>
-          <h3 className="mb-4 text-lg font-semibold text-zinc-950 dark:text-zinc-50">Ссылки</h3>
-          <ul className="flex flex-wrap gap-3">
+          <Heading as="h3" size="3" mb="4">
+            Ссылки
+          </Heading>
+          <ul className="flex flex-wrap gap-2 list-none p-0 m-0">
             {links.map((link, i) => (
               <li key={i}>
-                <a
-                  href={link.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-full border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-800 shadow-sm transition hover:border-zinc-400 hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800"
-                >
-                  {link.label}
-                  <span className="text-zinc-400" aria-hidden>
-                    ↗
-                  </span>
-                </a>
+                <PortalSourcePill href={link.url}>{link.label}</PortalSourcePill>
               </li>
             ))}
           </ul>
@@ -280,14 +246,19 @@ function DocumentationBlock({ block }: { block: DocBlock }) {
     }
     case "divider":
       return (
-        <div className="flex flex-col items-center gap-3 py-2">
+        <Flex direction="column" align="center" gap="3" py="2">
           {block.caption ? (
-            <span className="text-xs font-medium uppercase tracking-widest text-zinc-400">
+            <Text
+              size="1"
+              color="gray"
+              weight="medium"
+              style={{ letterSpacing: "0.08em", textTransform: "uppercase" }}
+            >
               {block.caption}
-            </span>
+            </Text>
           ) : null}
-          <hr className="w-full border-zinc-200 dark:border-zinc-800" />
-        </div>
+          <Separator size="4" style={{ width: "100%" }} />
+        </Flex>
       );
     case "quote":
       return (
@@ -528,6 +499,15 @@ function DocumentationBlock({ block }: { block: DocBlock }) {
             </p>
           </div>
         </div>
+      );
+    case "storybookEmbed":
+      if (!block.storybookUrl?.trim()) return null;
+      return (
+        <StorybookEmbedPreview
+          title={block.title ?? "Превью"}
+          storybookUrl={block.storybookUrl}
+          frameHeight={block.frameHeight}
+        />
       );
     default: {
       const b = block as { blockType?: string; id?: string | null };
