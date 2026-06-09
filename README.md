@@ -11,8 +11,8 @@
 ## 1. Клонирование
 
 ```bash
-git clone <URL-репозитория> next-app
-cd next-app
+git clone https://github.com/lisitsasvyatoslav/all-cms.git
+cd all-cms
 ```
 
 ## 2. Зависимости
