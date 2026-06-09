@@ -228,7 +228,10 @@ export interface Component {
   figmaUrl?: string | null;
   storybookUrl?: string | null;
   docsUrl?: string | null;
-  status?: ('stable' | 'beta' | 'deprecated' | 'draft') | null;
+  /**
+   * Не заполнены обязательные поля карточки — запись не попадает на портал (черновик в CMS без отдельного статуса).
+   */
+  status?: ('stable' | 'beta' | 'deprecated') | null;
   /**
    * Текст бейджа или предупреждения на портале.
    */
@@ -254,7 +257,7 @@ export interface Component {
    */
   showTOC?: boolean | null;
   /**
-   * Все 24 типа контент-блоков. Порядок = порядок на портале.
+   * 13 типов контент-блоков (14-й слот — Markdown export на странице). Порядок = порядок на портале.
    */
   documentation?:
     | (
@@ -264,7 +267,22 @@ export interface Component {
              */
             showLLM?: boolean | null;
             heading: string;
+            /**
+             * Абзац под заголовком (when to use, guidelines).
+             */
             body?: string | null;
+            /**
+             * Варианты, свойства или правила — с цветным маркером слева.
+             */
+            items?:
+              | {
+                  label: string;
+                  description?: string | null;
+                  accentColor?: string | null;
+                  labelAsBadge?: boolean | null;
+                  id?: string | null;
+                }[]
+              | null;
             id?: string | null;
             blockName?: string | null;
             blockType: 'section';
@@ -274,86 +292,11 @@ export interface Component {
              * Включено — блок попадает в ответ MCP для LLM. На портале блок показывается всегда.
              */
             showLLM?: boolean | null;
-            dos?:
-              | {
-                  text: string;
-                  id?: string | null;
-                }[]
-              | null;
-            donts?:
-              | {
-                  text: string;
-                  id?: string | null;
-                }[]
-              | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'doDont';
-          }
-        | {
-            /**
-             * Включено — блок попадает в ответ MCP для LLM. На портале блок показывается всегда.
-             */
-            showLLM?: boolean | null;
-            tone: 'info' | 'warning' | 'success';
-            text: string;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'callout';
-          }
-        | {
-            /**
-             * Включено — блок попадает в ответ MCP для LLM. На портале блок показывается всегда.
-             */
-            showLLM?: boolean | null;
             title?: string | null;
-            code: string;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'codeExample';
-          }
-        | {
             /**
-             * Включено — блок попадает в ответ MCP для LLM. На портале блок показывается всегда.
+             * Например: Button Props, Modal.Content Props.
              */
-            showLLM?: boolean | null;
-            title?: string | null;
-            snippet: string;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'codeMonaco';
-          }
-        | {
-            /**
-             * Включено — блок попадает в ответ MCP для LLM. На портале блок показывается всегда.
-             */
-            showLLM?: boolean | null;
-            title?: string | null;
-            body?: {
-              root: {
-                type: string;
-                children: {
-                  type: any;
-                  version: number;
-                  [k: string]: unknown;
-                }[];
-                direction: ('ltr' | 'rtl') | null;
-                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-                indent: number;
-                version: number;
-              };
-              [k: string]: unknown;
-            } | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'richTextSection';
-          }
-        | {
-            /**
-             * Включено — блок попадает в ответ MCP для LLM. На портале блок показывается всегда.
-             */
-            showLLM?: boolean | null;
-            title?: string | null;
+            subtitle?: string | null;
             rows?:
               | {
                   name: string;
@@ -366,6 +309,180 @@ export interface Component {
             id?: string | null;
             blockName?: string | null;
             blockType: 'propsTable';
+          }
+        | {
+            /**
+             * Включено — блок попадает в ответ MCP для LLM. На портале блок показывается всегда.
+             */
+            showLLM?: boolean | null;
+            title: string;
+            /**
+             * Story с args: ?path=/story/design-system-button--default&args=variant:secondary
+             */
+            storybookUrl: string;
+            frameHeight?: number | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'storybookEmbed';
+          }
+        | {
+            /**
+             * Включено — блок попадает в ответ MCP для LLM. На портале блок показывается всегда.
+             */
+            showLLM?: boolean | null;
+            title?: string | null;
+            /**
+             * Опциональный iframe над кодом — как на HeroUI.
+             */
+            previewStorybookUrl?: string | null;
+            previewHeight?: number | null;
+            code: string;
+            defaultCollapsed?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'codeExample';
+          }
+        | {
+            /**
+             * Включено — блок попадает в ответ MCP для LLM. На портале блок показывается всегда.
+             */
+            showLLM?: boolean | null;
+            heading?: string | null;
+            intro?: string | null;
+            dos?:
+              | {
+                  text: string;
+                  image?: (number | null) | Media;
+                  id?: string | null;
+                }[]
+              | null;
+            donts?:
+              | {
+                  text: string;
+                  image?: (number | null) | Media;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'doDont';
+          }
+        | {
+            /**
+             * Включено — блок попадает в ответ MCP для LLM. На портале блок показывается всегда.
+             */
+            showLLM?: boolean | null;
+            /**
+             * Например: соответствие WAI-ARIA Dialog pattern.
+             */
+            intro?: string | null;
+            patternLinkLabel?: string | null;
+            patternLinkUrl?: string | null;
+            keyboardRows?:
+              | {
+                  keys: string;
+                  description: string;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'accessibility';
+          }
+        | {
+            /**
+             * Включено — блок попадает в ответ MCP для LLM. На портале блок показывается всегда.
+             */
+            showLLM?: boolean | null;
+            title?: string | null;
+            components?: (number | Component)[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'relComponents';
+          }
+        | {
+            /**
+             * Включено — блок попадает в ответ MCP для LLM. На портале блок показывается всегда.
+             */
+            showLLM?: boolean | null;
+            title?: string | null;
+            groups?:
+              | {
+                  groupTitle: string;
+                  helpUrl?: string | null;
+                  rows?:
+                    | {
+                        name: string;
+                        description?: string | null;
+                        valueType?: ('string' | 'number' | 'color') | null;
+                        defaultValue?: string | null;
+                        swatchColor?: string | null;
+                        id?: string | null;
+                      }[]
+                    | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'designTokens';
+          }
+        | {
+            /**
+             * Включено — блок попадает в ответ MCP для LLM. На портале блок показывается всегда.
+             */
+            showLLM?: boolean | null;
+            entries?:
+              | {
+                  version: string;
+                  kind?: ('patch' | 'minor' | 'major') | null;
+                  changes?:
+                    | {
+                        text: string;
+                        id?: string | null;
+                      }[]
+                    | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'changelog';
+          }
+        | {
+            /**
+             * Включено — блок попадает в ответ MCP для LLM. На портале блок показывается всегда.
+             */
+            showLLM?: boolean | null;
+            title?: string | null;
+            image: number | Media;
+            parts?:
+              | {
+                  label: string;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'anatomy';
+          }
+        | {
+            /**
+             * Включено — блок попадает в ответ MCP для LLM. На портале блок показывается всегда.
+             */
+            showLLM?: boolean | null;
+            title?: string | null;
+            items?:
+              | {
+                  title: string;
+                  description?: string | null;
+                  done?: boolean | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'checklist';
           }
         | {
             /**
@@ -388,218 +505,53 @@ export interface Component {
              * Включено — блок попадает в ответ MCP для LLM. На портале блок показывается всегда.
              */
             showLLM?: boolean | null;
-            image: number | Media;
-            caption?: string | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'mediaFigure';
-          }
-        | {
-            /**
-             * Включено — блок попадает в ответ MCP для LLM. На портале блок показывается всегда.
-             */
-            showLLM?: boolean | null;
-            color?: (number | null) | Color;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'relColor';
-          }
-        | {
-            /**
-             * Включено — блок попадает в ответ MCP для LLM. На портале блок показывается всегда.
-             */
-            showLLM?: boolean | null;
-            icon?: (number | null) | Icon;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'relIcon';
-          }
-        | {
-            /**
-             * Включено — блок попадает в ответ MCP для LLM. На портале блок показывается всегда.
-             */
-            showLLM?: boolean | null;
-            label?: string | null;
-            /**
-             * @minItems 2
-             * @maxItems 2
-             */
-            location?: [number, number] | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'geoPoint';
-          }
-        | {
-            /**
-             * Включено — блок попадает в ответ MCP для LLM. На портале блок показывается всегда.
-             */
-            showLLM?: boolean | null;
             title?: string | null;
-            at?: string | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'calendarDate';
-          }
-        | {
-            /**
-             * Включено — блок попадает в ответ MCP для LLM. На портале блок показывается всегда.
-             */
-            showLLM?: boolean | null;
-            label?: string | null;
-            address?: string | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'emailLine';
-          }
-        | {
-            /**
-             * Включено — блок попадает в ответ MCP для LLM. На портале блок показывается всегда.
-             */
-            showLLM?: boolean | null;
-            label?: string | null;
-            value?: number | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'numberStat';
-          }
-        | {
-            /**
-             * Включено — блок попадает в ответ MCP для LLM. На портале блок показывается всегда.
-             */
-            showLLM?: boolean | null;
-            mode?: ('fast' | 'normal' | 'precise') | null;
-            hint?: string | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'radioPick';
-          }
-        | {
-            /**
-             * Включено — блок попадает в ответ MCP для LLM. На портале блок показывается всегда.
-             */
-            showLLM?: boolean | null;
-            tags?: ('a11y' | 'forms' | 'layout' | 'motion')[] | null;
-            note?: string | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'multiSelect';
-          }
-        | {
-            /**
-             * Включено — блок попадает в ответ MCP для LLM. На портале блок показывается всегда.
-             */
-            showLLM?: boolean | null;
-            enabled?: boolean | null;
-            flagLabel?: string | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'flagBox';
-          }
-        | {
-            /**
-             * Включено — блок попадает в ответ MCP для LLM. На портале блок показывается всегда.
-             */
-            showLLM?: boolean | null;
-            title?: string | null;
-            payload?:
-              | {
-                  [k: string]: unknown;
-                }
-              | unknown[]
-              | string
-              | number
-              | boolean
-              | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'jsonBlock';
-          }
-        | {
-            /**
-             * Включено — блок попадает в ответ MCP для LLM. На портале блок показывается всегда.
-             */
-            showLLM?: boolean | null;
-            bundle?: {
-              gTitle?: string | null;
-              gCount?: number | null;
-              gOn?: boolean | null;
-            };
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'groupStrip';
-          }
-        | {
-            /**
-             * Включено — блок попадает в ответ MCP для LLM. На портале блок показывается всегда.
-             */
-            showLLM?: boolean | null;
             intro?: string | null;
-            items?:
+            tokens?:
               | {
+                  name: string;
+                  description?: string | null;
+                  value: string;
                   /**
-                   * Включено — блок попадает в ответ MCP для LLM. На портале блок показывается всегда.
+                   * Необязательно, для подписи в UI.
                    */
-                  showLLM?: boolean | null;
-                  line: string;
+                  durationMs?: number | null;
                   id?: string | null;
-                  blockName?: string | null;
-                  blockType: 'nestLine';
                 }[]
               | null;
             id?: string | null;
             blockName?: string | null;
-            blockType: 'nestedStack';
-          }
-        | {
-            /**
-             * Включено — блок попадает в ответ MCP для LLM. На портале блок показывается всегда.
-             */
-            showLLM?: boolean | null;
-            tabSummary?: ComponentDocTabSummary;
-            tabDetail?: ComponentDocTabDetail;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'namedTabsStrip';
-          }
-        | {
-            /**
-             * Включено — блок попадает в ответ MCP для LLM. На портале блок показывается всегда.
-             */
-            showLLM?: boolean | null;
-            caption?: string | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'divider';
-          }
-        | {
-            /**
-             * Включено — блок попадает в ответ MCP для LLM. На портале блок показывается всегда.
-             */
-            showLLM?: boolean | null;
-            body: string;
-            attribution?: string | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'quote';
-          }
-        | {
-            /**
-             * Включено — блок попадает в ответ MCP для LLM. На портале блок показывается всегда.
-             */
-            showLLM?: boolean | null;
-            title: string;
-            /**
-             * Ссылка на story с args, скопированная из Storybook. Пример: http://127.0.0.1:6006/?path=/story/design-system-button--default&args=variant:secondary;size:sm — не /docs/…
-             */
-            storybookUrl: string;
-            frameHeight?: number | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'storybookEmbed';
+            blockType: 'motion';
           }
       )[]
     | null;
   folder?: (number | null) | FolderInterface;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-folders".
+ */
+export interface FolderInterface {
+  id: number;
+  name: string;
+  folder?: (number | null) | FolderInterface;
+  documentsAndFolders?: {
+    docs?: (
+      | {
+          relationTo?: 'payload-folders';
+          value: number | FolderInterface;
+        }
+      | {
+          relationTo?: 'components';
+          value: number | Component;
+        }
+    )[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
+  folderType?: 'components'[] | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -633,7 +585,22 @@ export interface Color {
              */
             showLLM?: boolean | null;
             heading: string;
+            /**
+             * Абзац под заголовком (when to use, guidelines).
+             */
             body?: string | null;
+            /**
+             * Варианты, свойства или правила — с цветным маркером слева.
+             */
+            items?:
+              | {
+                  label: string;
+                  description?: string | null;
+                  accentColor?: string | null;
+                  labelAsBadge?: boolean | null;
+                  id?: string | null;
+                }[]
+              | null;
             id?: string | null;
             blockName?: string | null;
             blockType: 'section';
@@ -643,68 +610,42 @@ export interface Color {
              * Включено — блок попадает в ответ MCP для LLM. На портале блок показывается всегда.
              */
             showLLM?: boolean | null;
-            tone: 'info' | 'warning' | 'success';
-            text: string;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'callout';
-          }
-        | {
-            /**
-             * Включено — блок попадает в ответ MCP для LLM. На портале блок показывается всегда.
-             */
-            showLLM?: boolean | null;
-            title?: string | null;
-            body?: {
-              root: {
-                type: string;
-                children: {
-                  type: any;
-                  version: number;
-                  [k: string]: unknown;
-                }[];
-                direction: ('ltr' | 'rtl') | null;
-                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-                indent: number;
-                version: number;
-              };
-              [k: string]: unknown;
-            } | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'richTextSection';
-          }
-        | {
-            /**
-             * Включено — блок попадает в ответ MCP для LLM. На портале блок показывается всегда.
-             */
-            showLLM?: boolean | null;
-            title?: string | null;
-            code: string;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'codeExample';
-          }
-        | {
-            /**
-             * Включено — блок попадает в ответ MCP для LLM. На портале блок показывается всегда.
-             */
-            showLLM?: boolean | null;
+            heading?: string | null;
+            intro?: string | null;
             dos?:
               | {
                   text: string;
+                  image?: (number | null) | Media;
                   id?: string | null;
                 }[]
               | null;
             donts?:
               | {
                   text: string;
+                  image?: (number | null) | Media;
                   id?: string | null;
                 }[]
               | null;
             id?: string | null;
             blockName?: string | null;
             blockType: 'doDont';
+          }
+        | {
+            /**
+             * Включено — блок попадает в ответ MCP для LLM. На портале блок показывается всегда.
+             */
+            showLLM?: boolean | null;
+            title?: string | null;
+            /**
+             * Опциональный iframe над кодом — как на HeroUI.
+             */
+            previewStorybookUrl?: string | null;
+            previewHeight?: number | null;
+            code: string;
+            defaultCollapsed?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'codeExample';
           }
         | {
             /**
@@ -727,21 +668,50 @@ export interface Color {
              * Включено — блок попадает в ответ MCP для LLM. На портале блок показывается всегда.
              */
             showLLM?: boolean | null;
-            image: number | Media;
-            caption?: string | null;
+            title?: string | null;
+            groups?:
+              | {
+                  groupTitle: string;
+                  helpUrl?: string | null;
+                  rows?:
+                    | {
+                        name: string;
+                        description?: string | null;
+                        valueType?: ('string' | 'number' | 'color') | null;
+                        defaultValue?: string | null;
+                        swatchColor?: string | null;
+                        id?: string | null;
+                      }[]
+                    | null;
+                  id?: string | null;
+                }[]
+              | null;
             id?: string | null;
             blockName?: string | null;
-            blockType: 'mediaFigure';
+            blockType: 'designTokens';
           }
         | {
             /**
              * Включено — блок попадает в ответ MCP для LLM. На портале блок показывается всегда.
              */
             showLLM?: boolean | null;
-            color?: (number | null) | Color;
+            title?: string | null;
+            /**
+             * Например: Button Props, Modal.Content Props.
+             */
+            subtitle?: string | null;
+            rows?:
+              | {
+                  name: string;
+                  type: string;
+                  defaultValue?: string | null;
+                  description?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
             id?: string | null;
             blockName?: string | null;
-            blockType: 'relColor';
+            blockType: 'propsTable';
           }
       )[]
     | null;
@@ -762,46 +732,6 @@ export interface Icon {
   figmaUrl?: string | null;
   storybookUrl?: string | null;
   notes?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "ComponentDocTabSummary".
- */
-export interface ComponentDocTabSummary {
-  brief?: string | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "ComponentDocTabDetail".
- */
-export interface ComponentDocTabDetail {
-  detail?: string | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "payload-folders".
- */
-export interface FolderInterface {
-  id: number;
-  name: string;
-  folder?: (number | null) | FolderInterface;
-  documentsAndFolders?: {
-    docs?: (
-      | {
-          relationTo?: 'payload-folders';
-          value: number | FolderInterface;
-        }
-      | {
-          relationTo?: 'components';
-          value: number | Component;
-        }
-    )[];
-    hasNextPage?: boolean;
-    totalDocs?: number;
-  };
-  folderType?: 'components'[] | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1201,61 +1131,15 @@ export interface ComponentsSelect<T extends boolean = true> {
               showLLM?: T;
               heading?: T;
               body?: T;
-              id?: T;
-              blockName?: T;
-            };
-        doDont?:
-          | T
-          | {
-              showLLM?: T;
-              dos?:
+              items?:
                 | T
                 | {
-                    text?: T;
+                    label?: T;
+                    description?: T;
+                    accentColor?: T;
+                    labelAsBadge?: T;
                     id?: T;
                   };
-              donts?:
-                | T
-                | {
-                    text?: T;
-                    id?: T;
-                  };
-              id?: T;
-              blockName?: T;
-            };
-        callout?:
-          | T
-          | {
-              showLLM?: T;
-              tone?: T;
-              text?: T;
-              id?: T;
-              blockName?: T;
-            };
-        codeExample?:
-          | T
-          | {
-              showLLM?: T;
-              title?: T;
-              code?: T;
-              id?: T;
-              blockName?: T;
-            };
-        codeMonaco?:
-          | T
-          | {
-              showLLM?: T;
-              title?: T;
-              snippet?: T;
-              id?: T;
-              blockName?: T;
-            };
-        richTextSection?:
-          | T
-          | {
-              showLLM?: T;
-              title?: T;
-              body?: T;
               id?: T;
               blockName?: T;
             };
@@ -1264,6 +1148,7 @@ export interface ComponentsSelect<T extends boolean = true> {
           | {
               showLLM?: T;
               title?: T;
+              subtitle?: T;
               rows?:
                 | T
                 | {
@@ -1271,6 +1156,153 @@ export interface ComponentsSelect<T extends boolean = true> {
                     type?: T;
                     defaultValue?: T;
                     description?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        storybookEmbed?:
+          | T
+          | {
+              showLLM?: T;
+              title?: T;
+              storybookUrl?: T;
+              frameHeight?: T;
+              id?: T;
+              blockName?: T;
+            };
+        codeExample?:
+          | T
+          | {
+              showLLM?: T;
+              title?: T;
+              previewStorybookUrl?: T;
+              previewHeight?: T;
+              code?: T;
+              defaultCollapsed?: T;
+              id?: T;
+              blockName?: T;
+            };
+        doDont?:
+          | T
+          | {
+              showLLM?: T;
+              heading?: T;
+              intro?: T;
+              dos?:
+                | T
+                | {
+                    text?: T;
+                    image?: T;
+                    id?: T;
+                  };
+              donts?:
+                | T
+                | {
+                    text?: T;
+                    image?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        accessibility?:
+          | T
+          | {
+              showLLM?: T;
+              intro?: T;
+              patternLinkLabel?: T;
+              patternLinkUrl?: T;
+              keyboardRows?:
+                | T
+                | {
+                    keys?: T;
+                    description?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        relComponents?:
+          | T
+          | {
+              showLLM?: T;
+              title?: T;
+              components?: T;
+              id?: T;
+              blockName?: T;
+            };
+        designTokens?:
+          | T
+          | {
+              showLLM?: T;
+              title?: T;
+              groups?:
+                | T
+                | {
+                    groupTitle?: T;
+                    helpUrl?: T;
+                    rows?:
+                      | T
+                      | {
+                          name?: T;
+                          description?: T;
+                          valueType?: T;
+                          defaultValue?: T;
+                          swatchColor?: T;
+                          id?: T;
+                        };
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        changelog?:
+          | T
+          | {
+              showLLM?: T;
+              entries?:
+                | T
+                | {
+                    version?: T;
+                    kind?: T;
+                    changes?:
+                      | T
+                      | {
+                          text?: T;
+                          id?: T;
+                        };
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        anatomy?:
+          | T
+          | {
+              showLLM?: T;
+              title?: T;
+              image?: T;
+              parts?:
+                | T
+                | {
+                    label?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        checklist?:
+          | T
+          | {
+              showLLM?: T;
+              title?: T;
+              items?:
+                | T
+                | {
+                    title?: T;
+                    description?: T;
+                    done?: T;
                     id?: T;
                   };
               id?: T;
@@ -1290,170 +1322,21 @@ export interface ComponentsSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
-        mediaFigure?:
-          | T
-          | {
-              showLLM?: T;
-              image?: T;
-              caption?: T;
-              id?: T;
-              blockName?: T;
-            };
-        relColor?:
-          | T
-          | {
-              showLLM?: T;
-              color?: T;
-              id?: T;
-              blockName?: T;
-            };
-        relIcon?:
-          | T
-          | {
-              showLLM?: T;
-              icon?: T;
-              id?: T;
-              blockName?: T;
-            };
-        geoPoint?:
-          | T
-          | {
-              showLLM?: T;
-              label?: T;
-              location?: T;
-              id?: T;
-              blockName?: T;
-            };
-        calendarDate?:
+        motion?:
           | T
           | {
               showLLM?: T;
               title?: T;
-              at?: T;
-              id?: T;
-              blockName?: T;
-            };
-        emailLine?:
-          | T
-          | {
-              showLLM?: T;
-              label?: T;
-              address?: T;
-              id?: T;
-              blockName?: T;
-            };
-        numberStat?:
-          | T
-          | {
-              showLLM?: T;
-              label?: T;
-              value?: T;
-              id?: T;
-              blockName?: T;
-            };
-        radioPick?:
-          | T
-          | {
-              showLLM?: T;
-              mode?: T;
-              hint?: T;
-              id?: T;
-              blockName?: T;
-            };
-        multiSelect?:
-          | T
-          | {
-              showLLM?: T;
-              tags?: T;
-              note?: T;
-              id?: T;
-              blockName?: T;
-            };
-        flagBox?:
-          | T
-          | {
-              showLLM?: T;
-              enabled?: T;
-              flagLabel?: T;
-              id?: T;
-              blockName?: T;
-            };
-        jsonBlock?:
-          | T
-          | {
-              showLLM?: T;
-              title?: T;
-              payload?: T;
-              id?: T;
-              blockName?: T;
-            };
-        groupStrip?:
-          | T
-          | {
-              showLLM?: T;
-              bundle?:
-                | T
-                | {
-                    gTitle?: T;
-                    gCount?: T;
-                    gOn?: T;
-                  };
-              id?: T;
-              blockName?: T;
-            };
-        nestedStack?:
-          | T
-          | {
-              showLLM?: T;
               intro?: T;
-              items?:
+              tokens?:
                 | T
                 | {
-                    nestLine?:
-                      | T
-                      | {
-                          showLLM?: T;
-                          line?: T;
-                          id?: T;
-                          blockName?: T;
-                        };
+                    name?: T;
+                    description?: T;
+                    value?: T;
+                    durationMs?: T;
+                    id?: T;
                   };
-              id?: T;
-              blockName?: T;
-            };
-        namedTabsStrip?:
-          | T
-          | {
-              showLLM?: T;
-              tabSummary?: T | ComponentDocTabSummarySelect<T>;
-              tabDetail?: T | ComponentDocTabDetailSelect<T>;
-              id?: T;
-              blockName?: T;
-            };
-        divider?:
-          | T
-          | {
-              showLLM?: T;
-              caption?: T;
-              id?: T;
-              blockName?: T;
-            };
-        quote?:
-          | T
-          | {
-              showLLM?: T;
-              body?: T;
-              attribution?: T;
-              id?: T;
-              blockName?: T;
-            };
-        storybookEmbed?:
-          | T
-          | {
-              showLLM?: T;
-              title?: T;
-              storybookUrl?: T;
-              frameHeight?: T;
               id?: T;
               blockName?: T;
             };
@@ -1461,20 +1344,6 @@ export interface ComponentsSelect<T extends boolean = true> {
   folder?: T;
   updatedAt?: T;
   createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "ComponentDocTabSummary_select".
- */
-export interface ComponentDocTabSummarySelect<T extends boolean = true> {
-  brief?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "ComponentDocTabDetail_select".
- */
-export interface ComponentDocTabDetailSelect<T extends boolean = true> {
-  detail?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1495,24 +1364,38 @@ export interface ColorsSelect<T extends boolean = true> {
               showLLM?: T;
               heading?: T;
               body?: T;
+              items?:
+                | T
+                | {
+                    label?: T;
+                    description?: T;
+                    accentColor?: T;
+                    labelAsBadge?: T;
+                    id?: T;
+                  };
               id?: T;
               blockName?: T;
             };
-        callout?:
+        doDont?:
           | T
           | {
               showLLM?: T;
-              tone?: T;
-              text?: T;
-              id?: T;
-              blockName?: T;
-            };
-        richTextSection?:
-          | T
-          | {
-              showLLM?: T;
-              title?: T;
-              body?: T;
+              heading?: T;
+              intro?: T;
+              dos?:
+                | T
+                | {
+                    text?: T;
+                    image?: T;
+                    id?: T;
+                  };
+              donts?:
+                | T
+                | {
+                    text?: T;
+                    image?: T;
+                    id?: T;
+                  };
               id?: T;
               blockName?: T;
             };
@@ -1521,26 +1404,10 @@ export interface ColorsSelect<T extends boolean = true> {
           | {
               showLLM?: T;
               title?: T;
+              previewStorybookUrl?: T;
+              previewHeight?: T;
               code?: T;
-              id?: T;
-              blockName?: T;
-            };
-        doDont?:
-          | T
-          | {
-              showLLM?: T;
-              dos?:
-                | T
-                | {
-                    text?: T;
-                    id?: T;
-                  };
-              donts?:
-                | T
-                | {
-                    text?: T;
-                    id?: T;
-                  };
+              defaultCollapsed?: T;
               id?: T;
               blockName?: T;
             };
@@ -1558,20 +1425,46 @@ export interface ColorsSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
-        mediaFigure?:
+        designTokens?:
           | T
           | {
               showLLM?: T;
-              image?: T;
-              caption?: T;
+              title?: T;
+              groups?:
+                | T
+                | {
+                    groupTitle?: T;
+                    helpUrl?: T;
+                    rows?:
+                      | T
+                      | {
+                          name?: T;
+                          description?: T;
+                          valueType?: T;
+                          defaultValue?: T;
+                          swatchColor?: T;
+                          id?: T;
+                        };
+                    id?: T;
+                  };
               id?: T;
               blockName?: T;
             };
-        relColor?:
+        propsTable?:
           | T
           | {
               showLLM?: T;
-              color?: T;
+              title?: T;
+              subtitle?: T;
+              rows?:
+                | T
+                | {
+                    name?: T;
+                    type?: T;
+                    defaultValue?: T;
+                    description?: T;
+                    id?: T;
+                  };
               id?: T;
               blockName?: T;
             };

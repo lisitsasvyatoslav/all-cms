@@ -72,7 +72,7 @@ export const componentDocsBySlug: Record<string, ComponentDoc> = {
         name: "className",
         type: "string",
         default: "—",
-        description: "Дополнительные Tailwind-классы.",
+        description: "Дополнительные CSS-классы.",
       },
       {
         name: "...rest",

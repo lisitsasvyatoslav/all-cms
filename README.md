@@ -1,36 +1,94 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Design System Portal (Next.js + Payload CMS)
 
-## Getting Started
+Локальный портал дизайн-системы: Next.js, Payload CMS (SQLite), Storybook.
 
-First, run the development server:
+## Требования
+
+- **Node.js** 20 или новее
+- **npm** (идёт с Node.js)
+- **Git**
+
+## 1. Клонирование
+
+```bash
+git clone <URL-репозитория> next-app
+cd next-app
+```
+
+## 2. Зависимости
+
+```bash
+npm install
+```
+
+## 3. База и демо-данные
+
+Первый запуск создаёт файл `payload.sqlite` в корне проекта.
+
+**Рекомендуемый путь для чистой локальной установки:**
+
+```bash
+npm run seed:portal
+```
+
+Скрипт подтянет схему БД и заполнит демо: компоненты, цвета, иконки, глобальные ссылки.
+
+Если Drizzle спросит про новые таблицы (`Is … created or renamed?`), на каждый вопрос выбирайте **`+ create table`**, не *rename*.
+
+Если миграция «застряла» или схема в неконсистентном состоянии (типично после смены блоков документации), проще начать с пустой БД:
+
+```powershell
+# Windows (PowerShell)
+Remove-Item payload.sqlite -ErrorAction SilentlyContinue
+npm run seed:portal
+```
+
+```bash
+# macOS / Linux
+rm -f payload.sqlite
+npm run seed:portal
+```
+
+## 4. Запуск приложения
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Откройте в браузере:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| URL | Что это |
+|-----|---------|
+| [http://127.0.0.1:3000](http://127.0.0.1:3000) | Портал дизайн-системы |
+| [http://127.0.0.1:3000/admin](http://127.0.0.1:3000/admin) | Payload Admin (CMS) |
+| [http://127.0.0.1:3000/components/button](http://127.0.0.1:3000/components/button) | Пример страницы компонента |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+При первом заходе в **Admin** создайте пользователя — первый аккаунт автоматически получит роль **admin**.
 
-## Learn More
+## 5. Storybook (опционально)
 
-To learn more about Next.js, take a look at the following resources:
+Превью компонентов на портале ссылается на Storybook. В **отдельном** терминале:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm run storybook
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Storybook: [http://127.0.0.1:6006](http://127.0.0.1:6006)
 
-## Deploy on Vercel
+## Полезные команды
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+| Команда | Описание |
+|---------|----------|
+| `npm run dev` | Dev-сервер Next.js (порт 3000) |
+| `npm run build` | Production-сборка |
+| `npm run start` | Запуск после `build` |
+| `npm run seed:portal` | Демо-данные и синхронизация схемы SQLite |
+| `npm run storybook` | Storybook на порту 6006 |
+| `npm run generate:types` | Перегенерация `payload-types.ts` после смены схемы CMS |
+| `npm run lint` | ESLint |
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Типичные проблемы
+
+**Пустой каталог компонентов на портале** — выполните `npm run seed:portal` или проверьте, что у записей в CMS заполнены обязательные поля (`name`, `slug`, `description`).
+
+**Превью Storybook не встраивается** — запущен ли `npm run storybook` на порту 6006.

@@ -1,25 +1,25 @@
 "use client";
 
-import { ScrollArea, Text } from "@radix-ui/themes";
+import { Box, Flex, Link, ScrollArea, Text } from "@radix-ui/themes";
+import type { Component } from "@/payload-types";
 import NextLink from "next/link";
-
-import { PortalAppearanceToggle } from "@/components/providers/portal-theme-provider";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 
-export type SidebarComponent = { slug: string; name: string };
+import { PortalAppearanceToggle } from "@/components/providers/portal-theme-provider";
+import { PortalComponentStatusBadge } from "@/components/portal/portal-component-status-badge";
+import { PortalNavItem } from "@/components/portal/portal-nav-item";
+import { portalClass } from "@/lib/portal/classes";
+
+export type SidebarComponent = {
+  slug: string;
+  name: string;
+  status?: Component["status"] | null;
+};
 
 type Props = {
   components: SidebarComponent[];
 };
-
-const navItemClass = (active: boolean) =>
-  [
-    "block rounded-md px-2 py-1.5 text-sm leading-snug no-underline transition-colors",
-    active
-      ? "bg-zinc-200/80 font-medium text-zinc-950 dark:bg-zinc-800 dark:text-zinc-50"
-      : "font-normal text-zinc-600 hover:bg-zinc-100/80 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-900 dark:hover:text-zinc-50",
-  ].join(" ");
 
 export function PortalSidebar({ components }: Props) {
   const pathname = usePathname();
@@ -40,74 +40,106 @@ export function PortalSidebar({ components }: Props) {
     : "";
 
   return (
-    <aside className="sticky top-0 flex h-screen w-56 shrink-0 flex-col border-r border-zinc-200/80 bg-zinc-50/90 backdrop-blur-sm dark:border-zinc-800 dark:bg-zinc-950/90">
-      <div className="border-b border-zinc-200 px-4 py-4 dark:border-zinc-800">
-        <NextLink
-          href="/"
-          className="text-base font-semibold tracking-tight text-zinc-900 no-underline hover:text-zinc-700 dark:text-zinc-50 dark:hover:text-zinc-200"
-        >
-          Design System
-        </NextLink>
+    <Flex direction="column" className="portal-sidebar">
+      <Box px="4" py="4">
+        <Link asChild size="3" weight="bold">
+          <NextLink href="/" className={portalClass.linkPlain}>
+            Design System
+          </NextLink>
+        </Link>
         <Text size="1" color="gray" mt="1" as="p">
           Документация
         </Text>
-      </div>
-      <ScrollArea type="auto" scrollbars="vertical" className="flex-1">
-        <nav className="flex flex-col gap-0.5 p-3">
-          <SidebarSectionLabel>Главная</SidebarSectionLabel>
-          <SidebarHashLink
-            href="/#overview"
-            active={onHome && (hash === "#overview" || hash === "")}
-          >
-            Обзор
-          </SidebarHashLink>
-          <SidebarHashLink href="/#sources" active={onHome && hash === "#sources"}>
-            Источники
-          </SidebarHashLink>
+      </Box>
 
-          <SidebarSectionLabel className="mt-4">Компоненты</SidebarSectionLabel>
-          {components.map((c) => (
-            <NextLink
-              key={c.slug}
-              href={`/components/${c.slug}`}
-              className={navItemClass(activeComponentSlug === c.slug)}
+      <ScrollArea type="auto" scrollbars="vertical" className={portalClass.sidebarScroll}>
+        <nav className={portalClass.sidebarNav}>
+            <SidebarSectionLabel>Главная</SidebarSectionLabel>
+            <SidebarHashLink
+              href="/#overview"
+              active={onHome && (hash === "#overview" || hash === "")}
             >
-              {c.name}
-            </NextLink>
-          ))}
+              Обзор
+            </SidebarHashLink>
+            <SidebarHashLink href="/#sources" active={onHome && hash === "#sources"}>
+              Источники
+            </SidebarHashLink>
 
-          <SidebarSectionLabel className="mt-4">Основы</SidebarSectionLabel>
-          <SidebarHashLink href="/#colors" active={onHome && hash === "#colors"}>
-            Цвета
-          </SidebarHashLink>
-          <SidebarHashLink href="/#icons" active={onHome && hash === "#icons"}>
-            Иконки
-          </SidebarHashLink>
+            <Box mt="4">
+              <SidebarSectionLabel>Компоненты</SidebarSectionLabel>
+            </Box>
+            {components.map((c) => (
+              <PortalNavItem key={c.slug} active={activeComponentSlug === c.slug}>
+                <Flex align="center" gap="2" wrap="wrap" className={portalClass.navItemRow}>
+                  <Link asChild size="2" color="gray" highContrast={activeComponentSlug === c.slug}>
+                    <NextLink
+                      href={`/components/${c.slug}`}
+                      className={portalClass.linkBlock}
+                    >
+                      {c.name}
+                    </NextLink>
+                  </Link>
+                  <PortalComponentStatusBadge status={c.status} />
+                </Flex>
+              </PortalNavItem>
+            ))}
+
+            <Box mt="4">
+              <SidebarSectionLabel>Основы</SidebarSectionLabel>
+            </Box>
+            <SidebarHashLink href="/#colors" active={onHome && hash === "#colors"}>
+              Цвета
+            </SidebarHashLink>
+            <SidebarHashLink href="/#icons" active={onHome && hash === "#icons"}>
+              Иконки
+            </SidebarHashLink>
+
+            <Box mt="4">
+              <SidebarSectionLabel>Справочник</SidebarSectionLabel>
+            </Box>
+            <PortalNavItem active={pathname === "/showcase/documentation-blocks"}>
+              <Link asChild size="2" color="gray" highContrast={pathname === "/showcase/documentation-blocks"}>
+                <NextLink href="/showcase/documentation-blocks" className={portalClass.linkBlock}>
+                  Блоки документации
+                </NextLink>
+              </Link>
+            </PortalNavItem>
         </nav>
       </ScrollArea>
-      <div className="flex items-center gap-2 border-t border-zinc-200 p-3 dark:border-zinc-800">
+
+      <Flex
+        align="center"
+        gap="2"
+        p="3"
+        className={portalClass.sidebarFooter}
+      >
         <PortalAppearanceToggle />
-        <NextLink href="/admin" className={`${navItemClass(false)} min-w-0 flex-1`}>
-          Payload Admin →
-        </NextLink>
-      </div>
-    </aside>
+        <Box flexGrow="1" minWidth="0">
+          <PortalNavItem active={false}>
+            <Link asChild size="2" color="gray">
+              <NextLink href="/admin" className={portalClass.linkBlock}>
+                Payload Admin →
+              </NextLink>
+            </Link>
+          </PortalNavItem>
+        </Box>
+      </Flex>
+    </Flex>
   );
 }
 
-function SidebarSectionLabel({
-  children,
-  className = "",
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) {
+function SidebarSectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <p
-      className={`mb-1 px-2 text-[11px] font-medium uppercase tracking-wide text-zinc-400 ${className}`}
+    <Text
+      size="1"
+      color="gray"
+      weight="medium"
+      mb="1"
+      as="p"
+      className={portalClass.labelCapsWide}
     >
       {children}
-    </p>
+    </Text>
   );
 }
 
@@ -121,8 +153,10 @@ function SidebarHashLink({
   children: React.ReactNode;
 }) {
   return (
-    <a href={href} className={navItemClass(active)}>
-      {children}
-    </a>
+    <PortalNavItem active={active}>
+      <Link href={href} size="2" color="gray" highContrast={active}>
+        {children}
+      </Link>
+    </PortalNavItem>
   );
 }

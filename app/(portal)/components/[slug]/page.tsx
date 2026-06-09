@@ -1,4 +1,4 @@
-import { Button, Card, Code, Flex, Heading, Text } from "@radix-ui/themes";
+import { Box, Card, Code, Flex, Heading, Text } from "@radix-ui/themes";
 import { notFound } from "next/navigation";
 import { getPayload } from "payload";
 
@@ -6,17 +6,25 @@ import config from "@payload-config";
 import type { PortalSource } from "@/payload-types";
 
 import { PortalBreadcrumbs } from "@/components/portal/portal-breadcrumbs";
+import { PortalComponentDeprecatedBanner } from "@/components/portal/portal-component-deprecated-banner";
+import { PortalComponentStatusBadge } from "@/components/portal/portal-component-status-badge";
 import { PortalCodeBlock } from "@/components/portal/portal-code-block";
-import { PortalPropsTable } from "@/components/portal/portal-props-table";
 import { PortalSourcePill } from "@/components/portal/portal-source-pill";
+import {
+  PortalHeaderDivider,
+  PortalPageContainer,
+  PortalPageWithToc,
+  PortalSection,
+} from "@/components/portal/portal-shell";
 import { TableOfContents } from "@/components/portal/table-of-contents";
 import { getComponentDoc } from "@/lib/component-docs";
+import { portalClass } from "@/lib/portal/classes";
 import { loadComponentDocument } from "@/lib/markdown/load-component-document";
 import { parseComponentRouteSlug } from "@/lib/markdown/parse-component-route-slug";
 import {
-  getComponentPageToc,
+  buildComponentPageToc,
+  documentationHasPropsTable,
   getContentDocumentationBlocks,
-  getTocFromBlocks,
 } from "@/lib/toc/get-toc";
 
 import { ComponentDocumentation } from "./documentation";
@@ -59,144 +67,112 @@ export default async function ComponentDocPage({ params }: Props) {
   const portalSources = await payload.findGlobal({ slug: "portal-sources" });
 
   const contentBlocks = getContentDocumentationBlocks(doc.documentation);
-  const { tocIdByIndex } = getTocFromBlocks(contentBlocks);
-  const tocItems = getComponentPageToc(doc, {
-    hasStaticProps: Boolean(staticDoc?.props?.length),
+  const hasCmsPropsTable = documentationHasPropsTable(doc.documentation);
+  const { items: tocItems, tocIdByIndex } = buildComponentPageToc(doc, {
+    hasStaticProps: Boolean(staticDoc?.props?.length) && !hasCmsPropsTable,
     hasStaticInstall: Boolean(staticDoc),
     hasStaticExamples: Boolean(staticDoc?.variantSnippets?.length),
   });
-  const showToc =
-    doc.showTOC !== false && tocItems.length > 1;
+  const showToc = doc.showTOC !== false && tocItems.length > 1;
 
-  return (
-    <div className="min-h-full bg-white dark:bg-black">
-      <article
-        className={`mx-auto px-8 py-12 lg:py-16 ${showToc ? "max-w-6xl" : "max-w-3xl"}`}
-      >
-        <PortalBreadcrumbs
-          items={[
-            { label: "Главная", href: "/" },
-            { label: "Components" },
-            { label: componentSlug, mono: true },
-          ]}
-        />
+  const main = (
+    <>
+      <PortalBreadcrumbs
+        items={[
+          { label: "Главная", href: "/" },
+          { label: "Components" },
+          { label: componentSlug, mono: true },
+        ]}
+      />
 
-        <header className="mb-10 border-b border-zinc-100 pb-10 dark:border-zinc-900">
-          <Heading size="8" weight="medium" mb="3">
+      <header>
+        <Flex align="center" gap="2" wrap="wrap" mb="3" className={portalClass.componentTitle}>
+          <Heading size="8" weight="medium">
             {doc.name}
           </Heading>
-          {doc.description ? (
-            <Text as="p" size="4" color="gray" style={{ lineHeight: 1.6 }}>
-              {doc.description}
-            </Text>
-          ) : null}
-          <Flex gap="2" wrap="wrap" mt="4">
-            {doc.figmaUrl ? (
-              <PortalSourcePill href={doc.figmaUrl}>Figma</PortalSourcePill>
-            ) : null}
-            {doc.storybookUrl ? (
-              <PortalSourcePill href={doc.storybookUrl}>Storybook</PortalSourcePill>
-            ) : null}
-            {doc.docsUrl ? (
-              <PortalSourcePill href={doc.docsUrl}>Документация</PortalSourcePill>
-            ) : null}
-            <PortalSourcePill
-              href={`/components/${componentSlug}.md`}
-              external={false}
-            >
-              Markdown
-            </PortalSourcePill>
-          </Flex>
-        </header>
-
-        <ComponentMetaRow doc={doc} />
-
-        <PortalLibraryStrip sources={portalSources} />
-
-        <div
-          className={
-            showToc
-              ? "grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,1fr)_11rem]"
-              : undefined
-          }
-        >
-          <div className="min-w-0">
-        <section className="mb-14">
-          <Heading as="h2" size="4" mb="4" id="preview" className="scroll-mt-24">
-            Превью
-          </Heading>
-          <ComponentLiveDemos
-            slug={componentSlug}
-            documentation={doc.documentation}
-          />
-        </section>
-
-        <ComponentDocumentation
-          blocks={doc.documentation}
-          tocIdByIndex={tocIdByIndex}
-        />
-
-        {staticDoc ? (
-          <>
-            <section className="mb-14">
-              <Heading as="h2" size="4" mb="4" id="props-reference" className="scroll-mt-24">
-                Пропсы
-              </Heading>
-              <PortalPropsTable
-                rows={staticDoc.props.map((row) => ({
-                  name: row.name,
-                  type: row.type,
-                  defaultValue: row.default,
-                  description: row.description,
-                }))}
-              />
-            </section>
-
-            <section className="mb-14">
-              <Heading as="h2" size="4" mb="4" id="installation" className="scroll-mt-24">
-                Установка
-              </Heading>
-              <PortalCodeBlock title="Импорт" code={staticDoc.importSnippet} />
-              <div className="mt-6">
-                <PortalCodeBlock title="Базовый пример" code={staticDoc.basicSnippet} />
-              </div>
-            </section>
-
-            <section className="mb-10">
-              <Heading as="h2" size="4" mb="4" id="code-examples" className="scroll-mt-24">
-                Примеры кода
-              </Heading>
-              <Flex direction="column" gap="6">
-                {staticDoc.variantSnippets.map((block) => (
-                  <div key={block.label}>
-                    <Text as="p" size="2" weight="medium" mb="2">
-                      {block.label}
-                    </Text>
-                    <PortalCodeBlock code={block.code} />
-                  </div>
-                ))}
-              </Flex>
-            </section>
-          </>
-        ) : (
-          <Text as="p" size="2" color="gray">
-            Для компонента «{componentSlug}» пока нет статической таблицы пропсов — добавьте запись в{" "}
-            <Code size="1" variant="soft">
-              lib/component-docs.ts
-            </Code>
-            .
+          <PortalComponentStatusBadge status={doc.status} />
+        </Flex>
+        {doc.description ? (
+          <Text as="p" size="4" color="gray" className={portalClass.lead}>
+            {doc.description}
           </Text>
-        )}
-          </div>
-
-          {showToc ? (
-            <aside className="hidden lg:block">
-              <TableOfContents items={tocItems} />
-            </aside>
+        ) : null}
+        <PortalComponentDeprecatedBanner doc={doc} />
+        <Box className={portalClass.linkRow} mt="4">
+          {doc.figmaUrl ? <PortalSourcePill href={doc.figmaUrl}>Figma</PortalSourcePill> : null}
+          {doc.storybookUrl ? (
+            <PortalSourcePill href={doc.storybookUrl}>Storybook</PortalSourcePill>
           ) : null}
-        </div>
-      </article>
-    </div>
+          {doc.docsUrl ? (
+            <PortalSourcePill href={doc.docsUrl}>Документация</PortalSourcePill>
+          ) : null}
+          <PortalSourcePill href={`/components/${componentSlug}.md`} external={false}>
+            Markdown
+          </PortalSourcePill>
+        </Box>
+        <PortalHeaderDivider />
+      </header>
+
+      <ComponentMetaRow doc={doc} />
+      <PortalLibraryStrip sources={portalSources} />
+
+      <PortalSection>
+        <Heading as="h2" size="4" mb="4" id="preview" className={portalClass.scrollTarget}>
+          Превью
+        </Heading>
+        <ComponentLiveDemos slug={componentSlug} documentation={doc.documentation} />
+      </PortalSection>
+
+      <ComponentDocumentation blocks={doc.documentation} tocIdByIndex={tocIdByIndex} />
+
+      {staticDoc ? (
+        <>
+          <PortalSection>
+            <Heading as="h2" size="4" mb="4" id="installation" className={portalClass.scrollTarget}>
+              Установка
+            </Heading>
+            <PortalCodeBlock title="Импорт" code={staticDoc.importSnippet} />
+            <Box mt="4">
+              <PortalCodeBlock title="Базовый пример" code={staticDoc.basicSnippet} />
+            </Box>
+          </PortalSection>
+
+          <PortalSection>
+            <Heading as="h2" size="4" mb="4" id="code-examples" className={portalClass.scrollTarget}>
+              Примеры кода
+            </Heading>
+            <Flex direction="column" gap="6">
+              {staticDoc.variantSnippets.map((block) => (
+                <Box key={block.label}>
+                  <Text as="p" size="2" weight="medium" mb="2">
+                    {block.label}
+                  </Text>
+                  <PortalCodeBlock code={block.code} />
+                </Box>
+              ))}
+            </Flex>
+          </PortalSection>
+        </>
+      ) : (
+        <Text as="p" size="2" color="gray">
+          Для компонента «{componentSlug}» пока нет статической таблицы пропсов — добавьте запись в{" "}
+          <Code size="1" variant="soft">
+            lib/component-docs.ts
+          </Code>
+          .
+        </Text>
+      )}
+    </>
+  );
+
+  return (
+    <PortalPageContainer wide={showToc}>
+      {showToc ? (
+        <PortalPageWithToc main={main} toc={<TableOfContents items={tocItems} />} />
+      ) : (
+        main
+      )}
+    </PortalPageContainer>
   );
 }
 
@@ -219,13 +195,7 @@ function ComponentMetaRow({
       : null;
 
   return (
-    <Flex
-      wrap="wrap"
-      gap="4"
-      mb="4"
-      pb="4"
-      className="border-b border-zinc-100 dark:border-zinc-900"
-    >
+    <Flex wrap="wrap" gap="4" mb="4" pb="4" className={portalClass.borderBottom}>
       <Text size="2" color="gray">
         Создано в CMS{" "}
         <Text as="span" size="2" weight="medium" highContrast>
@@ -259,20 +229,25 @@ function PortalLibraryStrip({ sources }: { sources: PortalSource }) {
   if (!links.length) return null;
 
   return (
-    <Card size="2" variant="surface" mb="4" style={{ borderStyle: "dashed" }}>
+    <Card
+      size="2"
+      variant="surface"
+      mb="4"
+      className={`${portalClass.cardDashed} ${portalClass.cardPadded}`}
+    >
       <Heading as="h2" size="1" mb="2" color="gray">
         Общие ссылки портала (глобальные)
       </Heading>
       <Text as="p" size="1" color="gray" mb="3">
         Из глобала «Ссылки на источники» в Payload — одни и те же URL для всего портала.
       </Text>
-      <ul className="flex flex-wrap gap-2 list-none p-0 m-0">
+      <Box className={portalClass.linkRow}>
         {links.map((l) => (
-          <li key={l.href}>
-            <PortalSourcePill href={l.href}>{l.label}</PortalSourcePill>
-          </li>
+          <PortalSourcePill key={l.href} href={l.href}>
+            {l.label}
+          </PortalSourcePill>
         ))}
-      </ul>
+      </Box>
     </Card>
   );
 }

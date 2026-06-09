@@ -1,6 +1,6 @@
 "use client";
 
-import { Theme } from "@radix-ui/themes";
+import { IconButton, Theme } from "@radix-ui/themes";
 import {
   createContext,
   useCallback,
@@ -17,6 +17,7 @@ import {
   type PortalAppearance,
   PORTAL_APPEARANCE_STORAGE_KEY,
 } from "@/lib/radix/portal-appearance";
+import { portalClass } from "@/lib/portal/classes";
 import { portalRadixThemeProps } from "@/lib/radix/portal-theme-config";
 
 type PortalThemeContextValue = {
@@ -72,7 +73,7 @@ export function PortalThemeProvider({ children }: { children: ReactNode }) {
       <Theme
         {...radixThemePropsWithoutAppearance}
         appearance={ready ? appearance : "light"}
-        className="radix-themes-portal min-h-full"
+        className={`radix-themes-portal ${portalClass.themeRoot}`}
       >
         {children}
       </Theme>
@@ -80,29 +81,23 @@ export function PortalThemeProvider({ children }: { children: ReactNode }) {
   );
 }
 
-/** Переключатель light/dark: Radix `<Theme appearance>` + класс `dark` на `<html>`. */
 export function PortalAppearanceToggle() {
   const { appearance, toggleAppearance } = usePortalTheme();
   const isDark = appearance === "dark";
 
   return (
-    <button
+    <IconButton
       type="button"
+      variant="ghost"
+      color="gray"
+      size="2"
       aria-label={isDark ? "Включить светлую тему" : "Включить тёмную тему"}
       onClick={toggleAppearance}
-      className={navIconButtonClass}
     >
-      {isDark ? (
-        <SunIcon aria-hidden />
-      ) : (
-        <MoonIcon aria-hidden />
-      )}
-    </button>
+      {isDark ? <SunIcon aria-hidden /> : <MoonIcon aria-hidden />}
+    </IconButton>
   );
 }
-
-const navIconButtonClass =
-  "inline-flex size-8 shrink-0 items-center justify-center rounded-md text-zinc-600 transition-colors hover:bg-zinc-100/80 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-900 dark:hover:text-zinc-50";
 
 function SunIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -120,10 +115,7 @@ function SunIcon(props: React.SVGProps<SVGSVGElement>) {
 function MoonIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg width="16" height="16" viewBox="0 0 15 15" fill="none" {...props}>
-      <path
-        d="M7.5 1.5a6 6 0 1 0 0 12 4.5 4.5 0 0 1 0-12z"
-        fill="currentColor"
-      />
+      <path d="M7.5 1.5a6 6 0 1 0 0 12 4.5 4.5 0 0 1 0-12z" fill="currentColor" />
     </svg>
   );
 }

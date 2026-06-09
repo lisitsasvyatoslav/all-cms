@@ -37,5 +37,5 @@ export const portalRadixThemeProps = {
   /**
    * false — фон страницы у Tailwind; `--color-background` из CSS для компонентов Radix.
    */
-  hasBackground: false,
+  hasBackground: true,
 } as const satisfies PortalRadixThemeConfig;

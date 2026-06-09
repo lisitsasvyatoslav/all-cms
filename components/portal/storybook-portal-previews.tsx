@@ -1,28 +1,34 @@
 "use client";
 
+import { Card, Callout, Flex, Text } from "@radix-ui/themes";
 import { composeStories } from "@storybook/react";
 import { useEffect, useState } from "react";
 import type { ComponentType, ReactNode } from "react";
 
+import { portalClass } from "@/lib/portal/classes";
 import { PORTAL_STORYBOOK_REGISTRY } from "@/lib/storybook/portal-registry";
 
 function DemoSurface({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <div className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950">
-      <p className="mb-4 text-xs font-medium uppercase tracking-wide text-zinc-400">
+    <Card size="2" variant="surface">
+      <Text
+        size="1"
+        weight="medium"
+        color="gray"
+        mb="4"
+        className={portalClass.demoTitle}
+      >
         {title}
-      </p>
+      </Text>
       {children}
-    </div>
+    </Card>
   );
 }
 
 /** Превью по slug — stories подгружаются динамически (меньше work при первом compile в dev). */
 export function StorybookPortalPreviews({ slug }: { slug: string }) {
   const entry = PORTAL_STORYBOOK_REGISTRY[slug];
-  const [composed, setComposed] = useState<ReturnType<typeof composeStories> | null>(
-    null,
-  );
+  const [composed, setComposed] = useState<ReturnType<typeof composeStories> | null>(null);
 
   useEffect(() => {
     if (!entry) {
@@ -46,24 +52,29 @@ export function StorybookPortalPreviews({ slug }: { slug: string }) {
 
   if (!composed) {
     return (
-      <p className="text-sm text-zinc-500" aria-busy="true">
+      <Text size="2" color="gray" aria-busy="true">
         Загрузка превью…
-      </p>
+      </Text>
     );
   }
 
-  const { catalog, layoutClassName = "" } = entry;
+  const { catalog } = entry;
 
   return (
-    <div className={`flex flex-col gap-8 ${layoutClassName}`.trim()}>
+    <Flex direction="column" gap="6">
       {catalog.map(({ storyId, title }) => {
         const Story = composed[storyId as keyof typeof composed];
         if (!Story) {
           return (
-            <p key={storyId} className="text-sm text-amber-700 dark:text-amber-300">
-              Story «{storyId}» не найдена в{" "}
-              <code className="font-mono text-xs">*.stories.tsx</code>.
-            </p>
+            <Callout.Root key={storyId} color="amber">
+              <Callout.Text>
+                Story «{storyId}» не найдена в{" "}
+                <Text as="span" className={portalClass.codeFont}>
+                  *.stories.tsx
+                </Text>
+                .
+              </Callout.Text>
+            </Callout.Root>
           );
         }
         const Render = Story as ComponentType;
@@ -73,6 +84,6 @@ export function StorybookPortalPreviews({ slug }: { slug: string }) {
           </DemoSurface>
         );
       })}
-    </div>
+    </Flex>
   );
 }

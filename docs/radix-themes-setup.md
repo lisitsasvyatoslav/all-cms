@@ -4,7 +4,9 @@
 
 **Зависимость:** `@radix-ui/themes` в `package.json`.
 
-**Где используется UI Themes на портале:** пока только обёртка `<Theme>` (провайдер). Отдельные компоненты Radix (`Button`, `Text` …) на маршрутах портала не рендерятся — пример есть в Storybook (`components/ds/radix-button.stories.tsx`).
+**Стили портала:** только Radix Themes + `app/radix-themes.css` (шрифты, rich-text, сайдбар, TOC). **Tailwind в проекте удалён.**
+
+**Где UI Themes:** весь портал `(portal)/*`, Storybook (`components/ds/*`, `radix-button`), обёртки в `components/portal/*`.
 
 ---
 
@@ -48,7 +50,7 @@ radix-themes.css             →  CSS-переменные поверх прес
 | `panelBackground` | `solid` | Фон панелей (`Card`, `Dialog`, `Table`): `solid` \| `translucent`. |
 | `radius` | `medium` | Скругление: `none` \| `small` \| `medium` \| `large` \| `full`. |
 | `scaling` | `100%` | Плотность UI: `90%` \| `95%` \| `100%` \| `105%` \| `110%`. |
-| `hasBackground` | `false` | Не красить фон у корня `<Theme>` — фон страницы остаётся у Tailwind в layout. |
+| `hasBackground` | `true` | Фон страницы из палитры Themes на корне `<Theme>`. |
 
 ### Чего нет в этом файле
 

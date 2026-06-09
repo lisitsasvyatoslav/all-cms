@@ -1,0 +1,49 @@
+import { Callout, Link, Text } from "@radix-ui/themes";
+import NextLink from "next/link";
+
+import type { Component } from "@/payload-types";
+import {
+  getDeprecatedBannerMessage,
+  isComponentDeprecated,
+  resolveReplacedByComponent,
+} from "@/lib/portal/component-status";
+import { portalClass } from "@/lib/portal/classes";
+
+import { PortalCalloutContent } from "./portal-callout-content";
+
+type Props = Pick<Component, "status" | "statusNote" | "replacedBy">;
+
+export function PortalComponentDeprecatedBanner({ doc }: { doc: Props }) {
+  if (!isComponentDeprecated(doc.status)) return null;
+
+  const replacement = resolveReplacedByComponent(doc.replacedBy);
+  const message = getDeprecatedBannerMessage(doc.statusNote);
+
+  return (
+    <Callout.Root
+      color="red"
+      variant="soft"
+      role="status"
+      className={portalClass.statusBanner}
+    >
+      <Callout.Icon>!</Callout.Icon>
+      <PortalCalloutContent>
+        <Text as="p" size="3" weight="bold" mb="1">
+          Deprecated
+        </Text>
+        <Text as="p" size="2">
+          {message}
+        </Text>
+        {replacement ? (
+          <Text as="p" size="2" mt="2">
+            Используйте{" "}
+            <Link asChild weight="medium">
+              <NextLink href={`/components/${replacement.slug}`}>{replacement.name}</NextLink>
+            </Link>
+            .
+          </Text>
+        ) : null}
+      </PortalCalloutContent>
+    </Callout.Root>
+  );
+}

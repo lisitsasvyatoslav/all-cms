@@ -210,10 +210,13 @@ const Components: CollectionConfig = {
               defaultValue: "stable",
               options: [
                 { label: "Stable", value: "stable" },
-                { label: "Beta", value: "beta" },
+                { label: "Preview (beta)", value: "beta" },
                 { label: "Deprecated", value: "deprecated" },
-                { label: "Draft", value: "draft" },
               ],
+              admin: {
+                description:
+                  "Не заполнены обязательные поля карточки — запись не попадает на портал (черновик в CMS без отдельного статуса).",
+              },
             },
             {
               name: "statusNote",
@@ -298,7 +301,7 @@ const Components: CollectionConfig = {
               admin: {
                 initCollapsed: false,
                 description:
-                  "Все 24 типа контент-блоков. Порядок = порядок на портале.",
+                  "13 типов контент-блоков (14-й слот — Markdown export на странице). Порядок = порядок на портале.",
               },
             },
           ],

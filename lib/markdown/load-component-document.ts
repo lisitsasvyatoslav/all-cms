@@ -2,6 +2,7 @@ import { getPayload } from "payload";
 
 import config from "@payload-config";
 import type { Component } from "@/payload-types";
+import { isComponentVisibleOnPortal } from "@/lib/portal/component-status";
 
 export async function loadComponentDocument(
   componentSlug: string,
@@ -13,5 +14,7 @@ export async function loadComponentDocument(
     limit: 1,
     depth: 2,
   });
-  return docs[0] ?? null;
+  const doc = docs[0];
+  if (!doc || !isComponentVisibleOnPortal(doc)) return null;
+  return doc;
 }

@@ -3,6 +3,7 @@
 import { Link, Text } from "@radix-ui/themes";
 import { useEffect, useState } from "react";
 
+import { portalClass } from "@/lib/portal/classes";
 import type { TocItem } from "@/lib/toc/get-toc";
 
 export function TableOfContents({ items }: { items: TocItem[] }) {
@@ -33,14 +34,11 @@ export function TableOfContents({ items }: { items: TocItem[] }) {
   }, [items]);
 
   return (
-    <nav aria-label="На этой странице" className="sticky top-20">
+    <nav aria-label="На этой странице" className="portal-toc-nav">
       <Text size="2" weight="medium" mb="3" as="p">
         На этой странице
       </Text>
-      <ul
-        className="space-y-2 border-l pl-3 m-0 list-none p-0"
-        style={{ borderColor: "var(--gray-a6)" }}
-      >
+      <ul className={portalClass.tocList}>
         {items.map((item) => (
           <li key={item.id}>
             <Link

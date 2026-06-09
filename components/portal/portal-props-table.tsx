@@ -1,4 +1,4 @@
-import { Table } from "@radix-ui/themes";
+import { Code, Table, Text } from "@radix-ui/themes";
 
 export type PortalPropsTableRow = {
   name: string;
@@ -22,15 +22,23 @@ export function PortalPropsTable({ rows }: { rows: PortalPropsTableRow[] }) {
         {rows.map((row) => (
           <Table.Row key={row.name}>
             <Table.RowHeaderCell>
-              <code>{row.name}</code>
+              <Code size="1" variant="ghost">
+                {row.name}
+              </Code>
             </Table.RowHeaderCell>
             <Table.Cell>
-              <code>{row.type}</code>
+              <Code size="1" variant="ghost">
+                {row.type}
+              </Code>
             </Table.Cell>
             <Table.Cell>
-              <code>{row.defaultValue?.trim() ? row.defaultValue : "—"}</code>
+              <Code size="1" variant="ghost">
+                {row.defaultValue?.trim() ? row.defaultValue : "—"}
+              </Code>
             </Table.Cell>
-            <Table.Cell>{row.description ?? "—"}</Table.Cell>
+            <Table.Cell>
+              <Text size="2">{row.description ?? "—"}</Text>
+            </Table.Cell>
           </Table.Row>
         ))}
       </Table.Body>

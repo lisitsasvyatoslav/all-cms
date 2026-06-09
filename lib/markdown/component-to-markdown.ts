@@ -1,6 +1,7 @@
 import type { Component } from "@/payload-types";
 
 import { getComponentDoc } from "@/lib/component-docs";
+import { documentationHasPropsTable } from "@/lib/toc/get-toc";
 
 import { documentationToMarkdown } from "./documentation-block-to-markdown";
 import {
@@ -56,8 +57,10 @@ export function componentDocToMarkdown(doc: Component): string {
   }
 
   if (staticDoc) {
-    sections.push(
-      mdJoin([
+    const staticSections: (string | null | undefined)[] = [];
+
+    if (!documentationHasPropsTable(documentation) && staticDoc.props.length) {
+      staticSections.push(
         mdHeading(2, "Пропсы"),
         mdGfmTable(
           ["Имя", "Тип", "По умолч.", "Описание"],
@@ -68,6 +71,10 @@ export function componentDocToMarkdown(doc: Component): string {
             row.description,
           ]),
         ),
+      );
+    }
+
+    staticSections.push(
         mdHeading(2, "Установка"),
         mdParagraph("Импорт"),
         mdFence(staticDoc.importSnippet, "tsx"),
@@ -78,8 +85,9 @@ export function componentDocToMarkdown(doc: Component): string {
           mdParagraph(block.label),
           mdFence(block.code, "tsx"),
         ]),
-      ]),
     );
+
+    sections.push(mdJoin(staticSections));
   }
 
   return mdJoin(sections);

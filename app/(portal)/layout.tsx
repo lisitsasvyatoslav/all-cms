@@ -1,10 +1,13 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import Script from "next/script";
 import { getPayload } from "payload";
 
 import config from "@payload-config";
 
+import { PortalAppShell } from "@/components/portal/portal-shell";
 import { PortalThemeProvider } from "@/components/providers/portal-theme-provider";
+import { isComponentVisibleOnPortal } from "@/lib/portal/component-status";
 import { portalAppearanceInitScript } from "@/lib/radix/portal-appearance";
 
 import { PortalSidebar } from "./portal-sidebar";
@@ -42,26 +45,30 @@ export default async function PortalLayout({
     overrideAccess: true,
   });
 
-  const componentNav = docs.map((d) => ({
-    slug: String(d.slug),
-    name: String(d.name),
-  }));
+  const componentNav = docs
+    .filter((d) => isComponentVisibleOnPortal(d))
+    .map((d) => ({
+      slug: String(d.slug),
+      name: String(d.name),
+      status: d.status,
+    }));
 
   return (
     <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      lang="ru"
+      className={`${geistSans.variable} ${geistMono.variable}`}
       suppressHydrationWarning
     >
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: portalAppearanceInitScript }} />
-      </head>
-      <body className="min-h-full flex flex-col">
+      <body suppressHydrationWarning>
+        <Script
+          id="portal-appearance-init"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{ __html: portalAppearanceInitScript }}
+        />
         <PortalThemeProvider>
-          <div className="flex min-h-full flex-1 flex-row bg-zinc-50 dark:bg-black">
-            <PortalSidebar components={componentNav} />
-            <div className="min-h-full min-w-0 flex-1">{children}</div>
-          </div>
+          <PortalAppShell sidebar={<PortalSidebar components={componentNav} />}>
+            {children}
+          </PortalAppShell>
         </PortalThemeProvider>
       </body>
     </html>

@@ -1,4 +1,4 @@
-import { Badge } from "@radix-ui/themes";
+import { Badge, Link } from "@radix-ui/themes";
 import type { ReactNode } from "react";
 
 type Props = {
@@ -11,7 +11,7 @@ type Props = {
 export function PortalSourcePill({ href, children, external = true }: Props) {
   return (
     <Badge variant="soft" size="2" asChild>
-      <a
+      <Link
         href={href}
         {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
       >
@@ -21,7 +21,7 @@ export function PortalSourcePill({ href, children, external = true }: Props) {
             ↗
           </span>
         ) : null}
-      </a>
+      </Link>
     </Badge>
   );
 }

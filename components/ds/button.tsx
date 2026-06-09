@@ -1,32 +1,27 @@
-import type { ButtonHTMLAttributes } from "react";
-
-export type ButtonType = {
-  variant?: ButtonVariant; /* Это комментарий ButtonVariant */
-  size?: ButtonSize; /* Это комментарий ButtonSize */
-}
+import { Button as RadixButton } from "@radix-ui/themes";
+import type { ComponentProps } from "react";
 
 export type ButtonVariant = "primary" | "secondary" | "outline" | "ghost" | "danger";
 export type ButtonSize = "sm" | "md" | "lg";
 
-const variantClass: Record<ButtonVariant, string> = {
-  primary:
-    "bg-zinc-900 text-white shadow-sm hover:bg-zinc-800 active:bg-zinc-950 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-white",
-  secondary:
-    "bg-zinc-100 text-zinc-900 hover:bg-zinc-200/80 active:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700",
-  outline:
-    "border border-zinc-300 bg-transparent hover:bg-zinc-50 dark:border-zinc-600 dark:hover:bg-zinc-900",
-  ghost: "bg-transparent hover:bg-zinc-100/80 dark:hover:bg-zinc-800/80",
-  danger:
-    "bg-red-600 text-white hover:bg-red-700 active:bg-red-800 shadow-sm",
+const variantMap: Record<
+  ButtonVariant,
+  { variant: ComponentProps<typeof RadixButton>["variant"]; color?: ComponentProps<typeof RadixButton>["color"] }
+> = {
+  primary: { variant: "solid" },
+  secondary: { variant: "soft", color: "gray" },
+  outline: { variant: "outline", color: "gray" },
+  ghost: { variant: "ghost", color: "gray" },
+  danger: { variant: "solid", color: "red" },
 };
 
-const sizeClass: Record<ButtonSize, string> = {
-  sm: "h-8 rounded-md px-3 text-xs",
-  md: "h-10 rounded-lg px-4 text-sm",
-  lg: "h-12 rounded-lg px-6 text-base",
+const sizeMap: Record<ButtonSize, ComponentProps<typeof RadixButton>["size"]> = {
+  sm: "1",
+  md: "2",
+  lg: "3",
 };
 
-export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+export type ButtonProps = Omit<ComponentProps<typeof RadixButton>, "variant" | "color" | "size"> & {
   variant?: ButtonVariant;
   size?: ButtonSize;
 };
@@ -34,16 +29,16 @@ export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 export function Button({
   variant = "primary",
   size = "md",
-  className = "",
-  disabled,
   type = "button",
   ...rest
 }: ButtonProps) {
+  const mapped = variantMap[variant];
   return (
-    <button
+    <RadixButton
       type={type}
-      disabled={disabled}
-      className={`inline-flex items-center justify-center font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-400 disabled:pointer-events-none disabled:opacity-50 ${variantClass[variant]} ${sizeClass[size]} ${className}`.trim()}
+      variant={mapped.variant}
+      color={mapped.color}
+      size={sizeMap[size]}
       {...rest}
     />
   );

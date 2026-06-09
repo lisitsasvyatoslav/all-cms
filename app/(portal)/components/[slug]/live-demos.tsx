@@ -1,5 +1,8 @@
 "use client";
 
+import { Box, Code, Flex, Strong, Text } from "@radix-ui/themes";
+
+import { PortalDocumentationBlockLabel } from "@/components/portal/portal-documentation-block-label";
 import { StorybookEmbedPreview } from "@/components/portal/storybook-embed-preview";
 import { StorybookOpenLink } from "@/components/portal/storybook-open-link";
 import type { DocumentationBlock } from "./documentation";
@@ -19,9 +22,11 @@ function isStorybookEmbedBlock(
 export function ComponentLiveDemos({
   slug,
   documentation,
+  showAdminBlockLabels = false,
 }: {
   slug: string;
   documentation: DocumentationBlock[] | null | undefined;
+  showAdminBlockLabels?: boolean;
 }) {
   const previews =
     documentation?.filter(isStorybookEmbedBlock).filter((b) => b.storybookUrl?.trim()) ??
@@ -29,32 +34,38 @@ export function ComponentLiveDemos({
 
   if (!previews.length) {
     return (
-      <p className="text-sm text-zinc-500">
+      <Text size="2" color="gray" as="p">
         Нет превью. Добавьте в Payload → «Документация» блоки{" "}
-        <strong>Storybook (URL)</strong> со ссылками на stories (
-        <code className="font-mono text-xs">?path=/story/…</code>). Запустите{" "}
-        <code className="font-mono text-xs">npm run storybook</code> или укажите
+        <Strong>Storybook (URL)</Strong> со ссылками на stories (
+        <Code size="1" variant="ghost">
+          ?path=/story/…
+        </Code>
+        ). Запустите <Code size="1" variant="ghost">npm run storybook</Code> или укажите
         задеплоенный Storybook в{" "}
-        <code className="font-mono text-xs">NEXT_PUBLIC_STORYBOOK_URL</code>.
-      </p>
+        <Code size="1" variant="ghost">NEXT_PUBLIC_STORYBOOK_URL</Code>.
+      </Text>
     );
   }
 
   return (
-    <div>
-      <div className="flex flex-col gap-8">
+    <Box>
+      <Flex direction="column" gap="6">
         {previews.map((block, i) => (
-          <StorybookEmbedPreview
-            key={block.id ?? `preview-${i}`}
-            title={block.title ?? "Превью"}
-            storybookUrl={block.storybookUrl}
-            frameHeight={block.frameHeight}
-          />
+          <Box key={block.id ?? `preview-${i}`}>
+            {showAdminBlockLabels ? (
+              <PortalDocumentationBlockLabel blockType="storybookEmbed" />
+            ) : null}
+            <StorybookEmbedPreview
+              title={block.title ?? "Превью"}
+              storybookUrl={block.storybookUrl}
+              frameHeight={block.frameHeight}
+            />
+          </Box>
         ))}
-      </div>
-      <div className="mt-6">
+      </Flex>
+      <Box mt="4">
         <StorybookOpenLink componentSlug={slug} />
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }

@@ -1,7 +1,6 @@
+/** PostCSS без Tailwind — стили портала через Radix Themes. */
 const config = {
-  plugins: {
-    "@tailwindcss/postcss": {},
-  },
+  plugins: {},
 };
 
 export default config;

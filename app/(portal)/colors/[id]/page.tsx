@@ -1,10 +1,15 @@
-import Link from "next/link";
+import { Box, Flex, Heading, Text } from "@radix-ui/themes";
 import { notFound } from "next/navigation";
 import { getPayload } from "payload";
 
 import config from "@payload-config";
 
-import { ComponentDocumentation } from "@/app/(portal)/components/[slug]/documentation";
+import { PortalBreadcrumbs } from "@/components/portal/portal-breadcrumbs";
+import { PortalHeaderDivider, PortalPageContainer } from "@/components/portal/portal-shell";
+import { portalClass } from "@/lib/portal/classes";
+import { portalSwatchBg } from "@/lib/portal/css-vars";
+
+import { ComponentDocumentation } from "../../components/[slug]/documentation";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -46,44 +51,41 @@ export default async function ColorDocPage({ params }: Props) {
   }
 
   return (
-    <div className="min-h-full bg-white dark:bg-black">
-      <article className="mx-auto max-w-3xl px-8 py-12 lg:py-16">
-        <nav className="mb-8 text-sm text-zinc-500">
-          <Link href="/" className="hover:text-zinc-800 dark:hover:text-zinc-300">
-            Главная
-          </Link>
-          <span className="mx-2 text-zinc-300">/</span>
-          <Link href="/#colors" className="hover:text-zinc-800 dark:hover:text-zinc-300">
-            Colors
-          </Link>
-          <span className="mx-2 text-zinc-300">/</span>
-          <span className="font-mono text-zinc-600 dark:text-zinc-400">{id}</span>
-        </nav>
+    <PortalPageContainer>
+      <PortalBreadcrumbs
+        items={[
+          { label: "Главная", href: "/" },
+          { label: "Colors", href: "/#colors" },
+          { label: id, mono: true },
+        ]}
+      />
 
-        <header className="mb-10 flex items-start gap-5 border-b border-zinc-100 pb-10 dark:border-zinc-900">
-          <span
-            className="size-16 shrink-0 rounded-2xl border border-zinc-200 shadow-inner dark:border-zinc-700"
-            style={{ backgroundColor: doc.hex }}
+      <header>
+        <Flex align="start" gap="5">
+          <Box
+            className={`${portalClass.swatch} ${portalClass.swatch64}`}
+            style={portalSwatchBg(doc.hex)}
             title={doc.hex}
           />
-          <div className="min-w-0">
-            <h1 className="text-3xl font-semibold tracking-tight text-zinc-950 dark:text-zinc-50">
+          <Box className={portalClass.minW0}>
+            <Heading size="8" weight="medium">
               {doc.name}
-            </h1>
-            <p className="mt-2 font-mono text-sm text-zinc-600 dark:text-zinc-400">
+            </Heading>
+            <Text mt="2" className={portalClass.codeFont} color="gray">
               {doc.hex}
               {doc.tokenKey ? ` · ${doc.tokenKey}` : ""}
-            </p>
+            </Text>
             {doc.caption ? (
-              <p className="mt-3 text-lg leading-relaxed text-zinc-600 dark:text-zinc-400">
+              <Text as="p" size="4" color="gray" mt="3" className={portalClass.lead}>
                 {doc.caption}
-              </p>
+              </Text>
             ) : null}
-          </div>
-        </header>
+          </Box>
+        </Flex>
+        <PortalHeaderDivider />
+      </header>
 
-        <ComponentDocumentation blocks={doc.documentation} />
-      </article>
-    </div>
+      <ComponentDocumentation blocks={doc.documentation} />
+    </PortalPageContainer>
   );
 }

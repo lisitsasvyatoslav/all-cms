@@ -1,4 +1,6 @@
-import { Box, Card, Code, Text } from "@radix-ui/themes";
+import { Box, Card, Code, Separator, Text } from "@radix-ui/themes";
+
+import { portalClass } from "@/lib/portal/classes";
 
 export function PortalCodeBlock({
   title,
@@ -10,23 +12,20 @@ export function PortalCodeBlock({
   return (
     <Card size="2" variant="surface">
       {title ? (
-        <Box mb="2" pb="2" style={{ borderBottom: "1px solid var(--gray-a5)" }}>
-          <Text size="1" color="gray" weight="medium">
-            {title}
-          </Text>
-        </Box>
+        <>
+          <Box px="3" pt="3" pb="2">
+            <Text size="1" color="gray" weight="medium">
+              {title}
+            </Text>
+          </Box>
+          <Separator size="4" />
+        </>
       ) : null}
-      <Code
-        size="2"
-        variant="ghost"
-        style={{
-          display: "block",
-          whiteSpace: "pre-wrap",
-          wordBreak: "break-word",
-        }}
-      >
-        {code.trim()}
-      </Code>
+      <Box p="3">
+        <Code size="2" variant="ghost" className={portalClass.textPreWrap}>
+          {code.trim()}
+        </Code>
+      </Box>
     </Card>
   );
 }

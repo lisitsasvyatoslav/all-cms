@@ -1,277 +1,446 @@
 /**
- * Переопределение токенов Radix Themes под портал.
- * Пресеты палитры — в `lib/radix/portal-theme-config.ts` (accentColor, grayColor, radius, scaling).
- * Здесь — все CSS-переменные, которые можно переопределить на `.radix-themes`.
- *
+ * Токены Radix Themes под портал + классы стилизации (без Tailwind).
  * @see https://www.radix-ui.com/themes/docs/theme/overview
- * @see node_modules/@radix-ui/themes/tokens.css — блок `.radix-themes { … }`
  */
 .radix-themes-portal.radix-themes {
-  /* ── Курсоры ───────────────────────────────────────────────────────────── */
-  --cursor-button: default;
-  --cursor-checkbox: default;
-  --cursor-disabled: not-allowed;
-  --cursor-link: pointer;
-  --cursor-menu-item: default;
-  --cursor-radio: default;
-  --cursor-slider-thumb: default;
-  --cursor-slider-thumb-active: default;
-  --cursor-switch: default;
-
-  /* ── Layout (scaling задаётся prop `scaling` → data-scaling) ───────────── */
-  --space-1: calc(4px * var(--scaling));
-  --space-2: calc(8px * var(--scaling));
-  --space-3: calc(12px * var(--scaling));
-  --space-4: calc(16px * var(--scaling));
-  --space-5: calc(24px * var(--scaling));
-  --space-6: calc(32px * var(--scaling));
-  --space-7: calc(40px * var(--scaling));
-  --space-8: calc(48px * var(--scaling));
-  --space-9: calc(64px * var(--scaling));
-  --container-1: 448px;
-  --container-2: 688px;
-  --container-3: 880px;
-  --container-4: 1136px;
-
-  /* ── Радиус (radius-factor задаётся prop `radius` → data-radius) ───────── */
-  --radius-1: calc(3px * var(--scaling) * var(--radius-factor));
-  --radius-2: calc(4px * var(--scaling) * var(--radius-factor));
-  --radius-3: calc(6px * var(--scaling) * var(--radius-factor));
-  --radius-4: calc(8px * var(--scaling) * var(--radius-factor));
-  --radius-5: calc(12px * var(--scaling) * var(--radius-factor));
-  --radius-6: calc(16px * var(--scaling) * var(--radius-factor));
-
-  /* ── Типографика: размеры ──────────────────────────────────────────────── */
-  --font-size-1: calc(12px * var(--scaling));
-  --font-size-2: calc(14px * var(--scaling));
-  --font-size-3: calc(16px * var(--scaling));
-  --font-size-4: calc(18px * var(--scaling));
-  --font-size-5: calc(20px * var(--scaling));
-  --font-size-6: calc(24px * var(--scaling));
-  --font-size-7: calc(28px * var(--scaling));
-  --font-size-8: calc(35px * var(--scaling));
-  --font-size-9: calc(60px * var(--scaling));
-  --font-weight-light: 300;
-  --font-weight-regular: 400;
-  --font-weight-medium: 500;
-  --font-weight-bold: 700;
-  --line-height-1: calc(16px * var(--scaling));
-  --line-height-2: calc(20px * var(--scaling));
-  --line-height-3: calc(24px * var(--scaling));
-  --line-height-4: calc(26px * var(--scaling));
-  --line-height-5: calc(28px * var(--scaling));
-  --line-height-6: calc(30px * var(--scaling));
-  --line-height-7: calc(36px * var(--scaling));
-  --line-height-8: calc(40px * var(--scaling));
-  --line-height-9: calc(60px * var(--scaling));
-  --letter-spacing-1: 0.0025em;
-  --letter-spacing-2: 0em;
-  --letter-spacing-3: 0em;
-  --letter-spacing-4: -0.0025em;
-  --letter-spacing-5: -0.005em;
-  --letter-spacing-6: -0.00625em;
-  --letter-spacing-7: -0.0075em;
-  --letter-spacing-8: -0.01em;
-  --letter-spacing-9: -0.025em;
-
-  /* ── Типографика: семейства (accentColor=indigo, grayColor=slate в конфиге) ─ */
   --default-font-family: var(--font-geist-sans, ui-sans-serif, system-ui, sans-serif);
-  --default-font-size: var(--font-size-3);
-  --default-font-style: normal;
-  --default-font-weight: 400;
-  --default-line-height: 1.5;
-  --default-letter-spacing: 0em;
-  --default-leading-trim-start: 0.42em;
-  --default-leading-trim-end: 0.36em;
-
-  --heading-font-family: var(--default-font-family);
-  --heading-font-size-adjust: 1;
-  --heading-font-style: normal;
-  --heading-leading-trim-start: var(--default-leading-trim-start);
-  --heading-leading-trim-end: var(--default-leading-trim-end);
-  --heading-letter-spacing: 0em;
-  --heading-line-height-1: calc(16px * var(--scaling));
-  --heading-line-height-2: calc(18px * var(--scaling));
-  --heading-line-height-3: calc(22px * var(--scaling));
-  --heading-line-height-4: calc(24px * var(--scaling));
-  --heading-line-height-5: calc(26px * var(--scaling));
-  --heading-line-height-6: calc(30px * var(--scaling));
-  --heading-line-height-7: calc(36px * var(--scaling));
-  --heading-line-height-8: calc(40px * var(--scaling));
-  --heading-line-height-9: calc(60px * var(--scaling));
-
   --code-font-family: var(--font-geist-mono, ui-monospace, monospace);
-  --code-font-size-adjust: 0.95;
-  --code-font-style: normal;
-  --code-font-weight: inherit;
-  --code-letter-spacing: -0.007em;
-  --code-padding-top: 0.1em;
-  --code-padding-bottom: 0.1em;
-  --code-padding-left: 0.25em;
-  --code-padding-right: 0.25em;
-
-  --strong-font-family: var(--default-font-family);
-  --strong-font-size-adjust: 1;
-  --strong-font-style: inherit;
-  --strong-font-weight: 700;
-  --strong-letter-spacing: 0em;
-
-  --em-font-family: "Times New Roman", "Times", serif;
-  --em-font-size-adjust: 1.18;
-  --em-font-style: italic;
-  --em-font-weight: inherit;
-  --em-letter-spacing: -0.025em;
-
-  --quote-font-family: "Times New Roman", "Times", serif;
-  --quote-font-size-adjust: 1.18;
-  --quote-font-style: italic;
-  --quote-font-weight: inherit;
-  --quote-letter-spacing: -0.025em;
-
-  --tab-active-letter-spacing: -0.01em;
-  --tab-active-word-spacing: 0em;
-  --tab-inactive-letter-spacing: 0em;
-  --tab-inactive-word-spacing: 0em;
-
-  /* ── Семантические цвета (light) ─────────────────────────────────────── */
-  --color-background: white;
-  --color-overlay: var(--black-a6);
-  --color-panel-solid: white;
-  --color-panel-translucent: rgba(255, 255, 255, 0.72);
-  --color-surface: rgba(255, 255, 255, 0.88);
-  --color-transparent: rgb(0 0 0 / 0);
-
-  /* ── Тени (light) ──────────────────────────────────────────────────────── */
-  --shadow-1: inset 0 0 0 1px var(--gray-a5), inset 0 1.5px 2px 0 var(--gray-a2),
-    inset 0 1.5px 2px 0 var(--black-a2);
-  --shadow-2: 0 0 0 1px var(--gray-a3), 0 0 0 0.5px var(--black-a1), 0 1px 1px 0 var(--gray-a2),
-    0 2px 1px -1px var(--black-a1), 0 1px 3px 0 var(--black-a1);
-  --shadow-3: 0 0 0 1px var(--gray-a3), 0 2px 3px -2px var(--gray-a3), 0 3px 12px -4px var(--black-a2),
-    0 4px 16px -8px var(--black-a2);
-  --shadow-4: 0 0 0 1px var(--gray-a3), 0 8px 40px var(--black-a1), 0 12px 32px -16px var(--gray-a3);
-  --shadow-5: 0 0 0 1px var(--gray-a3), 0 12px 60px var(--black-a3), 0 12px 32px -16px var(--gray-a5);
-  --shadow-6: 0 0 0 1px var(--gray-a3), 0 12px 60px var(--black-a3), 0 16px 64px var(--gray-a2),
-    0 16px 36px -20px var(--gray-a7);
-
-  /* ── Акцент (кастомная шкала; остальное — var из Radix) ─────────────────── */
-  --accent-1: #f5f7ff;
-  --accent-2: #eaefff;
-  --accent-3: #d9e2ff;
-  --accent-4: var(--indigo-4);
-  --accent-5: var(--indigo-5);
-  --accent-6: var(--indigo-6);
-  --accent-7: var(--indigo-7);
-  --accent-8: #5366f0;
-  --accent-9: var(--indigo-9);
-  --accent-10: var(--indigo-10);
-  --accent-11: var(--indigo-11);
-  --accent-12: var(--indigo-12);
-  --accent-a1: #3b4fd408;
-  --accent-a2: #3b4fd414;
-  --accent-a3: #3b4fd424;
-  --accent-a4: var(--indigo-a4);
-  --accent-a5: var(--indigo-a5);
-  --accent-a6: var(--indigo-a6);
-  --accent-a7: var(--indigo-a7);
-  --accent-a8: #5366f066;
-  --accent-a9: #3b4fd4cc;
-  --accent-a10: var(--indigo-a10);
-  --accent-a11: var(--indigo-a11);
-  --accent-a12: var(--indigo-a12);
-  --accent-contrast: #ffffff;
-  --accent-surface: #3b4fd426;
-  --accent-indicator: var(--indigo-indicator);
-  --accent-track: var(--indigo-track);
-
-  /* ── Нейтрали (часть — hex, часть — slate из Radix) ─────────────────────── */
-  --gray-1: #f8f9fb;
-  --gray-2: #f1f3f6;
-  --gray-3: var(--slate-3);
-  --gray-4: var(--slate-4);
-  --gray-5: var(--slate-5);
-  --gray-6: var(--slate-6);
-  --gray-7: var(--slate-7);
-  --gray-8: var(--slate-8);
-  --gray-9: #8b909a;
-  --gray-10: var(--slate-10);
-  --gray-11: var(--slate-11);
-  --gray-12: var(--slate-12);
-  --gray-a1: var(--slate-a1);
-  --gray-a2: var(--slate-a2);
-  --gray-a3: var(--slate-a3);
-  --gray-a4: var(--slate-a4);
-  --gray-a5: var(--slate-a5);
-  --gray-a6: var(--slate-a6);
-  --gray-a7: var(--slate-a7);
-  --gray-a8: var(--slate-a8);
-  --gray-a9: var(--slate-a9);
-  --gray-a10: var(--slate-a10);
-  --gray-a11: var(--slate-a11);
-  --gray-a12: var(--slate-a12);
-  --gray-contrast: var(--slate-contrast);
-  --gray-surface: var(--slate-surface);
-  --gray-indicator: var(--slate-indicator);
-  --gray-track: var(--slate-track);
-
-  /* ── Focus (обычно совпадает с accent) ─────────────────────────────────── */
-  --focus-1: var(--accent-1);
-  --focus-2: var(--accent-2);
-  --focus-3: var(--accent-3);
-  --focus-4: var(--accent-4);
-  --focus-5: var(--accent-5);
-  --focus-6: var(--accent-6);
-  --focus-7: var(--accent-7);
-  --focus-8: var(--accent-8);
-  --focus-9: var(--accent-9);
-  --focus-10: var(--accent-10);
-  --focus-11: var(--accent-11);
-  --focus-12: var(--accent-12);
-  --focus-a1: var(--accent-a1);
-  --focus-a2: var(--accent-a2);
-  --focus-a3: var(--accent-a3);
-  --focus-a4: var(--accent-a4);
-  --focus-a5: var(--accent-a5);
-  --focus-a6: var(--accent-a6);
-  --focus-a7: var(--accent-a7);
-  --focus-a8: var(--accent-a8);
-  --focus-a9: var(--accent-a9);
-  --focus-a10: var(--accent-a10);
-  --focus-a11: var(--accent-a11);
-  --focus-a12: var(--accent-a12);
-
-  /*
-   * Свои имена — любые, Radix их не использует.
-   * Применение: style={{ color: "var(--portal-brand-primary)" }} или в CSS.
-   */
-  --portal-brand-primary: var(--accent-9);
-  --portal-brand-muted: var(--accent-a4);
-  --portal-link-color: var(--accent-11);
-  --portal-sidebar-width: 280px;
-  --portal-doc-max-width: var(--container-2);
-  --portal-code-bg: var(--gray-a2);
-  --portal-callout-border: var(--accent-a7);
+  min-height: 100%;
 }
 
-/* ── Семантические цвета и тени (dark) ───────────────────────────────────── */
-.radix-themes-portal.radix-themes:where(.dark, .dark-theme) {
-  --color-background: var(--gray-1);
-  --color-overlay: var(--black-a8);
-  --color-panel-solid: var(--gray-2);
-  --color-panel-translucent: rgba(24, 27, 36, 0.72);
-  --color-surface: rgba(0, 0, 0, 0.25);
+.portal-theme-root {
+  min-height: 100vh;
+}
 
-  --portal-brand-primary: var(--accent-9);
-  --portal-link-color: var(--accent-11);
-  --portal-code-bg: var(--gray-a3);
+/* Layout */
+.portal-page {
+  max-width: 48rem;
+  margin-inline: auto;
+}
 
-  --shadow-1: inset 0 -1px 1px 0 var(--gray-a3), inset 0 0 0 1px var(--gray-a3),
-    inset 0 3px 4px 0 var(--black-a5), inset 0 0 0 1px var(--gray-a4);
-  --shadow-2: 0 0 0 1px var(--gray-a6), 0 0 0 0.5px var(--black-a3), 0 1px 1px 0 var(--black-a6),
-    0 2px 1px -1px var(--black-a6), 0 1px 3px 0 var(--black-a5);
-  --shadow-3: 0 0 0 1px var(--gray-a6), 0 2px 3px -2px var(--black-a3), 0 3px 8px -2px var(--black-a6),
-    0 4px 12px -4px var(--black-a7);
-  --shadow-4: 0 0 0 1px var(--gray-a6), 0 8px 40px var(--black-a3), 0 12px 32px -16px var(--black-a5);
-  --shadow-5: 0 0 0 1px var(--gray-a6), 0 12px 60px var(--black-a5), 0 12px 32px -16px var(--black-a7);
-  --shadow-6: 0 0 0 1px var(--gray-a6), 0 12px 60px var(--black-a4), 0 16px 64px var(--black-a6),
-    0 16px 36px -20px var(--black-a11);
+.portal-page-wide {
+  max-width: 72rem;
+  margin-inline: auto;
+}
+
+.portal-scroll-target {
+  scroll-margin-top: 6rem;
+}
+
+.portal-min-w-0 {
+  min-width: 0;
+  flex: 1;
+}
+
+.portal-flex-1 {
+  flex: 1;
+}
+
+.portal-storybook-max {
+  width: 100%;
+  max-width: 28rem;
+}
+
+/* Typography */
+.portal-lead {
+  line-height: 1.6;
+}
+
+.portal-prose {
+  max-width: 42rem;
+  line-height: 1.6;
+}
+
+.portal-text-pre-wrap {
+  white-space: pre-wrap;
+}
+
+.portal-text-pre-wrap-relaxed {
+  white-space: pre-wrap;
+  line-height: 1.7;
+}
+
+.portal-code-font {
+  font-family: var(--code-font-family);
+}
+
+.portal-label-caps {
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.portal-label-caps-wide {
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding-inline: var(--space-2);
+}
+
+.portal-label-upper {
+  text-transform: uppercase;
+}
+
+.portal-break-all {
+  word-break: break-all;
+}
+
+/* Borders */
+.portal-border-bottom {
+  border-bottom: 1px solid var(--gray-a5);
+}
+
+.portal-border-top {
+  border-top: 1px solid var(--gray-a5);
+}
+
+.portal-section-border-left {
+  padding-left: var(--space-4);
+  border-left: 2px solid var(--gray-12);
+}
+
+.portal-separator-full {
+  width: 100%;
+}
+
+/* Links */
+.portal-link-plain {
+  text-decoration: none;
+}
+
+.portal-link-block {
+  display: block;
+  text-decoration: none;
+}
+
+/* Navigation */
+.portal-breadcrumbs {
+  margin-bottom: var(--space-4);
+}
+
+.portal-breadcrumbs-list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.portal-breadcrumbs-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.portal-nav-item {
+  border-radius: var(--radius-2);
+}
+
+.portal-nav-item--active {
+  background: var(--gray-a3);
+  font-weight: var(--font-weight-medium);
+}
+
+.portal-nav-item-row {
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.portal-component-status-badge {
+  flex-shrink: 0;
+}
+
+.portal-component-title {
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.portal-status-banner {
+  margin-top: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.portal-sidebar-scroll {
+  flex: 1;
+}
+
+.portal-sidebar-footer {
+  border-top: 1px solid var(--gray-a5);
+}
+
+/* Ряды бейджей-ссылок (Figma, Storybook, …) */
+.portal-doc-block-admin-label {
+  padding-bottom: var(--space-2);
+  border-bottom: 1px dashed var(--gray-a6);
+}
+
+.portal-link-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  row-gap: var(--space-2);
+}
+
+.portal-source-pill {
+  flex-shrink: 0;
+}
+
+.portal-toc-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0 0 0 var(--space-3);
+  list-style: none;
+  border-left: 1px solid var(--gray-a6);
+}
+
+.portal-toc-list > li {
+  line-height: 1.5;
+}
+
+.portal-toc-list a {
+  display: inline-block;
+  padding-block: var(--space-1);
+}
+
+.portal-sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: var(--space-3);
+}
+
+.portal-sidebar-nav .portal-nav-item a,
+.portal-sidebar-nav .portal-nav-item .rt-Link {
+  display: block;
+  padding-block: var(--space-1);
+}
+
+/* Cards & blocks */
+.portal-card-dashed {
+  border-style: dashed;
+}
+
+.portal-card-padded {
+  padding: var(--space-4);
+}
+
+.portal-stat-card {
+  display: inline-block;
+  min-width: 8rem;
+}
+
+.portal-code-block-header {
+  border-bottom: 1px solid var(--gray-a5);
+}
+
+.portal-code-block-body {
+  display: block;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.portal-code-preview-area {
+  background: var(--gray-a2);
+}
+
+.portal-do-dont-card {
+  border: 1px solid var(--gray-a5);
+  border-radius: var(--radius-3);
+  background: var(--color-panel-solid);
+}
+
+.portal-do-dont-preview-empty {
+  background: var(--gray-a3);
+  min-height: 8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.portal-do-dont-panel-green {
+  background: var(--green-a2);
+}
+
+.portal-do-dont-panel-red {
+  background: var(--red-a2);
+}
+
+.portal-do-dont-separator-green {
+  background: var(--green-9);
+  height: 3px;
+}
+
+.portal-do-dont-separator-red {
+  background: var(--red-9);
+  height: 3px;
+}
+
+.portal-related-preview {
+  min-height: 6rem;
+  background: var(--gray-a2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.portal-anatomy-inset {
+  background: var(--accent-a2);
+}
+
+.portal-changelog-list {
+  margin: 0;
+  list-style: disc;
+}
+
+.portal-checklist-icon {
+  flex-shrink: 0;
+  width: 1.5rem;
+  height: 1.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.portal-embed-header {
+  border-bottom: 1px solid var(--gray-a5);
+}
+
+.portal-embed-title {
+  text-transform: uppercase;
+}
+
+.portal-embed-iframe {
+  display: block;
+  width: 100%;
+  height: var(--portal-iframe-height, 280px);
+  border: 0;
+}
+
+.portal-demo-title {
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* Media */
+.portal-img-full {
+  display: block;
+  width: 100%;
+}
+
+.portal-img-contain-40 {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.portal-swatch {
+  flex-shrink: 0;
+  border-radius: var(--radius-3);
+  border: 1px solid var(--gray-a6);
+  box-shadow: inset 0 1px 2px var(--gray-a4);
+  background-color: var(--portal-swatch-bg, transparent);
+}
+
+.portal-swatch-40 {
+  width: 40px;
+  height: 40px;
+}
+
+.portal-swatch-64 {
+  width: 64px;
+  height: 64px;
+}
+
+.portal-icon-preview {
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: var(--radius-3);
+  background: var(--gray-a3);
+}
+
+.portal-icon-preview-48 {
+  width: 48px;
+  height: 48px;
+}
+
+.portal-img-in-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 4px;
+}
+
+.portal-icon-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-3);
+  background: var(--gray-a3);
+}
+
+.portal-pill-external-gap {
+  margin-left: 0.2em;
+}
+
+.portal-nested-list {
+  margin: 0;
+}
+
+/* Rich text (CMS) */
+.portal-rich-text {
+  font-size: var(--font-size-2);
+  line-height: 1.7;
+  color: var(--gray-12);
+}
+
+.portal-rich-text p {
+  margin: 0 0 var(--space-3);
+}
+
+.portal-rich-text ul {
+  margin: var(--space-2) 0;
+  padding-left: var(--space-5);
+  list-style: disc;
+}
+
+.portal-rich-text a {
+  color: var(--accent-11);
+  text-decoration: underline;
+}
+
+.portal-sidebar {
+  position: sticky;
+  top: 0;
+  flex-shrink: 0;
+  width: 14rem;
+  height: 100vh;
+  border-right: 1px solid var(--gray-a5);
+  background: var(--color-panel-solid);
+}
+
+.portal-toc-nav {
+  position: sticky;
+  top: 5rem;
+}
+
+.portal-toc-aside {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .portal-toc-aside {
+    display: block;
+  }
+}
+
+.portal-list-unstyled {
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }

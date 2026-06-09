@@ -8,7 +8,17 @@ import { fileURLToPath } from "url";
 import { getPayload } from "payload";
 
 import config from "../payload.config";
+import { componentDocsBySlug, type PropRow } from "../lib/component-docs";
 import { storybookStoryUrl } from "../lib/storybook/portal-preview-config";
+
+function propsTableRowsFromDoc(props: PropRow[]) {
+  return props.map((row) => ({
+    name: row.name,
+    type: row.type,
+    defaultValue: row.default ?? "—",
+    description: row.description,
+  }));
+}
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -65,8 +75,34 @@ const buttonDocumentationSeed = [
   {
     blockType: "section" as const,
     showLLM: true,
-    heading: "Когда использовать",
+    heading: "When to use",
     body: "Button — для явного действия в интерфейсе: отправка формы, подтверждение в модалке, запуск процесса. Текст кнопки должен отвечать на вопрос «что произойдёт?»",
+    items: [
+      {
+        label: "primary",
+        description: "Основное действие на экране.",
+        accentColor: "#1677ff",
+        labelAsBadge: true,
+      },
+      {
+        label: "secondary",
+        description: "Вторичное действие рядом с primary.",
+        accentColor: "#f0f0f0",
+        labelAsBadge: true,
+      },
+      {
+        label: "outline",
+        description: "Действие с меньшим визуальным весом.",
+        accentColor: "#ffffff",
+        labelAsBadge: true,
+      },
+      {
+        label: "danger",
+        description: "Деструктивное действие (удаление, отмена без сохранения).",
+        accentColor: "#ff4d4f",
+        labelAsBadge: true,
+      },
+    ],
   },
   {
     blockType: "doDont" as const,
@@ -82,43 +118,60 @@ const buttonDocumentationSeed = [
     ],
   },
   {
-    blockType: "callout" as const,
+    blockType: "accessibility" as const,
     showLLM: true,
-    tone: "warning" as const,
-    text: "Для перехода на другую страницу без побочных эффектов предпочтительнее текстовая ссылка или Link — кнопка ожидается как действие в текущем контексте.",
+    intro: "Кнопка рендерится как нативный <button> с корректными ролями и состояниями disabled.",
+    patternLinkLabel: "Button pattern (WAI-ARIA)",
+    patternLinkUrl: "https://www.w3.org/WAI/ARIA/apg/patterns/button/",
+    keyboardRows: [
+      { keys: "Enter", description: "Активирует кнопку, когда фокус на элементе." },
+      { keys: "Space", description: "Активирует кнопку (для нативного button)." },
+      { keys: "Tab", description: "Перемещает фокус к следующему интерактивному элементу." },
+    ],
   },
   {
     blockType: "propsTable" as const,
     showLLM: true,
-    title: "Основные пропсы",
-    rows: [
-      {
-        name: "variant",
-        type: '"primary" | "secondary" | …',
-        defaultValue: '"primary"',
-        description: "Визуальный стиль.",
-      },
-      {
-        name: "size",
-        type: '"sm" | "md" | "lg"',
-        defaultValue: '"md"',
-        description: "Размер кнопки.",
-      },
-      {
-        name: "disabled",
-        type: "boolean",
-        defaultValue: "—",
-        description: "Отключает взаимодействие.",
-      },
-    ],
+    title: "API Reference",
+    subtitle: "Button Props",
+    rows: propsTableRowsFromDoc(componentDocsBySlug.button.props),
   },
   {
     blockType: "codeExample" as const,
     showLLM: true,
-    title: "Минимальный пример",
-    code: `<Button variant="primary" type="submit">
-  Сохранить
-</Button>`,
+    title: "Sizes",
+    previewStorybookUrl: storybookStoryUrl(storybookBase, "button", "Sizes"),
+    previewHeight: 180,
+    code: `import { Button } from "@/components/ds/button";
+
+export function Sizes() {
+  return (
+    <div style={{ display: "flex", gap: 8, alignItems: "flex-end" }}>
+      <Button size="sm">Small</Button>
+      <Button size="md">Medium</Button>
+      <Button size="lg">Large</Button>
+    </div>
+  );
+}`,
+  },
+  {
+    blockType: "motion" as const,
+    showLLM: true,
+    title: "Motion",
+    intro: "Пресеты длительности и кривых для hover/focus состояний кнопки.",
+    tokens: [
+      {
+        name: "motionDurationFast",
+        description: "Быстрые микро-взаимодействия.",
+        value: "150ms",
+        durationMs: 150,
+      },
+      {
+        name: "motionEaseInOut",
+        description: "Стандартная кривая для фона и рамки.",
+        value: "cubic-bezier(0.645, 0.045, 0.355, 1)",
+      },
+    ],
   },
   {
     blockType: "resourceLinks" as const,
@@ -151,8 +204,10 @@ const inputDocumentationSeed = [
   },
   {
     blockType: "codeExample" as const,
-    title: "Минимальный пример",
-    code: `<Input label="Email" type="email" placeholder="name@company.com" />`,
+    title: "Default",
+    code: `import { Input } from "@/components/ds/input";
+
+<Input label="Email" type="email" placeholder="name@company.com" />`,
   },
 ];
 
@@ -184,10 +239,10 @@ const badgeDocumentationSeed = [
     body: "Badge — компактная метка статуса, счётчика или категории. Не интерактивен; для действия используйте Button или Link.",
   },
   {
-    blockType: "callout" as const,
+    blockType: "section" as const,
     showLLM: true,
-    tone: "info" as const,
-    text: "Не заменяет Tag/Chip с удалением — Badge только отображает информацию.",
+    heading: "Content guidelines",
+    body: "Не заменяет Tag/Chip с удалением — Badge только отображает информацию.",
   },
 ];
 
@@ -227,12 +282,68 @@ const components = [
   {
     name: "Badge",
     slug: "badge",
-    status: "beta" as const,
+    status: "stable" as const,
     description:
       "Метка статуса или счётчика: варианты neutral / success / warning, компактный размер.",
     figmaUrl: "https://www.figma.com/design/",
     docsUrl: "https://payloadcms.com/docs",
     documentation: [...badgeDocumentationSeed],
+  },
+  {
+    name: "Tabs",
+    slug: "tabs",
+    status: "stable" as const,
+    description: "",
+    documentation: [
+      {
+        blockType: "section" as const,
+        heading: "Черновик",
+        body: "Нет краткого описания — карточка скрыта на портале, пока не заполните обязательные поля.",
+      },
+    ],
+  },
+  {
+    name: "Card",
+    slug: "card",
+    status: "beta" as const,
+    statusNote: "API может измениться до релиза v1.",
+    description:
+      "Контейнер с заголовком и телом. Статус Preview — в сайдбаре бейдж Preview.",
+    figmaUrl: "https://www.figma.com/design/",
+    docsUrl: "https://payloadcms.com/docs",
+    documentation: [
+      {
+        blockType: "section" as const,
+        heading: "Preview",
+        body: "Компонент в стадии preview: можно смотреть документацию, но контракт не зафиксирован.",
+      },
+      {
+        blockType: "section" as const,
+        heading: "When not to use",
+        body: "Обратная совместимость не гарантируется до перевода в stable.",
+      },
+    ],
+  },
+  {
+    name: "Legacy Chip",
+    slug: "legacy-chip",
+    status: "deprecated" as const,
+    statusNote: "Удалим в v2.0. Используйте Badge вместо Legacy Chip.",
+    description:
+      "Устаревший чип. Статус Deprecated — бейдж в сайдбаре и замена на Badge.",
+    docsUrl: "https://payloadcms.com/docs",
+    documentation: [
+      {
+        blockType: "section" as const,
+        heading: "Deprecated",
+        body: "Не используйте в новых интерфейсах. Мигрируйте на Badge.",
+      },
+      {
+        blockType: "section" as const,
+        heading: "Migration",
+        body: "Компонент будет удалён в следующем мажорном релизе. Используйте Badge.",
+      },
+    ],
   },
 ];
 
@@ -258,7 +369,14 @@ const componentRelationsBySlug: Record<
     relatedSlugs: ["button", "input"],
   },
   badge: {
-    relatedSlugs: ["button", "link"],
+    relatedSlugs: ["button", "link", "legacy-chip"],
+  },
+  card: {
+    relatedSlugs: ["button", "badge"],
+  },
+  "legacy-chip": {
+    replacedBySlug: "badge",
+    relatedSlugs: ["badge"],
   },
 };
 
@@ -267,6 +385,9 @@ const componentFolderBySlug: Record<string, string> = {
   input: "Forms",
   link: "Actions",
   badge: "Feedback",
+  tabs: "Forms",
+  card: "Feedback",
+  "legacy-chip": "Feedback",
 };
 
 const colors = [
@@ -636,7 +757,7 @@ async function main() {
   }
 
   console.log(
-    "Seed OK: portal-sources, components×4, colors×8, icons×4, field-showcase×1 + SVG в Media.",
+    "Seed OK: portal-sources, components×7, colors×8, icons×4, field-showcase×1 + SVG в Media.",
   );
   process.exit(0);
 }

@@ -1,5 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { Box, Flex, Text, TextField } from "@radix-ui/themes";
 
+import { portalClass } from "@/lib/portal/classes";
 import { portalPreviewCatalogBySlug } from "@/lib/storybook/portal-preview-catalog";
 
 import { Input } from "./input";
@@ -24,9 +26,9 @@ const meta = {
   },
   decorators: [
     (Story) => (
-      <div className="w-full max-w-md">
+      <Box className={portalClass.storybookMax}>
         <Story />
-      </div>
+      </Box>
     ),
   ],
 } satisfies Meta<typeof Input>;
@@ -38,21 +40,23 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {};
 
 export const WithLabel: Story = {
-  render: (args) => (
-    <label className="flex flex-col gap-1.5 text-sm font-medium text-zinc-800 dark:text-zinc-200">
-      Email
-      <Input {...args} type="email" placeholder="name@company.com" />
-    </label>
+  render: () => (
+    <Flex direction="column" gap="1">
+      <Text as="label" size="2" weight="medium">
+        Email
+      </Text>
+      <TextField.Root type="email" placeholder="name@company.com" size="2" />
+    </Flex>
   ),
 };
 
 export const Sizes: Story = {
   render: () => (
-    <div className="flex flex-col gap-3">
+    <Flex direction="column" gap="3">
       <Input inputSize="sm" placeholder="Small" />
       <Input inputSize="md" placeholder="Medium" />
       <Input inputSize="lg" placeholder="Large" />
-    </div>
+    </Flex>
   ),
   parameters: { controls: { disable: true } },
 };

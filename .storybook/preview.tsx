@@ -1,6 +1,5 @@
 import type { Preview } from "@storybook/react";
-import { Theme } from "@radix-ui/themes";
-import type { ReactNode } from "react";
+import { Box, Theme } from "@radix-ui/themes";
 
 import { portalRadixThemeProps } from "../lib/radix/portal-theme-config";
 
@@ -29,26 +28,17 @@ const preview: Preview = {
     (Story, context) => {
       const bg = context.globals.backgrounds?.value;
       const isDark = bg === "#0a0a0a";
-      const wrapper = (children: ReactNode) => (
+      return (
         <Theme
           {...portalRadixThemeProps}
           appearance={isDark ? "dark" : "light"}
           className="radix-themes-portal"
         >
-          <div
-            className={isDark ? "dark" : undefined}
-            style={{
-              padding: "1.5rem",
-              minHeight: "4rem",
-              color: "var(--foreground)",
-              background: "var(--background)",
-            }}
-          >
-            {children}
-          </div>
+          <Box p="4" minHeight="4rem">
+            <Story />
+          </Box>
         </Theme>
       );
-      return wrapper(<Story />);
     },
   ],
 };

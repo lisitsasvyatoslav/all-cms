@@ -18,8 +18,8 @@ export function readPortalAppearance(): PortalAppearance {
 }
 
 export function applyPortalAppearanceToDocument(appearance: PortalAppearance): void {
-  document.documentElement.classList.toggle("dark", appearance === "dark");
+  document.documentElement.style.colorScheme = appearance;
 }
 
-/** Скрипт до гидрации — без мигания при загрузке. */
-export const portalAppearanceInitScript = `(function(){try{var k=${JSON.stringify(PORTAL_APPEARANCE_STORAGE_KEY)};var s=localStorage.getItem(k);var d=s==="dark"||(s!=="light"&&window.matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.classList.toggle("dark",d);}catch(e){}})();`;
+/** Скрипт до гидрации — color-scheme до монтирования Radix Theme. */
+export const portalAppearanceInitScript = `(function(){try{var k=${JSON.stringify(PORTAL_APPEARANCE_STORAGE_KEY)};var s=localStorage.getItem(k);var d=s==="dark"||(s!=="light"&&window.matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.style.colorScheme=d?"dark":"light";}catch(e){}})();`;
