@@ -1,18 +1,17 @@
 /**
- * Копирует related-previews/*-light.webp → public/og/portal-default.webp
- * Запуск: npm run sync:portal-default-og
+ * Генерирует public/og/portal-site.webp — нейтральная OG для главной и каталога.
+ * Запуск: npm run generate:portal-site-og
  */
 import "./load-env.js";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { syncPortalDefaultOgImage } from "../lib/portal/portal-default-og.js";
+import { generatePortalSiteOgImage } from "../lib/portal/portal-default-og.js";
 
 const projectRoot = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 
 async function main() {
-  const ok = await syncPortalDefaultOgImage(projectRoot);
-  process.exit(ok ? 0 : 1);
+  await generatePortalSiteOgImage(projectRoot);
 }
 
 main().catch((error) => {

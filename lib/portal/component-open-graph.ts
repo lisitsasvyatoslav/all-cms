@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 import { PORTAL_COMPONENTS_WEB_PATH, componentWebPagePath } from "@/lib/portal/component-routes";
-import { PORTAL_DEFAULT_OG_RELATIVE_PATH } from "@/lib/portal/portal-default-og";
+import { PORTAL_SITE_OG_RELATIVE_PATH } from "@/lib/portal/portal-default-og";
 import { resolveRelatedComponentPreview } from "@/lib/portal/resolve-related-component-preview";
 import {
   RELATED_PREVIEW_HEIGHT,
@@ -64,7 +64,7 @@ export function portalRootOpenGraphMetadata(): Pick<
   "metadataBase" | "openGraph" | "twitter"
 > {
   const defaultImages = buildOpenGraphImages(
-    PORTAL_DEFAULT_OG_RELATIVE_PATH,
+    PORTAL_SITE_OG_RELATIVE_PATH,
     PORTAL_SITE_NAME,
   );
 
@@ -98,7 +98,7 @@ export function buildPortalPageOpenGraphMetadata(
     input.description,
     input.path,
     "website",
-    buildOpenGraphImages(PORTAL_DEFAULT_OG_RELATIVE_PATH, input.title),
+    buildOpenGraphImages(PORTAL_SITE_OG_RELATIVE_PATH, input.title),
   );
 }
 
@@ -139,7 +139,7 @@ export function buildComponentOpenGraphMetadata(
   const description = doc.description?.trim() || undefined;
   const pagePath = componentWebPagePath(slug);
   const preview = resolveRelatedComponentPreview(doc);
-  const imagePath = preview.lightUrl ?? PORTAL_DEFAULT_OG_RELATIVE_PATH;
+  const imagePath = preview.lightUrl ?? PORTAL_SITE_OG_RELATIVE_PATH;
   const images = buildOpenGraphImages(imagePath, preview.lightUrl ? preview.alt : title);
 
   return metadataWithImages(title, description, pagePath, "article", images);

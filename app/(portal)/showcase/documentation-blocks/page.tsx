@@ -12,6 +12,7 @@ import {
   PortalSection,
 } from "@/components/portal/portal-shell";
 import { TableOfContents } from "@/components/portal/table-of-contents";
+import { buildPortalPageOpenGraphMetadata } from "@/lib/portal/component-open-graph";
 import { componentWebPagePath } from "@/lib/portal/component-routes";
 import { portalClass } from "@/lib/portal/classes";
 import { buildDocumentationBlocksShowcase } from "@/lib/portal/documentation-blocks-showcase";
@@ -22,11 +23,12 @@ import { ComponentLiveDemos } from "../../components/web/[slug]/live-demos";
 
 export const dynamic = "force-dynamic";
 
-export const metadata = {
-  title: "Блоки документации · Design System",
+export const metadata = buildPortalPageOpenGraphMetadata({
+  title: "Блоки документации",
   description:
     "Демо 13 блоков вкладки «Документация» коллекции components — как на реальной странице компонента.",
-};
+  path: "/showcase/documentation-blocks",
+});
 
 export default async function DocumentationBlocksShowcasePage() {
   const payload = await getPayload({ config });

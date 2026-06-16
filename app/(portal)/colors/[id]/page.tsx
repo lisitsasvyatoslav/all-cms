@@ -6,6 +6,7 @@ import config from "@payload-config";
 
 import { PortalBreadcrumbs } from "@/components/portal/portal-breadcrumbs";
 import { PortalHeaderDivider, PortalPageContainer } from "@/components/portal/portal-shell";
+import { buildPortalPageOpenGraphMetadata } from "@/lib/portal/component-open-graph";
 import { portalClass } from "@/lib/portal/classes";
 import { portalSwatchBg } from "@/lib/portal/css-vars";
 
@@ -27,10 +28,13 @@ export async function generateMetadata({ params }: Props) {
     depth: 2,
   });
 
-  return {
-    title: doc ? `${doc.name} · Colors` : "Цвет",
-    description: doc?.caption ?? doc?.tokenKey ?? doc?.hex ?? "",
-  };
+  if (!doc) return { title: "Цвет" };
+
+  return buildPortalPageOpenGraphMetadata({
+    title: `${doc.name} · Colors`,
+    description: doc.caption ?? doc.tokenKey ?? doc.hex ?? undefined,
+    path: `/colors/${numericId}`,
+  });
 }
 
 export default async function ColorDocPage({ params }: Props) {

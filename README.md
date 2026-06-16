@@ -99,11 +99,15 @@ Storybook: [http://127.0.0.1:6006](http://127.0.0.1:6006)
    - `PAYLOAD_SECRET` — случайная строка ≥ 32 символов (обязательно)
    - `NEXT_PUBLIC_SITE_URL` — `https://ваш-проект.vercel.app` (для OG в мессенджерах; можно после первого деплоя)
 
-2. **База данных:** `payload.sqlite` в git не попадает. На Vercel используется **`data/payload.seed.sqlite`** — копия демо-БД, которая при старте кладётся в `/tmp`. Обновить seed после локального `seed:portal`:
+2. **База данных:** `payload.sqlite` в git не попадает. На Vercel — **`data/payload.seed.sqlite`**. Обновить seed после локального `seed:portal`:
    ```powershell
    Copy-Item payload.sqlite data/payload.seed.sqlite -Force
    ```
-   Закоммитьте `data/payload.seed.sqlite` вместе с кодом.
+   OG главной и каталога — **`public/og/portal-site.webp`** (нейтральная, не превью Button). Сгенерировать:
+   ```powershell
+   npm run generate:portal-site-og
+   ```
+   Закоммитьте `data/payload.seed.sqlite` и `public/og/portal-site.webp`.
 
 3. Изменения в Admin на Vercel **не сохраняются** между cold start (эфемерный `/tmp`). Для продакшена — `DATABASE_URI` на Turso или Postgres.
 

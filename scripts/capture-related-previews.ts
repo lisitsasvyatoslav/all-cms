@@ -10,8 +10,8 @@
  *   --port=6020    порт Storybook
  *   --no-payload   не синхронизировать в Payload Media
  *
- * После capture: public/related-previews → Payload Media → og:image на страницах компонентов;
- * public/og/portal-default.webp — дефолт OG для главной и каталога.
+ * После capture: public/related-previews → Payload Media → og:image на страницах компонентов.
+ * OG главной/каталога: public/og/portal-site.webp (npm run generate:portal-site-og).
  */
 import "./load-env.js";
 import { execSync, spawn, type ChildProcess } from "node:child_process";
@@ -25,7 +25,6 @@ import sharp from "sharp";
 
 import config from "../payload.config.js";
 import { syncRelatedPreviewsForSlugs } from "../lib/payload/sync-related-preview-media.js";
-import { syncPortalDefaultOgImage } from "../lib/portal/portal-default-og.js";
 import {
   RELATED_PREVIEW_CAPTURE,
   RELATED_PREVIEW_OUTPUT_DIR,
@@ -269,8 +268,6 @@ async function main() {
   }
 
   console.log(`Done. ${slugs.length * 2} files in ${RELATED_PREVIEW_OUTPUT_DIR}/`);
-
-  await syncPortalDefaultOgImage(projectRoot);
 
   if (syncPayload) {
     if (!process.env.PAYLOAD_SECRET?.trim()) {
