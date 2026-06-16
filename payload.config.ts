@@ -20,6 +20,7 @@ import {
   syncComponentDesignChecklistBeforeChange,
 } from "./lib/payload/component-design-checklist-hooks";
 import { isPortalDocumentationReadable } from "./lib/payload/documentation-access";
+import { resolvePayloadDatabaseUri } from "./lib/payload/resolve-database-uri";
 import { FieldShowcaseCollection } from "./collections/fieldShowcase";
 import { componentAgentMcpTools } from "./lib/mcp/components-agent";
 import { migrations } from "./migrations";
@@ -584,7 +585,7 @@ export default buildConfig({
   },
   db: sqliteAdapter({
     client: {
-      url: process.env.DATABASE_URI || "file:./payload.sqlite",
+      url: resolvePayloadDatabaseUri(),
     },
     // Dev push дублирует индексы после частичного push — только миграции.
     push: false,

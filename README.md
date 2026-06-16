@@ -92,3 +92,19 @@ Storybook: [http://127.0.0.1:6006](http://127.0.0.1:6006)
 **Пустой каталог компонентов на портале** — выполните `npm run seed:portal` или проверьте, что у записей в CMS заполнены обязательные поля (`name`, `slug`, `description`).
 
 **Превью Storybook не встраивается** — запущен ли `npm run storybook` на порту 6006.
+
+## Деплой на Vercel
+
+1. **Environment Variables** (Settings → Environment Variables):
+   - `PAYLOAD_SECRET` — случайная строка ≥ 32 символов (обязательно)
+   - `NEXT_PUBLIC_SITE_URL` — `https://ваш-проект.vercel.app` (для OG в мессенджерах; можно после первого деплоя)
+
+2. **База данных:** `payload.sqlite` в git не попадает. На Vercel используется **`data/payload.seed.sqlite`** — копия демо-БД, которая при старте кладётся в `/tmp`. Обновить seed после локального `seed:portal`:
+   ```powershell
+   Copy-Item payload.sqlite data/payload.seed.sqlite -Force
+   ```
+   Закоммитьте `data/payload.seed.sqlite` вместе с кодом.
+
+3. Изменения в Admin на Vercel **не сохраняются** между cold start (эфемерный `/tmp`). Для продакшена — `DATABASE_URI` на Turso или Postgres.
+
+4. **Redeploy** после добавления env-переменных.
