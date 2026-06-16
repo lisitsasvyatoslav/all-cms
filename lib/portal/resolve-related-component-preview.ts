@@ -22,12 +22,16 @@ function publicPreviewUrlIfExists(slug: string, theme: "light" | "dark"): string
   return null;
 }
 
+function staticPreviewUrl(slug: string | null, theme: "light" | "dark"): string | null {
+  return slug ? publicPreviewUrlIfExists(slug, theme) : null;
+}
+
 function mediaUrl(field: number | Media | null | undefined): string | null {
   if (field == null) return null;
   return mediaPublicUrl(field);
 }
 
-/** Статические превью: CMS Media → public/related-previews → null (iframe fallback). */
+/** Превью: public/related-previews (git) → CMS Media → null. Статика первая — на Vercel нет /media. */
 export function resolveRelatedComponentPreview(
   rel: Pick<Component, "slug" | "name" | "relatedPreviewLight" | "relatedPreviewDark">,
 ): RelatedComponentPreview {
@@ -35,9 +39,9 @@ export function resolveRelatedComponentPreview(
   const alt = typeof rel.name === "string" ? rel.name : slug ?? "Component preview";
 
   const lightUrl =
-    mediaUrl(rel.relatedPreviewLight) ?? (slug ? publicPreviewUrlIfExists(slug, "light") : null);
+    staticPreviewUrl(slug, "light") ?? mediaUrl(rel.relatedPreviewLight);
   const darkUrl =
-    mediaUrl(rel.relatedPreviewDark) ?? (slug ? publicPreviewUrlIfExists(slug, "dark") : null);
+    staticPreviewUrl(slug, "dark") ?? mediaUrl(rel.relatedPreviewDark);
 
   return {
     lightUrl,
