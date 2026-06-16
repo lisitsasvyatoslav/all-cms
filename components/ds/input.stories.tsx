@@ -3,8 +3,9 @@ import { Box, Flex, Text, TextField } from "@radix-ui/themes";
 
 import { portalClass } from "@/lib/portal/classes";
 import { portalPreviewCatalogBySlug } from "@/lib/storybook/portal-preview-catalog";
+import { relatedPreviewDecorator, relatedPreviewStoryParameters } from "@/lib/storybook/related-preview-story";
 
-import { Input } from "./input";
+import { Input } from "@next-app/ui-kit";
 
 export const portalPreviewCatalog = portalPreviewCatalogBySlug.input;
 
@@ -38,6 +39,15 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
+
+export const RelatedPreview: Story = {
+  args: {
+    placeholder: "Input",
+    inputSize: "md",
+  },
+  parameters: relatedPreviewStoryParameters,
+  decorators: [relatedPreviewDecorator],
+};
 
 export const WithLabel: Story = {
   render: () => (

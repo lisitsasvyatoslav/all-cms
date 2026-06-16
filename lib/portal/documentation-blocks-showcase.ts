@@ -56,21 +56,17 @@ export function buildDocumentationBlocksShowcase(
       ],
     },
     {
-      blockType: "storybookEmbed",
-      showLLM: false,
-      title: "Live preview",
-      storybookUrl,
-      frameHeight: 220,
-    },
-    {
       blockType: "codeExample",
       showLLM: true,
-      title: "Sizes",
+      title: "Default",
       previewStorybookUrl: storybookUrl,
-      previewHeight: 160,
-      code: `import { Button } from "@/components/ds/button";
+      previewHeight: 220,
+      defaultCollapsed: true,
+      code: `import { Button } from "@next-app/ui-kit";
 
-<Button size="sm">Small</Button>`,
+export function Default() {
+  return <Button>Small</Button>;
+}`,
     },
     {
       blockType: "doDont",
@@ -168,7 +164,10 @@ export function buildDocumentationBlocksShowcase(
       showLLM: true,
       links: [
         { label: "Figma", url: "https://www.figma.com/" },
-        { label: "Storybook", url: "https://storybook.js.org/" },
+        { label: "Storybook", url: "https://storybook.heroui.com/" },
+        { label: "React Aria", url: "https://react-aria.adobe.com/Button" },
+        { label: "Source", url: "https://github.com/heroui-inc/heroui" },
+        { label: "Styles source", url: "https://github.com/heroui-inc/heroui" },
       ],
     },
     {

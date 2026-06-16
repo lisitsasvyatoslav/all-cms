@@ -1,4 +1,4 @@
-import { Code, Table, Text } from "@radix-ui/themes";
+import { portalClass } from "@/lib/portal/classes";
 
 export type PortalPropsTableRow = {
   name: string;
@@ -7,41 +7,59 @@ export type PortalPropsTableRow = {
   description?: string | null;
 };
 
+function PropsTableCode({
+  children,
+  wrap = "chip",
+}: {
+  children: string;
+  wrap?: "nowrap" | "chip";
+}) {
+  const className =
+    wrap === "nowrap"
+      ? `${portalClass.propsTableCode} ${portalClass.propsTableCodeNowrap}`
+      : portalClass.propsTableCode;
+
+  return (
+    <code className={className}>
+      <span className={portalClass.propsTableCodeText}>{children}</span>
+    </code>
+  );
+}
+
+function formatDefault(value?: string | null): string {
+  const trimmed = value?.trim();
+  return trimmed ? trimmed : "-";
+}
+
 export function PortalPropsTable({ rows }: { rows: PortalPropsTableRow[] }) {
   return (
-    <Table.Root variant="surface" size="2">
-      <Table.Header>
-        <Table.Row>
-          <Table.ColumnHeaderCell>Имя</Table.ColumnHeaderCell>
-          <Table.ColumnHeaderCell>Тип</Table.ColumnHeaderCell>
-          <Table.ColumnHeaderCell>По умолч.</Table.ColumnHeaderCell>
-          <Table.ColumnHeaderCell>Описание</Table.ColumnHeaderCell>
-        </Table.Row>
-      </Table.Header>
-      <Table.Body>
-        {rows.map((row) => (
-          <Table.Row key={row.name}>
-            <Table.RowHeaderCell>
-              <Code size="1" variant="ghost">
-                {row.name}
-              </Code>
-            </Table.RowHeaderCell>
-            <Table.Cell>
-              <Code size="1" variant="ghost">
-                {row.type}
-              </Code>
-            </Table.Cell>
-            <Table.Cell>
-              <Code size="1" variant="ghost">
-                {row.defaultValue?.trim() ? row.defaultValue : "—"}
-              </Code>
-            </Table.Cell>
-            <Table.Cell>
-              <Text size="2">{row.description ?? "—"}</Text>
-            </Table.Cell>
-          </Table.Row>
-        ))}
-      </Table.Body>
-    </Table.Root>
+    <div className={portalClass.propsTableWrap}>
+      <table className={portalClass.propsTable}>
+        <thead>
+          <tr>
+            <th scope="col">Prop</th>
+            <th scope="col">Type</th>
+            <th scope="col">Default</th>
+            <th scope="col">Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row) => (
+            <tr key={row.name}>
+              <td className={portalClass.propsTableCellCompact}>
+                <PropsTableCode wrap="nowrap">{row.name}</PropsTableCode>
+              </td>
+              <td className={portalClass.propsTableCellType}>
+                <PropsTableCode>{row.type}</PropsTableCode>
+              </td>
+              <td className={portalClass.propsTableCellCompact}>
+                <PropsTableCode wrap="nowrap">{formatDefault(row.defaultValue)}</PropsTableCode>
+              </td>
+              <td>{row.description?.trim() || "—"}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }

@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
     "dev": "cross-env NODE_OPTIONS=--no-deprecation next dev -H 127.0.0.1 -p 3000",
     "build": "cross-env NODE_OPTIONS=--no-deprecation next build",
@@ -13,10 +16,16 @@
     "generate:types": "cross-env NODE_OPTIONS=--no-deprecation payload generate:types",
     "payload:migrate": "cross-env NODE_OPTIONS=--no-deprecation payload migrate",
     "seed:portal": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/seed-portal.ts",
+    "sync:design-checklist": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/sync-component-design-checklist.ts",
+    "capture:related-previews": "tsx scripts/capture-related-previews.ts",
+    "sync:portal-default-og": "tsx scripts/sync-portal-default-og.ts",
+    "upload:related-previews": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/upload-related-previews-to-payload.ts",
+    "generate:props-manifest": "npm run generate:props-manifest -w @next-app/ui-kit",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
   "dependencies": {
+    "@next-app/ui-kit": "workspace:*",
     "@payloadcms/db-sqlite": "^3.84.1",
     "@payloadcms/next": "^3.84.1",
     "@payloadcms/plugin-mcp": "^3.84.1",
@@ -25,6 +34,7 @@
     "cross-env": "^10.1.0",
     "dotenv": "^17.4.2",
     "graphql": "^16.13.2",
+    "lucide-react": "^1.17.0",
     "next": "16.2.4",
     "payload": "^3.84.1",
     "react": "19.2.4",
@@ -43,6 +53,8 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.4",
+    "playwright": "^1.52.0",
+    "serve": "^14.2.4",
     "storybook": "^8.6.14",
     "tsx": "^4.20.0",
     "typescript": "^5",

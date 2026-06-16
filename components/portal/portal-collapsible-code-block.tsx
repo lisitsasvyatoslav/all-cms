@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
-import { Box, Button, Card, Code, Flex, Separator, Text } from "@radix-ui/themes";
+import { useCallback, useState } from "react";
+import { Box, Text } from "@radix-ui/themes";
 
+import { CheckIcon, CopyMarkdownIcon } from "@/components/portal/page-action-icons";
+import { PortalStorybookPreviewFrame } from "@/components/portal/portal-storybook-preview-frame";
+import { highlightCodeLine } from "@/lib/portal/highlight-code-line";
 import { portalClass } from "@/lib/portal/classes";
-import { portalIframeHeight } from "@/lib/portal/css-vars";
 import { storybookUrlToIframeSrc } from "@/lib/storybook/storybook-embed-url";
 
 type Props = {
@@ -22,61 +24,90 @@ export function PortalCollapsibleCodeBlock({
   previewHeight,
   defaultCollapsed,
 }: Props) {
-  const [collapsed, setCollapsed] = useState(Boolean(defaultCollapsed));
+  const [collapsed, setCollapsed] = useState(defaultCollapsed !== false);
+  const [copied, setCopied] = useState(false);
   const trimmed = code.trim();
+  const lines = trimmed.split("\n");
   const previewUrl = previewStorybookUrl?.trim();
-  const iframeSrc = previewUrl ? storybookUrlToIframeSrc(previewUrl) : null;
-  const height = Math.min(600, Math.max(80, previewHeight ?? 200));
+  const iframeSrc = previewUrl
+    ? storybookUrlToIframeSrc(previewUrl, { portalEmbed: true })
+    : null;
+  const height = previewHeight ?? 350;
+
+  const copyCode = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(trimmed);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 2000);
+    } catch {
+      /* ignore */
+    }
+  }, [trimmed]);
 
   return (
-    <Box>
+    <Box className={portalClass.embedRoot}>
       {title ? (
-        <HeadingLike mb="3">{title}</HeadingLike>
+        <Text as="div" size="4" weight="bold" mb="3">
+          {title}
+        </Text>
       ) : null}
-      <Card size="2" variant="surface">
+
+      <div className={portalClass.codeExample}>
         {iframeSrc ? (
-          <>
-            <Flex align="center" justify="center" p="4" className="portal-code-preview-area">
-              <Box asChild width="100%">
-                <iframe
-                  title={title ?? "Превью кода"}
-                  src={iframeSrc}
-                  className={portalClass.embedIframe}
-                  style={portalIframeHeight(height)}
-                  loading="lazy"
-                />
-              </Box>
-            </Flex>
-            <Separator size="4" />
-          </>
+          <PortalStorybookPreviewFrame
+            title={title ?? "Превью кода"}
+            iframeSrc={iframeSrc}
+            height={height}
+            variant="unified"
+          />
         ) : null}
-        {!collapsed ? (
-          <Box p="3" position="relative">
-            <Code size="2" variant="ghost" className={portalClass.textPreWrap}>
-              {trimmed}
-            </Code>
-          </Box>
-        ) : null}
-        <Flex justify="center" py="2" px="3">
-          <Button
+
+        <div className={portalClass.codeExampleCode}>
+          <button
             type="button"
-            size="1"
-            variant="soft"
-            color="gray"
-            onClick={() => setCollapsed((v) => !v)}
+            className={portalClass.codeExampleCopy}
+            onClick={() => void copyCode()}
+            aria-label={copied ? "Скопировано" : "Скопировать код"}
+          >
+            {copied ? <CheckIcon /> : <CopyMarkdownIcon />}
+          </button>
+
+          <div className={portalClass.codeExamplePreWrap}>
+            <pre
+              className={
+                collapsed
+                  ? `${portalClass.codeExamplePre} ${portalClass.codeExamplePreCollapsed}`
+                  : portalClass.codeExamplePre
+              }
+            >
+              <code className={portalClass.codeExamplePreInner}>
+                {lines.map((line, index) => (
+                  <div key={index} className={portalClass.codeExampleLine}>
+                    <span className={portalClass.codeExampleLineNo} aria-hidden>
+                      {index + 1}
+                    </span>
+                    <span className={portalClass.codeExampleLineContent}>
+                      {highlightCodeLine(line)}
+                    </span>
+                  </div>
+                ))}
+              </code>
+            </pre>
+
+            {collapsed ? <div className={portalClass.codeExampleFade} aria-hidden /> : null}
+          </div>
+        </div>
+
+        <div className={portalClass.codeExampleFooter}>
+          <button
+            type="button"
+            className={portalClass.codeExampleToggle}
+            onClick={() => setCollapsed((value) => !value)}
           >
             {collapsed ? "Развернуть код" : "Свернуть код"}
-          </Button>
-        </Flex>
-      </Card>
+          </button>
+        </div>
+      </div>
     </Box>
-  );
-}
-
-function HeadingLike({ children, mb }: { children: React.ReactNode; mb?: "3" }) {
-  return (
-    <Text as="div" size="4" weight="bold" mb={mb}>
-      {children}
-    </Text>
   );
 }

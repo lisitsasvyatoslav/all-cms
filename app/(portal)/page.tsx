@@ -1,4 +1,5 @@
 import { Box, Card, Code, Flex, Grid, Heading, Link, Text } from "@radix-ui/themes";
+import type { Metadata } from "next";
 import NextLink from "next/link";
 import { getPayload } from "payload";
 
@@ -6,11 +7,15 @@ import config from "@payload-config";
 import { PortalSourcePill } from "@/components/portal/portal-source-pill";
 import { PortalComponentTitle } from "@/components/portal/portal-component-title";
 import { PortalPageContainer } from "@/components/portal/portal-shell";
+import { buildHomeOpenGraphMetadata } from "@/lib/portal/component-open-graph";
 import { isComponentVisibleOnPortal } from "@/lib/portal/component-status";
 import { portalClass } from "@/lib/portal/classes";
+import { componentWebPagePath } from "@/lib/portal/component-routes";
 import { portalSwatchBg } from "@/lib/portal/css-vars";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = buildHomeOpenGraphMetadata();
 
 export default async function Home() {
   const payload = await getPayload({ config });
@@ -72,10 +77,26 @@ export default async function Home() {
             Источники
           </Heading>
           <nav className={portalClass.linkRow} aria-label="Источники">
-              {figma ? <PortalSourcePill href={figma}>Figma</PortalSourcePill> : null}
-              {storybook ? <PortalSourcePill href={storybook}>Storybook</PortalSourcePill> : null}
-              {docsUrl ? <PortalSourcePill href={docsUrl}>Документация</PortalSourcePill> : null}
-              {repo ? <PortalSourcePill href={repo}>Репозиторий</PortalSourcePill> : null}
+              {figma ? (
+                <PortalSourcePill href={figma} icon="figma">
+                  Figma
+                </PortalSourcePill>
+              ) : null}
+              {storybook ? (
+                <PortalSourcePill href={storybook} icon="storybook">
+                  Storybook
+                </PortalSourcePill>
+              ) : null}
+              {docsUrl ? (
+                <PortalSourcePill href={docsUrl} icon="docs">
+                  Документация
+                </PortalSourcePill>
+              ) : null}
+              {repo ? (
+                <PortalSourcePill href={repo} icon="github">
+                  Репозиторий
+                </PortalSourcePill>
+              ) : null}
               {!figma && !storybook && !docsUrl && !repo ? (
                 <Text size="2" color="gray">
                   Задайте URL в Globals → «Ссылки на источники» или выполните{" "}
@@ -119,7 +140,7 @@ export default async function Home() {
                   ) : null}
                   <Flex wrap="wrap" align="center" gap="4" mt="4">
                     <Link asChild size="2" weight="medium">
-                      <NextLink href={`/components/${c.slug}`}>Документация и превью →</NextLink>
+                      <NextLink href={componentWebPagePath(c.slug)}>Документация и превью →</NextLink>
                     </Link>
                     <OptionalExternalLink href={c.figmaUrl} label="Figma" />
                     <OptionalExternalLink href={c.storybookUrl} label="Storybook" />

@@ -1,5 +1,7 @@
 import type { Component, Media } from "@/payload-types";
 
+import { componentWebPagePath } from "@/lib/portal/component-routes";
+
 import {
   mdBulletList,
   mdFence,
@@ -58,23 +60,8 @@ function blockToMarkdown(block: DocumentationBlock, baseUrl: string): string | n
         mdFence(block.code ?? "", "tsx"),
       ]);
 
-    case "propsTable": {
-      const rows = block.rows?.filter(Boolean) ?? [];
-      if (!rows.length) return block.title ? mdHeading(2, block.title) : null;
-      return mdJoin([
-        mdHeading(2, block.title?.trim() || "API Reference"),
-        block.subtitle ? mdHeading(3, block.subtitle) : null,
-        mdGfmTable(
-          ["Имя", "Тип", "По умолч.", "Описание"],
-          rows.map((row) => [
-            row.name,
-            row.type,
-            row.defaultValue?.trim() ? row.defaultValue : "—",
-            row.description ?? "—",
-          ]),
-        ),
-      ]);
-    }
+    case "propsTable":
+      return null;
 
     case "resourceLinks": {
       const links = block.links?.filter((l) => l?.url && l?.label) ?? [];
@@ -120,7 +107,7 @@ function blockToMarkdown(block: DocumentationBlock, baseUrl: string): string | n
         mdBulletList(
           comps.map((c) => {
             const comp = c as { name?: string; slug?: string };
-            return mdLink(comp.name ?? comp.slug!, `/components/${comp.slug}`);
+            return mdLink(comp.name ?? comp.slug!, componentWebPagePath(comp.slug!));
           }),
         ),
       ]);

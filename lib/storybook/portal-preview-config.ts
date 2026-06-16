@@ -4,9 +4,16 @@ export type PortalPreviewEntry = {
   title: string;
 };
 
+export function storybookStorySlug(storyId: string): string {
+  return storyId.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase();
+}
+
+export function storybookStoryId(componentSlug: string, storyId: string): string {
+  return `design-system-${componentSlug}--${storybookStorySlug(storyId)}`;
+}
+
 export function storybookStoryPath(componentSlug: string, storyId: string): string {
-  const storySlug = storyId.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase();
-  return `/story/design-system-${componentSlug}--${storySlug}`;
+  return `/story/${storybookStoryId(componentSlug, storyId)}`;
 }
 
 export function storybookStoryUrl(

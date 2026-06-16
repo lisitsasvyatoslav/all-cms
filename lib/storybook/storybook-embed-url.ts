@@ -17,11 +17,24 @@ export function isAllowedStorybookOrigin(origin: string): boolean {
   return configuredStorybookOrigins().includes(origin);
 }
 
+export type StorybookIframeOptions = {
+  /** Центрирование и прозрачный фон для live preview на портале. */
+  portalEmbed?: boolean;
+};
+
+function appendGlobals(existing: string | null, fragment: string): string {
+  if (!existing?.trim()) return fragment;
+  return `${existing};${fragment}`;
+}
+
 /**
  * Ссылка из UI Storybook (?path=/story/…&args=…) → iframe.html для встраивания на портал.
  * @see https://storybook.js.org/docs/writing-stories/args#setting-args-through-the-url
  */
-export function storybookUrlToIframeSrc(input: string): string | null {
+export function storybookUrlToIframeSrc(
+  input: string,
+  options?: StorybookIframeOptions,
+): string | null {
   const trimmed = input.trim();
   if (!trimmed) return null;
 
@@ -35,6 +48,13 @@ export function storybookUrlToIframeSrc(input: string): string | null {
   if (!isAllowedStorybookOrigin(parsed.origin)) return null;
 
   if (parsed.pathname.endsWith("/iframe.html")) {
+    if (options?.portalEmbed) {
+      const globals = appendGlobals(
+        parsed.searchParams.get("globals"),
+        "backgrounds.value:transparent",
+      );
+      parsed.searchParams.set("globals", globals);
+    }
     return parsed.toString();
   }
 
@@ -50,10 +70,16 @@ export function storybookUrlToIframeSrc(input: string): string | null {
   iframe.searchParams.set("viewMode", "story");
   iframe.searchParams.set("id", storyId);
 
-  for (const key of ["args", "globals"] as const) {
-    const value = parsed.searchParams.get(key);
-    if (value) iframe.searchParams.set(key, value);
+  let globals = parsed.searchParams.get("globals");
+
+  if (options?.portalEmbed) {
+    globals = appendGlobals(globals, "backgrounds.value:transparent");
   }
+
+  if (globals) iframe.searchParams.set("globals", globals);
+
+  const args = parsed.searchParams.get("args");
+  if (args) iframe.searchParams.set("args", args);
 
   return iframe.toString();
 }

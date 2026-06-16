@@ -9,6 +9,7 @@ import {
   Text,
 } from "@radix-ui/themes";
 
+import { DoDontHeaderIcon } from "@/components/portal/do-dont-header-icon";
 import { PortalCalloutContent } from "@/components/portal/portal-callout-content";
 import { portalClass } from "@/lib/portal/classes";
 import type { Media } from "@/payload-types";
@@ -72,22 +73,24 @@ export function SectionBlock({
   );
 }
 
-function DoDontPreview({ image }: { image?: number | Media | null }) {
+function DoDontImageSection({
+  image,
+  separatorClassName,
+}: {
+  image?: number | Media | null;
+  separatorClassName: string;
+}) {
   const src = image ? mediaPublicUrl(image) : null;
-  if (!src) {
-    return (
-      <Box p="6" className="portal-do-dont-preview-empty">
-        <Text size="1" color="gray" align="center">
-          Превью
-        </Text>
-      </Box>
-    );
-  }
+  if (!src) return null;
+
   return (
-    <Inset clip="padding-box" side="all">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={src} alt="" className={portalClass.imgFull} />
-    </Inset>
+    <>
+      <Inset clip="padding-box" side="all">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={src} alt="" className={portalClass.imgFull} />
+      </Inset>
+      <Separator size="4" className={separatorClassName} />
+    </>
   );
 }
 
@@ -112,14 +115,14 @@ export function DoDontBlock({
       <Grid columns={{ initial: "1", sm: "2" }} gap="4">
         {dos.length ? (
           <CardColumn>
-            <DoDontPreview image={dos[0]?.image} />
-            <Separator size="4" className="portal-do-dont-separator-green" />
+            <DoDontImageSection
+              image={dos[0]?.image}
+              separatorClassName="portal-do-dont-separator-green"
+            />
             <Box p="3" className="portal-do-dont-panel-green">
               <Flex gap="2" align="center" mb="2">
-                <Badge color="green" variant="solid" radius="full">
-                  ✓
-                </Badge>
-                <Text size="2" weight="bold">
+                <DoDontHeaderIcon variant="do" />
+                <Text size="2" weight="bold" as="div">
                   Do
                 </Text>
               </Flex>
@@ -135,14 +138,14 @@ export function DoDontBlock({
         ) : null}
         {donts.length ? (
           <CardColumn>
-            <DoDontPreview image={donts[0]?.image} />
-            <Separator size="4" className="portal-do-dont-separator-red" />
+            <DoDontImageSection
+              image={donts[0]?.image}
+              separatorClassName="portal-do-dont-separator-red"
+            />
             <Box p="3" className="portal-do-dont-panel-red">
               <Flex gap="2" align="center" mb="2">
-                <Badge color="red" variant="solid" radius="full">
-                  ×
-                </Badge>
-                <Text size="2" weight="bold">
+                <DoDontHeaderIcon variant="dont" />
+                <Text size="2" weight="bold" as="div">
                   Don&apos;t
                 </Text>
               </Flex>
@@ -163,7 +166,7 @@ export function DoDontBlock({
 
 function CardColumn({ children }: { children: React.ReactNode }) {
   return (
-    <Box className={portalClass.doDontCard} overflow="hidden">
+    <Box className={portalClass.doDontCard} overflow="hidden" height="100%">
       {children}
     </Box>
   );

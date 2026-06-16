@@ -71,6 +71,7 @@ export interface Config {
     users: User;
     media: Media;
     components: Component;
+    'design-checklist-items': DesignChecklistItem;
     colors: Color;
     icons: Icon;
     notes: Note;
@@ -91,6 +92,7 @@ export interface Config {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     components: ComponentsSelect<false> | ComponentsSelect<true>;
+    'design-checklist-items': DesignChecklistItemsSelect<false> | DesignChecklistItemsSelect<true>;
     colors: ColorsSelect<false> | ColorsSelect<true>;
     icons: IconsSelect<false> | IconsSelect<true>;
     notes: NotesSelect<false> | NotesSelect<true>;
@@ -227,6 +229,14 @@ export interface Component {
   description?: string | null;
   figmaUrl?: string | null;
   storybookUrl?: string | null;
+  /**
+   * Скриншот для карточек Related Components. Генерация: npm run capture:related-previews
+   */
+  relatedPreviewLight?: (number | null) | Media;
+  /**
+   * Скриншот для карточек Related Components в тёмной теме портала.
+   */
+  relatedPreviewDark?: (number | null) | Media;
   docsUrl?: string | null;
   /**
    * Не заполнены обязательные поля карточки — запись не попадает на портал (черновик в CMS без отдельного статуса).
@@ -256,6 +266,20 @@ export interface Component {
    * Правая колонка «На этой странице». Список строится из заголовков H2 на странице.
    */
   showTOC?: boolean | null;
+  /**
+   * Список заполняется автоматически. Редактору нужно только включить «Выполнено».
+   */
+  designChecklist?:
+    | {
+        /**
+         * Подставляется из справочника автоматически.
+         */
+        item: number | DesignChecklistItem;
+        done?: boolean | null;
+        note?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   /**
    * 13 типов контент-блоков (14-й слот — Markdown export на странице). Порядок = порядок на портале.
    */
@@ -526,6 +550,25 @@ export interface Component {
       )[]
     | null;
   folder?: (number | null) | FolderInterface;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Общие требования к компонентам. На карточке каждого компонента отмечайте выполнение.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "design-checklist-items".
+ */
+export interface DesignChecklistItem {
+  id: number;
+  title: string;
+  description?: string | null;
+  category?: ('states' | 'accessibility' | 'layout' | 'content') | null;
+  sortOrder?: number | null;
+  /**
+   * Снято — пункт скрыт на всех страницах компонентов.
+   */
+  isActive?: boolean | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -986,6 +1029,10 @@ export interface PayloadLockedDocument {
         value: number | Component;
       } | null)
     | ({
+        relationTo: 'design-checklist-items';
+        value: number | DesignChecklistItem;
+      } | null)
+    | ({
         relationTo: 'colors';
         value: number | Color;
       } | null)
@@ -1114,6 +1161,8 @@ export interface ComponentsSelect<T extends boolean = true> {
   description?: T;
   figmaUrl?: T;
   storybookUrl?: T;
+  relatedPreviewLight?: T;
+  relatedPreviewDark?: T;
   docsUrl?: T;
   status?: T;
   statusNote?: T;
@@ -1122,6 +1171,14 @@ export interface ComponentsSelect<T extends boolean = true> {
   relatedComponents?: T;
   replacedBy?: T;
   showTOC?: T;
+  designChecklist?:
+    | T
+    | {
+        item?: T;
+        done?: T;
+        note?: T;
+        id?: T;
+      };
   documentation?:
     | T
     | {
@@ -1342,6 +1399,19 @@ export interface ComponentsSelect<T extends boolean = true> {
             };
       };
   folder?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "design-checklist-items_select".
+ */
+export interface DesignChecklistItemsSelect<T extends boolean = true> {
+  title?: T;
+  description?: T;
+  category?: T;
+  sortOrder?: T;
+  isActive?: T;
   updatedAt?: T;
   createdAt?: T;
 }

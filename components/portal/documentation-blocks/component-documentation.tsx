@@ -4,6 +4,7 @@ import { PortalDocumentationBlockLabel } from "@/components/portal/portal-docume
 import { PortalHeaderDivider } from "@/components/portal/portal-shell";
 import type { Color, Component } from "@/payload-types";
 import { portalClass } from "@/lib/portal/classes";
+import { getContentDocumentationBlocks } from "@/lib/portal/live-preview-blocks";
 
 import { DocumentationBlockRenderer } from "./documentation-block";
 
@@ -11,6 +12,8 @@ export function ComponentDocumentation({
   blocks,
   tocIdByIndex,
   showAdminBlockLabels = false,
+  omitPropsTable = false,
+  omitChecklist = false,
 }: {
   blocks:
     | NonNullable<Component["documentation"]>
@@ -19,8 +22,15 @@ export function ComponentDocumentation({
     | undefined;
   tocIdByIndex?: Map<number, string>;
   showAdminBlockLabels?: boolean;
+  /** Таблица пропсов берётся из ui-kit, CMS-блок propsTable не рендерим. */
+  omitPropsTable?: boolean;
+  /** Checklist берётся из коллекции design-checklist-items, CMS-блок checklist не рендерим. */
+  omitChecklist?: boolean;
 }) {
-  const contentBlocks = blocks?.filter((b) => b.blockType !== "storybookEmbed") ?? [];
+  const contentBlocks = getContentDocumentationBlocks(blocks, {
+    omitPropsTable,
+    omitChecklist,
+  });
   if (!contentBlocks.length) return null;
 
   return (

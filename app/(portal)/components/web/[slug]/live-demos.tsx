@@ -2,23 +2,15 @@
 
 import { Box, Code, Flex, Strong, Text } from "@radix-ui/themes";
 
+import { PortalCollapsibleCodeBlock } from "@/components/portal/portal-collapsible-code-block";
 import { PortalDocumentationBlockLabel } from "@/components/portal/portal-documentation-block-label";
-import { StorybookEmbedPreview } from "@/components/portal/storybook-embed-preview";
 import { StorybookOpenLink } from "@/components/portal/storybook-open-link";
+import { portalClass } from "@/lib/portal/classes";
+import { getLivePreviewItems } from "@/lib/portal/live-preview-blocks";
+
 import type { DocumentationBlock } from "./documentation";
 
-function isStorybookEmbedBlock(
-  block: DocumentationBlock,
-): block is DocumentationBlock & {
-  blockType: "storybookEmbed";
-  storybookUrl: string;
-  title?: string | null;
-  frameHeight?: number | null;
-} {
-  return block.blockType === "storybookEmbed";
-}
-
-/** Превью только из блоков «Storybook (URL)» во вкладке Документация в Payload. */
+/** Live preview + code example (как Hero UI) из documentation. */
 export function ComponentLiveDemos({
   slug,
   documentation,
@@ -28,15 +20,14 @@ export function ComponentLiveDemos({
   documentation: DocumentationBlock[] | null | undefined;
   showAdminBlockLabels?: boolean;
 }) {
-  const previews =
-    documentation?.filter(isStorybookEmbedBlock).filter((b) => b.storybookUrl?.trim()) ??
-    [];
+  const previews = getLivePreviewItems(documentation);
 
   if (!previews.length) {
     return (
       <Text size="2" color="gray" as="p">
         Нет превью. Добавьте в Payload → «Документация» блоки{" "}
-        <Strong>Storybook (URL)</Strong> со ссылками на stories (
+        <Strong>Code examples</Strong> с URL Storybook в поле превью или пару{" "}
+        <Strong>Storybook (URL)</Strong> + <Strong>Code examples</Strong> (
         <Code size="1" variant="ghost">
           ?path=/story/…
         </Code>
@@ -48,17 +39,19 @@ export function ComponentLiveDemos({
   }
 
   return (
-    <Box>
-      <Flex direction="column" gap="6">
-        {previews.map((block, i) => (
-          <Box key={block.id ?? `preview-${i}`}>
+    <Box className={portalClass.embedRoot}>
+      <Flex direction="column" gap="8">
+        {previews.map((item) => (
+          <Box key={item.key}>
             {showAdminBlockLabels ? (
-              <PortalDocumentationBlockLabel blockType="storybookEmbed" />
+              <PortalDocumentationBlockLabel blockType="codeExample" />
             ) : null}
-            <StorybookEmbedPreview
-              title={block.title ?? "Превью"}
-              storybookUrl={block.storybookUrl}
-              frameHeight={block.frameHeight}
+            <PortalCollapsibleCodeBlock
+              title={item.title}
+              code={item.code}
+              previewStorybookUrl={item.previewStorybookUrl}
+              previewHeight={item.previewHeight}
+              defaultCollapsed={item.defaultCollapsed}
             />
           </Box>
         ))}

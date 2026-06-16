@@ -19,6 +19,7 @@ const config: StorybookConfig = {
       alias: {
         ...viteConfig.resolve?.alias,
         "@": path.join(dirname, ".."),
+        "@next-app/ui-kit": path.join(dirname, "../packages/ui-kit/src/index.ts"),
       },
     };
     return viteConfig;

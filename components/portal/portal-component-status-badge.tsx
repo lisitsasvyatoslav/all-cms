@@ -1,6 +1,7 @@
 import { Badge } from "@radix-ui/themes";
 
 import type { Component } from "@/payload-types";
+import { portalClass } from "@/lib/portal/classes";
 import {
   getComponentStatusBadgeColor,
   getComponentStatusBadgeLabel,
@@ -9,13 +10,23 @@ import {
 
 export function PortalComponentStatusBadge({
   status,
+  variant = "default",
 }: {
   status: Component["status"] | null | undefined;
+  variant?: "default" | "sidebar";
 }) {
   if (!shouldShowComponentStatusBadge(status)) return null;
 
   const label = getComponentStatusBadgeLabel(status);
   if (!label) return null;
+
+  if (variant === "sidebar") {
+    return (
+      <span className={portalClass.sidebarNavChip} data-slot="chip">
+        <span data-slot="chip-label">{label}</span>
+      </span>
+    );
+  }
 
   return (
     <Badge

@@ -1,0 +1,26 @@
+{
+  "name": "@next-app/ui-kit",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./props-manifest.json": "./props-manifest.json",
+    "./catalog": "./src/catalog.ts"
+  },
+  "scripts": {
+    "generate:props-manifest": "tsx scripts/generate-props-manifest.ts"
+  },
+  "peerDependencies": {
+    "@radix-ui/themes": "^3.3.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "react-docgen-typescript": "^2.4.0",
+    "tsx": "^4.20.0",
+    "typescript": "^5.0.0"
+  }
+}

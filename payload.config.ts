@@ -13,9 +13,16 @@ import {
   documentationBlocksForColors,
   documentationBlocksForComponents,
 } from "./collections/componentDocumentationBlocks";
+import { DesignChecklistItemsCollection } from "./collections/designChecklistItems";
+import {
+  syncAllComponentsAfterChecklistItemChange,
+  syncComponentDesignChecklistAfterRead,
+  syncComponentDesignChecklistBeforeChange,
+} from "./lib/payload/component-design-checklist-hooks";
 import { isPortalDocumentationReadable } from "./lib/payload/documentation-access";
 import { FieldShowcaseCollection } from "./collections/fieldShowcase";
 import { componentAgentMcpTools } from "./lib/mcp/components-agent";
+import { migrations } from "./migrations";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -158,6 +165,10 @@ const Components: CollectionConfig = {
     update: hasRole(["admin", "pm"]),
     delete: isAdmin,
   },
+  hooks: {
+    beforeChange: [syncComponentDesignChecklistBeforeChange],
+    afterRead: [syncComponentDesignChecklistAfterRead],
+  },
   fields: [
     {
       type: "tabs",
@@ -197,6 +208,26 @@ const Components: CollectionConfig = {
               name: "storybookUrl",
               type: "text",
               label: "Ссылка на Storybook",
+            },
+            {
+              name: "relatedPreviewLight",
+              type: "upload",
+              relationTo: "media",
+              label: "Превью Related (светлая тема)",
+              admin: {
+                description:
+                  "Скриншот для карточек Related Components. Генерация: npm run capture:related-previews",
+              },
+            },
+            {
+              name: "relatedPreviewDark",
+              type: "upload",
+              relationTo: "media",
+              label: "Превью Related (тёмная тема)",
+              admin: {
+                description:
+                  "Скриншот для карточек Related Components в тёмной теме портала.",
+              },
             },
             {
               name: "docsUrl",
@@ -282,6 +313,49 @@ const Components: CollectionConfig = {
                 description:
                   "Правая колонка «На этой странице». Список строится из заголовков H2 на странице.",
               },
+            },
+          ],
+        },
+        {
+          label: "Design checklist",
+          description:
+            "Отметьте галочками выполненные требования. Все пункты подставляются автоматически из коллекции «Design checklist».",
+          fields: [
+            {
+              name: "designChecklist",
+              type: "array",
+              label: "Статусы требований",
+              labels: { singular: "Пункт", plural: "Пункты" },
+              admin: {
+                description:
+                  "Список заполняется автоматически. Редактору нужно только включить «Выполнено».",
+                initCollapsed: false,
+                isSortable: false,
+              },
+              fields: [
+                {
+                  name: "item",
+                  type: "relationship",
+                  relationTo: "design-checklist-items",
+                  required: true,
+                  label: "Пункт",
+                  admin: {
+                    readOnly: true,
+                    description: "Подставляется из справочника автоматически.",
+                  },
+                },
+                {
+                  name: "done",
+                  type: "checkbox",
+                  label: "Выполнено",
+                  defaultValue: false,
+                },
+                {
+                  name: "note",
+                  type: "textarea",
+                  label: "Комментарий",
+                },
+              ],
             },
           ],
         },
@@ -492,7 +566,16 @@ export default buildConfig({
   folders: {
     browseByFolder: true,
   },
-  collections: [Users, Media, Components, Colors, Icons, Notes, FieldShowcaseCollection],
+  collections: [
+    Users,
+    Media,
+    Components,
+    DesignChecklistItemsCollection,
+    Colors,
+    Icons,
+    Notes,
+    FieldShowcaseCollection,
+  ],
   globals: [PortalSources],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",
@@ -503,6 +586,10 @@ export default buildConfig({
     client: {
       url: process.env.DATABASE_URI || "file:./payload.sqlite",
     },
+    // Dev push дублирует индексы после частичного push — только миграции.
+    push: false,
+    migrationDir: path.resolve(dirname, "migrations"),
+    prodMigrations: migrations,
   }),
   sharp,
   plugins: [

@@ -1,4 +1,4 @@
-import { StorybookEmbedPreview } from "@/components/portal/storybook-embed-preview";
+import { PortalCollapsibleCodeBlock } from "@/components/portal/portal-collapsible-code-block";
 
 import { DoDontBlock, SectionBlock } from "./content-blocks";
 import { CodeExampleBlock, PropsTableBlock, ResourceLinksBlock } from "./data-blocks";
@@ -52,10 +52,12 @@ export function DocumentationBlockRenderer({
     case "storybookEmbed":
       if (!block.storybookUrl?.trim()) return null;
       return (
-        <StorybookEmbedPreview
+        <PortalCollapsibleCodeBlock
           title={block.title ?? "Превью"}
-          storybookUrl={block.storybookUrl}
-          frameHeight={block.frameHeight}
+          previewStorybookUrl={block.storybookUrl}
+          previewHeight={block.frameHeight}
+          defaultCollapsed
+          code={`// Добавьте парный блок codeExample с previewStorybookUrl для «${block.title ?? "Превью"}»`}
         />
       );
     case "codeExample":

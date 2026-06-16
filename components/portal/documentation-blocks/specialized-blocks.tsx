@@ -16,7 +16,11 @@ import {
   Text,
 } from "@radix-ui/themes";
 
+import { ChecklistItemIcon } from "@/components/portal/checklist-item-icon";
+import { RelatedComponentCard } from "@/components/portal/related-component-card";
 import { portalClass } from "@/lib/portal/classes";
+import { resolveRelatedComponentPreview } from "@/lib/portal/resolve-related-component-preview";
+import { resolveRelatedComponentStorybookUrl } from "@/lib/portal/resolve-related-component-storybook-url";
 import { portalSwatchBg } from "@/lib/portal/css-vars";
 import type { Component } from "@/payload-types";
 
@@ -91,14 +95,30 @@ export function AccessibilityBlock({
 
 function resolveRelatedComponent(
   rel: number | Component,
-): { slug: string; name: string; description?: string | null } | null {
+): {
+  slug: string;
+  name: string;
+  storybookUrl: string | null;
+  previewLightUrl: string | null;
+  previewDarkUrl: string | null;
+  previewAlt: string;
+} | null {
   if (!rel || typeof rel !== "object") return null;
   if (typeof rel.slug !== "string" || typeof rel.name !== "string") return null;
-  return { slug: rel.slug, name: rel.name, description: rel.description };
+  const preview = resolveRelatedComponentPreview(rel);
+  return {
+    slug: rel.slug,
+    name: rel.name,
+    storybookUrl: preview.hasStaticPreview ? null : resolveRelatedComponentStorybookUrl(rel),
+    previewLightUrl: preview.lightUrl,
+    previewDarkUrl: preview.darkUrl,
+    previewAlt: preview.alt,
+  };
 }
 
 export function RelComponentsBlock({
   block,
+  tocId,
 }: BlockProps<Extract<DocumentationBlock, { blockType: "relComponents" }>>) {
   const related =
     block.components
@@ -108,31 +128,12 @@ export function RelComponentsBlock({
 
   return (
     <Box>
-      <Heading as="h2" size="4" mb="4">
+      <DocSectionHeading id={tocId}>
         {block.title?.trim() || "Related Components"}
-      </Heading>
-      <Grid columns={{ initial: "1", sm: "2", md: "3" }} gap="4">
+      </DocSectionHeading>
+      <Grid columns={{ initial: "1", sm: "2", md: "3" }} gap="5">
         {related.map((c) => (
-          <Card key={c.slug} size="2" variant="surface" asChild>
-            <NextLink href={`/components/${c.slug}`} className={portalClass.linkPlain}>
-              <Box p="4" className="portal-related-preview">
-                <Text size="2" weight="medium" align="center">
-                  {c.name}
-                </Text>
-              </Box>
-              <Separator size="4" />
-              <Box p="3">
-                <Text size="2" weight="medium">
-                  {c.name}
-                </Text>
-                {c.description ? (
-                  <Text size="1" color="gray" mt="1" className={portalClass.textPreWrap}>
-                    {c.description}
-                  </Text>
-                ) : null}
-              </Box>
-            </NextLink>
-          </Card>
+          <RelatedComponentCard key={c.slug} {...c} />
         ))}
       </Grid>
     </Box>
@@ -307,24 +308,17 @@ export function ChecklistBlock({
       <DocSectionHeading id={tocId}>
         {block.title?.trim() || "Design checklist"}
       </DocSectionHeading>
-      <Separator size="4" mb="4" />
-      <Grid columns={{ initial: "1", sm: "2" }} gap="4">
+      <Separator size="4" mb="5" className={portalClass.checklistDivider} />
+      <Grid columns={{ initial: "1", md: "2" }} gap="5" className={portalClass.checklist}>
         {items.map((item, i) => (
-          <Flex key={i} gap="3" align="start">
-            <Badge
-              color={item.done ? "green" : "gray"}
-              variant={item.done ? "solid" : "soft"}
-              radius="full"
-              className={portalClass.checklistIcon}
-            >
-              {item.done ? "✓" : "○"}
-            </Badge>
-            <Box>
-              <Text size="2" weight="bold">
+          <Flex key={i} gap="3" align="start" className={portalClass.checklistItem}>
+            <ChecklistItemIcon done={item.done} />
+            <Box minWidth="0">
+              <Text as="div" size="2" weight="bold" highContrast>
                 {item.title}
               </Text>
               {item.description ? (
-                <Text size="2" color="gray" mt="1">
+                <Text as="p" size="2" color="gray" mt="1" className={portalClass.checklistDescription}>
                   {item.description}
                 </Text>
               ) : null}

@@ -173,7 +173,7 @@ const allDocumentationBlocks: Block[] = [
         name: "defaultCollapsed",
         type: "checkbox",
         label: "Код свёрнут по умолчанию",
-        defaultValue: false,
+        defaultValue: true,
       },
     ],
   }),

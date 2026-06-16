@@ -12,12 +12,13 @@ import {
   PortalSection,
 } from "@/components/portal/portal-shell";
 import { TableOfContents } from "@/components/portal/table-of-contents";
+import { componentWebPagePath } from "@/lib/portal/component-routes";
 import { portalClass } from "@/lib/portal/classes";
 import { buildDocumentationBlocksShowcase } from "@/lib/portal/documentation-blocks-showcase";
 import { buildPortalPageToc, getContentDocumentationBlocks } from "@/lib/toc/get-toc";
 
-import { ComponentDocumentation } from "../../components/[slug]/documentation";
-import { ComponentLiveDemos } from "../../components/[slug]/live-demos";
+import { ComponentDocumentation } from "../../components/web/[slug]/documentation";
+import { ComponentLiveDemos } from "../../components/web/[slug]/live-demos";
 
 export const dynamic = "force-dynamic";
 
@@ -79,7 +80,7 @@ export default async function DocumentationBlocksShowcasePage() {
             Payload → Components
           </PortalSourcePill>
           <Link asChild size="2">
-            <NextLink href="/components/button">Пример: Button →</NextLink>
+            <NextLink href={componentWebPagePath("button")}>Пример: Button →</NextLink>
           </Link>
         </Box>
         <PortalHeaderDivider />

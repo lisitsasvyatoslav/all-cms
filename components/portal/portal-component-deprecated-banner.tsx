@@ -1,5 +1,6 @@
 import { Callout, Link, Text } from "@radix-ui/themes";
 import NextLink from "next/link";
+import { componentWebPagePath } from "@/lib/portal/component-routes";
 
 import type { Component } from "@/payload-types";
 import {
@@ -38,7 +39,7 @@ export function PortalComponentDeprecatedBanner({ doc }: { doc: Props }) {
           <Text as="p" size="2" mt="2">
             Используйте{" "}
             <Link asChild weight="medium">
-              <NextLink href={`/components/${replacement.slug}`}>{replacement.name}</NextLink>
+              <NextLink href={componentWebPagePath(replacement.slug)}>{replacement.name}</NextLink>
             </Link>
             .
           </Text>

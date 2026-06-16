@@ -12,6 +12,8 @@ import { portalAppearanceInitScript } from "@/lib/radix/portal-appearance";
 
 import { PortalSidebar } from "./portal-sidebar";
 
+import { portalRootOpenGraphMetadata } from "@/lib/portal/component-open-graph";
+
 import "@radix-ui/themes/styles.css";
 import "../globals.css";
 import "../radix-themes.css";
@@ -27,8 +29,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Design System · Portal",
-  description: "Тестовый портал дизайн-системы (Payload + Next.js)",
+  title: {
+    default: "Design System · Portal",
+    template: "%s · Design System",
+  },
+  description: "Портал дизайн-системы: компоненты, документация, Storybook.",
+  ...portalRootOpenGraphMetadata(),
 };
 
 export default async function PortalLayout({

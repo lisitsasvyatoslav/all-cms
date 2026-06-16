@@ -9,7 +9,7 @@ import { PortalHeaderDivider, PortalPageContainer } from "@/components/portal/po
 import { portalClass } from "@/lib/portal/classes";
 import { portalSwatchBg } from "@/lib/portal/css-vars";
 
-import { ComponentDocumentation } from "../../components/[slug]/documentation";
+import { ComponentDocumentation } from "../../components/web/[slug]/documentation";
 
 type Props = { params: Promise<{ id: string }> };
 

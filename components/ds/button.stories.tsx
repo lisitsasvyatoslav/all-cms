@@ -2,8 +2,9 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { Callout, Flex } from "@radix-ui/themes";
 
 import { portalPreviewCatalogBySlug } from "@/lib/storybook/portal-preview-catalog";
+import { relatedPreviewDecorator, relatedPreviewStoryParameters } from "@/lib/storybook/related-preview-story";
 
-import { Button } from "./button";
+import { Button } from "@next-app/ui-kit";
 
 export const portalPreviewCatalog = portalPreviewCatalogBySlug.button;
 
@@ -35,6 +36,16 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
+
+export const RelatedPreview: Story = {
+  args: {
+    children: "Button",
+    variant: "primary",
+    size: "md",
+  },
+  parameters: relatedPreviewStoryParameters,
+  decorators: [relatedPreviewDecorator],
+};
 
 export const Variants: Story = {
   render: () => (

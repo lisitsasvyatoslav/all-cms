@@ -12,7 +12,7 @@ export async function loadComponentDocument(
     collection: "components",
     where: { slug: { equals: componentSlug } },
     limit: 1,
-    depth: 2,
+    depth: 3,
   });
   const doc = docs[0];
   if (!doc || !isComponentVisibleOnPortal(doc)) return null;

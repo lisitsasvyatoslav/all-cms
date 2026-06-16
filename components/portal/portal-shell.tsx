@@ -41,8 +41,10 @@ export function PortalPageWithToc({
   toc: ReactNode;
 }) {
   return (
-    <Grid columns={{ initial: "1", lg: "1fr 11rem" }} gap="6">
-      <Box minWidth="0">{main}</Box>
+    <Grid columns={{ initial: "1", lg: "minmax(0, 1fr) 11rem" }} gap="6">
+      <Box minWidth="0" maxWidth="100%">
+        {main}
+      </Box>
       <Box minWidth="0" className="portal-toc-aside">
         {toc}
       </Box>

@@ -17,7 +17,7 @@ export type ComponentDoc = {
 export const componentDocsBySlug: Record<string, ComponentDoc> = {
   button: {
     label: "Button",
-    importSnippet: `import { Button } from "@/components/ds/button";`,
+    importSnippet: `import { Button } from "@next-app/ui-kit";`,
     basicSnippet: `<Button>Нажми</Button>`,
     variantSnippets: [
       {
@@ -84,7 +84,7 @@ export const componentDocsBySlug: Record<string, ComponentDoc> = {
   },
   input: {
     label: "Input",
-    importSnippet: `import { Input } from "@/components/ds/input";`,
+    importSnippet: `import { Input } from "@next-app/ui-kit";`,
     basicSnippet: `<Input placeholder="Введите текст" />`,
     variantSnippets: [
       {

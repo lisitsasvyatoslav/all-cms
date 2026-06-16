@@ -1,7 +1,11 @@
 import type { Component } from "@/payload-types";
 
 import { getComponentDoc } from "@/lib/component-docs";
-import { documentationHasPropsTable } from "@/lib/toc/get-toc";
+import { getUiKitPropsForSlug } from "@/lib/ui-kit/props-from-manifest";
+import {
+  getContentDocumentationBlocks,
+  getLivePreviewItems,
+} from "@/lib/portal/live-preview-blocks";
 
 import { documentationToMarkdown } from "./documentation-block-to-markdown";
 import {
@@ -26,12 +30,8 @@ export function componentDocToMarkdown(doc: Component): string {
   const baseUrl = resolveSiteBaseUrl();
   const staticDoc = getComponentDoc(doc.slug);
   const documentation = doc.documentation ?? [];
-  const previewBlocks = documentation.filter(
-    (b) => b.blockType === "storybookEmbed",
-  );
-  const contentBlocks = documentation.filter(
-    (b) => b.blockType !== "storybookEmbed",
-  );
+  const livePreviewItems = getLivePreviewItems(documentation);
+  const contentBlocks = getContentDocumentationBlocks(documentation, { omitPropsTable: true });
 
   const headerLinks = [
     doc.figmaUrl ? mdLink("Figma", doc.figmaUrl) : null,
@@ -46,9 +46,15 @@ export function componentDocToMarkdown(doc: Component): string {
     `Обновлено: ${new Date(doc.updatedAt).toLocaleString("ru-RU")}`,
   ];
 
-  const previewMd = documentationToMarkdown(previewBlocks, baseUrl);
-  if (previewMd) {
-    sections.push(mdJoin([mdHeading(2, "Превью (Storybook)"), previewMd]));
+  if (livePreviewItems.length) {
+    const previewMd = mdJoin(
+      livePreviewItems.flatMap((item) => [
+        mdHeading(3, item.title),
+        mdLink("Storybook", item.previewStorybookUrl),
+        mdFence(item.code),
+      ]),
+    );
+    sections.push(mdJoin([mdHeading(2, "Превью"), previewMd]));
   }
 
   const cmsDocs = documentationToMarkdown(contentBlocks, baseUrl);
@@ -56,23 +62,26 @@ export function componentDocToMarkdown(doc: Component): string {
     sections.push(mdJoin([mdHeading(2, "Документация (CMS)"), cmsDocs]));
   }
 
-  if (staticDoc) {
-    const staticSections: (string | null | undefined)[] = [];
-
-    if (!documentationHasPropsTable(documentation) && staticDoc.props.length) {
-      staticSections.push(
-        mdHeading(2, "Пропсы"),
+  const kitProps = getUiKitPropsForSlug(doc.slug);
+  if (kitProps.length) {
+    sections.push(
+      mdJoin([
+        mdHeading(2, "API Reference"),
         mdGfmTable(
           ["Имя", "Тип", "По умолч.", "Описание"],
-          staticDoc.props.map((row) => [
+          kitProps.map((row) => [
             row.name,
             row.type,
-            row.default ?? "—",
-            row.description,
+            row.defaultValue ?? "—",
+            row.description ?? "—",
           ]),
         ),
-      );
-    }
+      ]),
+    );
+  }
+
+  if (staticDoc) {
+    const staticSections: (string | null | undefined)[] = [];
 
     staticSections.push(
         mdHeading(2, "Установка"),

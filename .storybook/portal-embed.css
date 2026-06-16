@@ -1,0 +1,36 @@
+/* Только при встраивании на портал (класс ставится в preview.tsx). */
+html.portal-storybook-embed,
+html.portal-storybook-embed body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+html.portal-storybook-embed #storybook-root {
+  height: 100%;
+}
+
+/* Related preview capture: полный кадр 1200×630 без отступов и max-width. */
+html.portal-storybook-embed:has(.portal-related-preview-capture) .portal-embed-shell {
+  padding: 0 !important;
+}
+
+html.portal-storybook-embed:has(.portal-related-preview-capture) .portal-storybook-max {
+  max-width: none;
+  width: 100%;
+  height: 100%;
+}
+
+html.portal-storybook-embed .portal-related-preview-capture {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+}
+
+html.portal-storybook-embed .portal-related-preview-capture__stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform-origin: center center;
+}

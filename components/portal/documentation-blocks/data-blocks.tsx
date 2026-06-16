@@ -1,8 +1,10 @@
-import { Box, Flex, Heading, Text } from "@radix-ui/themes";
+import { Box, Heading } from "@radix-ui/themes";
 
 import { PortalCollapsibleCodeBlock } from "@/components/portal/portal-collapsible-code-block";
 import { PortalPropsTable } from "@/components/portal/portal-props-table";
 import { PortalSourcePill } from "@/components/portal/portal-source-pill";
+
+import { portalClass } from "@/lib/portal/classes";
 
 import { DocSectionHeading } from "./shared";
 import type { DocumentationBlock } from "./types";
@@ -45,21 +47,29 @@ export function PropsTableBlock({
 
 export function ResourceLinksBlock({
   block,
+  tocId,
 }: BlockProps<Extract<DocumentationBlock, { blockType: "resourceLinks" }>>) {
   const links = block.links?.filter((l) => l?.url && l?.label) ?? [];
   if (!links.length) return null;
   return (
     <Box>
-      <Heading as="h2" size="4" mb="4">
-        Ссылки
-      </Heading>
-      <Flex gap="2" wrap="wrap" align="center">
+      {tocId ? (
+        <Heading
+          as="h2"
+          size="4"
+          id={tocId}
+          className={`portal-sr-only ${portalClass.scrollTarget}`}
+        >
+          Other source links
+        </Heading>
+      ) : null}
+      <nav className={portalClass.linkRow} aria-label="Other source links">
         {links.map((link, i) => (
           <PortalSourcePill key={i} href={link.url}>
             {link.label}
           </PortalSourcePill>
         ))}
-      </Flex>
+      </nav>
     </Box>
   );
 }
