@@ -753,6 +753,7 @@ function buildCheckboxDocumentation(relatedComponentIds: number[]) {
     {
       blockType: "doDont" as const,
       showLLM: true,
+      heading: "Подписи и группировка",
       dos: [
         { text: "Используйте понятный label справа от флажка." },
         { text: "Группируйте связанные опции вертикально с равными отступами." },
@@ -799,6 +800,8 @@ function buildCheckboxDocumentation(relatedComponentIds: number[]) {
       blockType: "accessibility" as const,
       showLLM: true,
       intro: "Флажок — нативный input type=checkbox с видимым label и состоянием checked.",
+      patternLinkLabel: "Checkbox pattern (WAI-ARIA)",
+      patternLinkUrl: "https://www.w3.org/WAI/ARIA/apg/patterns/checkbox/",
       keyboardRows: [
         { keys: "Space", description: "Переключает состояние, когда фокус на чекбоксе." },
         { keys: "Tab", description: "Переход к следующему элементу формы." },
@@ -896,6 +899,7 @@ function buildAlertDocumentation(relatedComponentIds: number[]) {
     {
       blockType: "doDont" as const,
       showLLM: true,
+      heading: "Содержание и variant",
       dos: [
         { text: "Краткий заголовок + одно предложение сути." },
         { text: "Выбирайте variant по серьёзности: error только для блокирующих проблем." },
@@ -947,6 +951,7 @@ const linkDocumentationSeed = [
   {
     blockType: "doDont" as const,
     showLLM: true,
+    heading: "Текст и семантика",
     dos: [
       { text: "Текст ссылки должен описывать цель («Документация», не «Подробнее» без контекста)." },
       { text: "Внешние ссылки помечайте визуально или через aria." },

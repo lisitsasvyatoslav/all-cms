@@ -1,6 +1,7 @@
 import type { CollectionConfig } from "payload";
 
 import { syncAllComponentsAfterChecklistItemChange } from "@/lib/payload/component-design-checklist-hooks";
+import { accessHasRole } from "@/lib/payload/access";
 
 export const DesignChecklistItemsCollection: CollectionConfig = {
   slug: "design-checklist-items",
@@ -16,11 +17,9 @@ export const DesignChecklistItemsCollection: CollectionConfig = {
   },
   access: {
     read: () => true,
-    create: ({ req }) =>
-      req.user?.role === "admin" || req.user?.role === "pm" || req.user?.role === "designer",
-    update: ({ req }) =>
-      req.user?.role === "admin" || req.user?.role === "pm" || req.user?.role === "designer",
-    delete: ({ req }) => req.user?.role === "admin",
+    create: accessHasRole(["admin", "pm", "designer"]),
+    update: accessHasRole(["admin", "pm", "designer"]),
+    delete: accessHasRole(["admin"]),
   },
   fields: [
     {

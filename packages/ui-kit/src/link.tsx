@@ -7,7 +7,7 @@ type LinkRadixProps = WithoutRadixLayout<ComponentProps<typeof RadixLink>>;
 
 export interface LinkProps extends Pick<
   LinkRadixProps,
-  "asChild" | "className" | "highContrast" | "href" | "target" | "title" | "type"
+  "asChild" | "className" | "highContrast" | "href" | "rel" | "target" | "title" | "type"
 > {
   /** Рендерит дочерний элемент вместо корня. */
   asChild?: LinkRadixProps["asChild"];
@@ -17,7 +17,7 @@ export interface LinkProps extends Pick<
   highContrast?: LinkRadixProps["highContrast"];
   /** URL перехода. */
   href?: LinkRadixProps["href"];
-  /** Куда открыть ссылку (_blank и т.д.). */
+  rel?: LinkRadixProps["rel"];
   target?: LinkRadixProps["target"];
   /** Всплывающая подсказка (HTML title). */
   title?: LinkRadixProps["title"];

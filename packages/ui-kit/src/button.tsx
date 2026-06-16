@@ -29,7 +29,16 @@ type ButtonRadixProps = WithoutRadixLayout<
 
 export interface ButtonProps extends Pick<
   ButtonRadixProps,
-  "asChild" | "className" | "disabled" | "highContrast" | "loading" | "radius" | "type" | "value" | "title"
+  | "asChild"
+  | "className"
+  | "disabled"
+  | "highContrast"
+  | "loading"
+  | "onClick"
+  | "radius"
+  | "type"
+  | "value"
+  | "title"
 > {
   /** Визуальный стиль: primary, secondary, outline, ghost, danger. */
   variant?: ButtonVariant;
@@ -45,6 +54,8 @@ export interface ButtonProps extends Pick<
   highContrast?: ButtonRadixProps["highContrast"];
   /** Показывает индикатор загрузки. */
   loading?: ButtonRadixProps["loading"];
+  /** Обработчик клика. */
+  onClick?: ButtonRadixProps["onClick"];
   /** Скругление углов Radix Themes. */
   radius?: ButtonRadixProps["radius"];
   /** Семантика для форм: button, submit, reset. */

@@ -1,8 +1,12 @@
+import type { Component as CmsComponent } from "@/payload-types";
+
 /** Платформа реализации компонента */
 export type ComponentFramework = "react" | "kotlin" | "swift" | "flutter";
 
 /** Статус страницы реализации */
 export type ComponentStatus = "stable" | "beta" | "deprecated";
+
+type ComponentDocumentationBlock = NonNullable<CmsComponent["documentation"]>[number];
 
 /**
  * Одна запись коллекции `components` =

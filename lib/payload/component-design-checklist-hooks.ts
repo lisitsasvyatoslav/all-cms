@@ -1,4 +1,4 @@
-import type { CollectionAfterReadHook, CollectionBeforeChangeHook } from "payload";
+import type { CollectionAfterChangeHook, CollectionAfterReadHook, CollectionBeforeChangeHook } from "payload";
 
 import {
   loadActiveDesignChecklistCatalog,
