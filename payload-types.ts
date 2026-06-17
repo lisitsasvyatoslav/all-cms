@@ -1797,20 +1797,26 @@ export interface PortalSeo {
   defaultDescription?: string | null;
   locale?: string | null;
   /**
-   * Для главной, каталога и fallback. На Vercel надёжнее public/og/portal-site.webp (npm run generate:portal-site-og).
+   * Статический файл public/og/portal-site.webp (npm run generate:portal-site-og). Поле не влияет на OG — картинка всегда portal-site.webp.
    */
   defaultOgImage?: (number | null) | Media;
   homeShareTitle?: string | null;
   homeShareDescription?: string | null;
   /**
-   * Пусто — OG-картинка сайта по умолчанию.
+   * Не используется — OG-картинка всегда public/og/portal-site.webp.
    */
   homeShareImage?: (number | null) | Media;
   catalogWebShareTitle?: string | null;
   catalogWebShareDescription?: string | null;
+  /**
+   * Не используется — OG-картинка всегда public/og/portal-site.webp.
+   */
   catalogWebShareImage?: (number | null) | Media;
   showcaseShareTitle?: string | null;
   showcaseShareDescription?: string | null;
+  /**
+   * Не используется — OG-картинка всегда public/og/portal-site.webp.
+   */
   showcaseShareImage?: (number | null) | Media;
   updatedAt?: string | null;
   createdAt?: string | null;

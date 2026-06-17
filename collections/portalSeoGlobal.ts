@@ -65,7 +65,7 @@ export const PortalSeoGlobal: GlobalConfig = {
               label: "OG-картинка по умолчанию",
               admin: {
                 description:
-                  "Для главной, каталога и fallback. На Vercel надёжнее public/og/portal-site.webp (npm run generate:portal-site-og).",
+                  "Статический файл public/og/portal-site.webp (npm run generate:portal-site-og). Поле не влияет на OG — картинка всегда portal-site.webp.",
               },
             },
           ],
@@ -92,7 +92,7 @@ export const PortalSeoGlobal: GlobalConfig = {
               relationTo: "media",
               label: "og:image (опционально)",
               admin: {
-                description: "Пусто — OG-картинка сайта по умолчанию.",
+                description: "Не используется — OG-картинка всегда public/og/portal-site.webp.",
               },
             },
           ],
@@ -117,6 +117,9 @@ export const PortalSeoGlobal: GlobalConfig = {
               type: "upload",
               relationTo: "media",
               label: "og:image (опционально)",
+              admin: {
+                description: "Не используется — OG-картинка всегда public/og/portal-site.webp.",
+              },
             },
           ],
         },
@@ -141,6 +144,9 @@ export const PortalSeoGlobal: GlobalConfig = {
               type: "upload",
               relationTo: "media",
               label: "og:image (опционально)",
+              admin: {
+                description: "Не используется — OG-картинка всегда public/og/portal-site.webp.",
+              },
             },
           ],
         },

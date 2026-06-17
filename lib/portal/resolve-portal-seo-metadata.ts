@@ -37,32 +37,34 @@ function buildOpenGraphImages(imagePath: string, alt: string): OpenGraphImage[] 
   ];
 }
 
-function resolvePageImage(seo: NormalizedPortalSeo, pageImagePath: string | null): string {
-  return pageImagePath ?? seo.defaultOgImagePath ?? PORTAL_SITE_OG_RELATIVE_PATH;
+function resolvePageImage(seo: NormalizedPortalSeo): string {
+  return seo.defaultOgImagePath ?? PORTAL_SITE_OG_RELATIVE_PATH;
 }
 
 function pageShareFields(seo: NormalizedPortalSeo, page: PortalSeoPageKey): PageShareFields {
+  const imagePath = resolvePageImage(seo);
+
   switch (page) {
     case "home":
       return {
         title: seo.homeShareTitle,
         description: seo.homeShareDescription,
         path: seo.homePath,
-        imagePath: resolvePageImage(seo, seo.homeShareImagePath),
+        imagePath,
       };
     case "catalogWeb":
       return {
         title: seo.catalogWebShareTitle,
         description: seo.catalogWebShareDescription,
         path: seo.catalogWebPath,
-        imagePath: resolvePageImage(seo, seo.catalogWebShareImagePath),
+        imagePath,
       };
     case "showcase":
       return {
         title: seo.showcaseShareTitle,
         description: seo.showcaseShareDescription,
         path: seo.showcasePath,
-        imagePath: resolvePageImage(seo, seo.showcaseShareImagePath),
+        imagePath,
       };
     default: {
       const _exhaustive: never = page;
@@ -102,22 +104,15 @@ function metadataWithImages(
 export function buildPortalRootOpenGraphMetadata(
   seo: NormalizedPortalSeo,
 ): Pick<Metadata, "metadataBase" | "openGraph" | "twitter"> {
-  const defaultImages = buildOpenGraphImages(
-    seo.defaultOgImagePath,
-    seo.siteName,
-  );
-
   return {
     metadataBase: new URL(portalSiteOrigin()),
     openGraph: {
       siteName: seo.siteName,
       locale: seo.locale,
       type: "website",
-      images: defaultImages,
     },
     twitter: {
       card: "summary_large_image",
-      images: defaultImages.map((image) => image.url),
     },
   };
 }
@@ -160,7 +155,7 @@ export function buildCustomPortalShareMetadata(
     type?: "website" | "article";
   },
 ): Pick<Metadata, "title" | "description" | "openGraph" | "twitter"> {
-  const imagePath = input.imagePath ?? seo.defaultOgImagePath;
+  const imagePath = PORTAL_SITE_OG_RELATIVE_PATH;
   return metadataWithImages(
     input.title,
     input.description,
