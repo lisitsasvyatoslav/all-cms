@@ -5,6 +5,7 @@ import * as migration_20260610_120000_component_related_previews from './2026061
 import * as migration_20260610_150000_design_checklist_items from './20260610_150000_design_checklist_items';
 import * as migration_20260610_150100_design_checklist_locked_docs_rels from './20260610_150100_design_checklist_locked_docs_rels';
 import * as migration_20260610_150200_fix_components_design_checklist_schema from './20260610_150200_fix_components_design_checklist_schema';
+import * as migration_20260616_120000_portal_seo_global from './20260616_120000_portal_seo_global';
 
 export const migrations = [
   {
@@ -41,5 +42,10 @@ export const migrations = [
     up: migration_20260610_150200_fix_components_design_checklist_schema.up,
     down: migration_20260610_150200_fix_components_design_checklist_schema.down,
     name: '20260610_150200_fix_components_design_checklist_schema',
+  },
+  {
+    up: migration_20260616_120000_portal_seo_global.up,
+    down: migration_20260616_120000_portal_seo_global.down,
+    name: '20260616_120000_portal_seo_global',
   },
 ];

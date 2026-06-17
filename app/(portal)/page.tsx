@@ -15,7 +15,9 @@ import { portalSwatchBg } from "@/lib/portal/css-vars";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = buildHomeOpenGraphMetadata();
+export async function generateMetadata(): Promise<Metadata> {
+  return buildHomeOpenGraphMetadata();
+}
 
 export default async function Home() {
   const payload = await getPayload({ config });

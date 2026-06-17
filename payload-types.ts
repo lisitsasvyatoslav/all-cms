@@ -110,9 +110,11 @@ export interface Config {
   fallbackLocale: null;
   globals: {
     'portal-sources': PortalSource;
+    'portal-seo': PortalSeo;
   };
   globalsSelect: {
     'portal-sources': PortalSourcesSelect<false> | PortalSourcesSelect<true>;
+    'portal-seo': PortalSeoSelect<false> | PortalSeoSelect<true>;
   };
   locale: null;
   widgets: {
@@ -971,6 +973,16 @@ export interface PayloadMcpApiKey {
      */
     update?: boolean | null;
   };
+  portalSeo?: {
+    /**
+     * Allow clients to find portal-seo global.
+     */
+    find?: boolean | null;
+    /**
+     * Allow clients to update portal-seo global.
+     */
+    update?: boolean | null;
+  };
   'payload-mcp-tool'?: {
     /**
      * Карточка UI-компонента (components): name, slug, description, ссылки. Без documentation. Укажи slug или id.
@@ -1679,6 +1691,12 @@ export interface PayloadMcpApiKeysSelect<T extends boolean = true> {
         find?: T;
         update?: T;
       };
+  portalSeo?:
+    | T
+    | {
+        find?: T;
+        update?: T;
+      };
   'payload-mcp-tool'?:
     | T
     | {
@@ -1760,6 +1778,44 @@ export interface PortalSource {
   createdAt?: string | null;
 }
 /**
+ * Заголовки, описания и OG-картинки для главной, каталога и дефолтов портала. Пустые поля — встроенные значения по умолчанию.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "portal-seo".
+ */
+export interface PortalSeo {
+  id: number;
+  siteName?: string | null;
+  /**
+   * Когда у страницы нет своего title.
+   */
+  titleDefault?: string | null;
+  /**
+   * Next.js metadata template, %s — title страницы.
+   */
+  titleTemplate?: string | null;
+  defaultDescription?: string | null;
+  locale?: string | null;
+  /**
+   * Для главной, каталога и fallback. На Vercel надёжнее public/og/portal-site.webp (npm run generate:portal-site-og).
+   */
+  defaultOgImage?: (number | null) | Media;
+  homeShareTitle?: string | null;
+  homeShareDescription?: string | null;
+  /**
+   * Пусто — OG-картинка сайта по умолчанию.
+   */
+  homeShareImage?: (number | null) | Media;
+  catalogWebShareTitle?: string | null;
+  catalogWebShareDescription?: string | null;
+  catalogWebShareImage?: (number | null) | Media;
+  showcaseShareTitle?: string | null;
+  showcaseShareDescription?: string | null;
+  showcaseShareImage?: (number | null) | Media;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "portal-sources_select".
  */
@@ -1768,6 +1824,30 @@ export interface PortalSourcesSelect<T extends boolean = true> {
   storybookUrl?: T;
   documentationUrl?: T;
   repositoryUrl?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "portal-seo_select".
+ */
+export interface PortalSeoSelect<T extends boolean = true> {
+  siteName?: T;
+  titleDefault?: T;
+  titleTemplate?: T;
+  defaultDescription?: T;
+  locale?: T;
+  defaultOgImage?: T;
+  homeShareTitle?: T;
+  homeShareDescription?: T;
+  homeShareImage?: T;
+  catalogWebShareTitle?: T;
+  catalogWebShareDescription?: T;
+  catalogWebShareImage?: T;
+  showcaseShareTitle?: T;
+  showcaseShareDescription?: T;
+  showcaseShareImage?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

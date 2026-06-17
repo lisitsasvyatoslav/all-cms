@@ -17,7 +17,9 @@ import type { TocItem } from "@/lib/toc/get-toc";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = buildComponentsCatalogOpenGraphMetadata();
+export async function generateMetadata(): Promise<Metadata> {
+  return buildComponentsCatalogOpenGraphMetadata();
+}
 
 export default async function ComponentsWebPage() {
   const groups = await loadComponentsCatalogGroups();

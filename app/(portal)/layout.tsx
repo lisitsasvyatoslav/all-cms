@@ -12,7 +12,7 @@ import { portalAppearanceInitScript } from "@/lib/radix/portal-appearance";
 
 import { PortalSidebar } from "./portal-sidebar";
 
-import { portalRootOpenGraphMetadata } from "@/lib/portal/component-open-graph";
+import { buildPortalLayoutMetadataFromCms } from "@/lib/portal/component-open-graph";
 
 import "@radix-ui/themes/styles.css";
 import "../globals.css";
@@ -28,14 +28,9 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: {
-    default: "Design System · Portal",
-    template: "%s · Design System",
-  },
-  description: "Портал дизайн-системы: компоненты, документация, Storybook.",
-  ...portalRootOpenGraphMetadata(),
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return buildPortalLayoutMetadataFromCms();
+}
 
 export default async function PortalLayout({
   children,

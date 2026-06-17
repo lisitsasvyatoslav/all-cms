@@ -14,6 +14,7 @@ import {
   documentationBlocksForComponents,
 } from "./collections/componentDocumentationBlocks";
 import { DesignChecklistItemsCollection } from "./collections/designChecklistItems";
+import { PortalSeoGlobal } from "./collections/portalSeoGlobal";
 import {
   syncAllComponentsAfterChecklistItemChange,
   syncComponentDesignChecklistAfterRead,
@@ -577,7 +578,7 @@ export default buildConfig({
     Notes,
     FieldShowcaseCollection,
   ],
-  globals: [PortalSources],
+  globals: [PortalSources, PortalSeoGlobal],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",
   typescript: {
@@ -624,6 +625,10 @@ export default buildConfig({
       globals: {
         "portal-sources": {
           description: "Глобальные ссылки: Figma library, Storybook, документация, репозиторий.",
+          enabled: { find: true, update: true },
+        },
+        "portal-seo": {
+          description: "SEO и Open Graph: title, description, og:image для страниц портала.",
           enabled: { find: true, update: true },
         },
       },

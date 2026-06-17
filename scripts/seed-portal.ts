@@ -33,6 +33,22 @@ const demoSources = {
   repositoryUrl: "https://github.com/payloadcms/payload",
 };
 
+const demoPortalSeo = {
+  siteName: "Design System",
+  titleDefault: "Design System · Portal",
+  titleTemplate: "%s · Design System",
+  defaultDescription: "Портал дизайн-системы: компоненты, документация, Storybook.",
+  locale: "ru_RU",
+  homeShareTitle: "Дизайн-система",
+  homeShareDescription:
+    "Портал дизайн-системы: компоненты, документация, Storybook и ссылки на источники.",
+  catalogWebShareTitle: "Components",
+  catalogWebShareDescription: "Каталог компонентов дизайн-системы для Web.",
+  showcaseShareTitle: "Блоки документации",
+  showcaseShareDescription:
+    "Демо 13 блоков вкладки «Документация» коллекции components — как на реальной странице компонента.",
+};
+
 /** Общие пункты design checklist (коллекция design-checklist-items). */
 const designChecklistItemSeeds = [
   {
@@ -1699,6 +1715,12 @@ async function main() {
     overrideAccess: true,
   });
 
+  await payload.updateGlobal({
+    slug: "portal-seo",
+    data: demoPortalSeo,
+    overrideAccess: true,
+  });
+
   const actionsFolderId = await ensureComponentFolder(payload, "Actions");
   const formsFolderId = await ensureComponentFolder(payload, "Forms");
   const feedbackFolderId = await ensureComponentFolder(payload, "Feedback");
@@ -1738,7 +1760,7 @@ async function main() {
   }
 
   console.log(
-    "Seed OK: portal-sources, design-checklist-items, components×12, colors×8, icons×4, field-showcase×1 + SVG в Media.",
+    "Seed OK: portal-sources, portal-seo, design-checklist-items, components×12, colors×8, icons×4, field-showcase×1 + SVG в Media.",
   );
   process.exit(0);
 }
