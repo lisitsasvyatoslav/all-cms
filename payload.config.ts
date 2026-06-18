@@ -14,14 +14,16 @@ import {
   documentationBlocksForComponents,
 } from "./collections/componentDocumentationBlocks";
 import { DesignChecklistItemsCollection } from "./collections/designChecklistItems";
+import { GlossaryTermsCollection } from "./collections/glossaryTerms";
 import { PortalSeoGlobal } from "./collections/portalSeoGlobal";
+import { TextGlossaryGlobal } from "./collections/textGlossaryGlobal";
 import {
   syncAllComponentsAfterChecklistItemChange,
   syncComponentDesignChecklistAfterRead,
   syncComponentDesignChecklistBeforeChange,
 } from "./lib/payload/component-design-checklist-hooks";
 import { isPortalDocumentationReadable } from "./lib/payload/documentation-access";
-import { resolvePayloadDatabaseUri } from "./lib/payload/resolve-database-uri";
+import { resolvePayloadSqliteClientConfig } from "./lib/payload/resolve-database-uri";
 import { FieldShowcaseCollection } from "./collections/fieldShowcase";
 import { componentAgentMcpTools } from "./lib/mcp/components-agent";
 import { migrations } from "./migrations";
@@ -573,21 +575,20 @@ export default buildConfig({
     Media,
     Components,
     DesignChecklistItemsCollection,
+    GlossaryTermsCollection,
     Colors,
     Icons,
     Notes,
     FieldShowcaseCollection,
   ],
-  globals: [PortalSources, PortalSeoGlobal],
+  globals: [PortalSources, PortalSeoGlobal, TextGlossaryGlobal],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",
   typescript: {
     outputFile: path.resolve(dirname, "payload-types.ts"),
   },
   db: sqliteAdapter({
-    client: {
-      url: resolvePayloadDatabaseUri(),
-    },
+    client: resolvePayloadSqliteClientConfig(),
     // Dev push дублирует индексы после частичного push — только миграции.
     push: false,
     migrationDir: path.resolve(dirname, "migrations"),
@@ -621,6 +622,10 @@ export default buildConfig({
           description: "Заметки / черновики.",
           enabled: { find: true, create: true, update: true, delete: false },
         },
+        "glossary-terms": {
+          description: "Термины глоссария для страницы /text/glossary.",
+          enabled: { find: true, create: true, update: true, delete: true },
+        },
       },
       globals: {
         "portal-sources": {
@@ -629,6 +634,10 @@ export default buildConfig({
         },
         "portal-seo": {
           description: "SEO и Open Graph: title, description, og:image для страниц портала.",
+          enabled: { find: true, update: true },
+        },
+        "text-glossary": {
+          description: "Тексты страницы /text/glossary: заголовок, принципы, SEO.",
           enabled: { find: true, update: true },
         },
       },

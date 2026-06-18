@@ -154,6 +154,169 @@
   display: inline-block;
 }
 
+.portal-glossary-section {
+  margin-bottom: var(--space-8);
+}
+
+.portal-glossary-section:last-child {
+  margin-bottom: 0;
+}
+
+.portal-glossary-accordion {
+  width: 100%;
+}
+
+.portal-glossary-accordion-item {
+  background: transparent;
+  overflow: hidden;
+}
+
+.portal-glossary-accordion-header {
+  margin: 0;
+}
+
+.portal-glossary-accordion-trigger {
+  all: unset;
+  box-sizing: border-box;
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-4);
+  cursor: pointer;
+  color: inherit;
+}
+
+.portal-glossary-accordion-trigger:hover {
+  background: transparent;
+}
+
+.portal-glossary-accordion-trigger:focus-visible {
+  outline: 2px solid var(--focus-8);
+  outline-offset: -2px;
+}
+
+.portal-glossary-accordion-chevron {
+  flex-shrink: 0;
+  width: 1rem;
+  height: 1rem;
+  color: var(--gray-10);
+  transition: transform 150ms ease;
+}
+
+.portal-glossary-accordion-trigger[data-state="open"] .portal-glossary-accordion-chevron {
+  transform: rotate(180deg);
+}
+
+.portal-glossary-accordion-content {
+  overflow: hidden;
+}
+
+.portal-glossary-accordion-content[data-state="open"] {
+  animation: portal-glossary-accordion-slide-down 220ms cubic-bezier(0.87, 0, 0.13, 1);
+}
+
+.portal-glossary-accordion-content[data-state="closed"] {
+  animation: portal-glossary-accordion-slide-up 220ms cubic-bezier(0.87, 0, 0.13, 1);
+}
+
+.portal-glossary-accordion-content-inner {
+  padding: 0 var(--space-4) var(--space-4);
+}
+
+@keyframes portal-glossary-accordion-slide-down {
+  from {
+    height: 0;
+  }
+
+  to {
+    height: var(--radix-accordion-content-height);
+  }
+}
+
+@keyframes portal-glossary-accordion-slide-up {
+  from {
+    height: var(--radix-accordion-content-height);
+  }
+
+  to {
+    height: 0;
+  }
+}
+
+.portal-glossary-principles {
+  margin: 0;
+  padding-left: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.portal-glossary-principles li {
+  padding-left: var(--space-1);
+}
+
+.portal-glossary-groups {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-7);
+}
+
+.portal-glossary-group {
+  display: grid;
+  grid-template-columns: 2.5rem minmax(0, 1fr);
+  gap: var(--space-4);
+  align-items: start;
+}
+
+.portal-glossary-letter {
+  font-size: var(--font-size-6);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.2;
+  color: var(--gray-12);
+  padding-top: var(--space-1);
+}
+
+.portal-glossary-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.portal-glossary-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.portal-glossary-preferred {
+  font-size: var(--font-size-3);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.4;
+  color: var(--gray-12);
+}
+
+.portal-glossary-avoid {
+  font-size: var(--font-size-2);
+  line-height: 1.5;
+  color: var(--gray-11);
+}
+
+.portal-glossary-avoid-strike {
+  text-decoration: line-through;
+  text-decoration-color: var(--gray-a8);
+}
+
+.portal-glossary-empty {
+  margin: 0;
+  color: var(--gray-11);
+  font-size: var(--font-size-2);
+}
+
 .portal-label-caps {
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -248,6 +411,51 @@
 
 .portal-sidebar-section-label:not(:first-child) {
   margin-top: var(--space-4);
+}
+
+.portal-sidebar-area-nav {
+  display: flex;
+  gap: var(--space-1);
+  padding-inline: var(--space-1);
+  margin-bottom: var(--space-2);
+}
+
+.portal-sidebar-area-nav-link {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  border-radius: var(--radius-2);
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--font-size-1);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-1);
+  text-decoration: none;
+  color: var(--gray-11);
+  background: transparent;
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.portal-sidebar-area-nav-link:hover {
+  background: color-mix(in srgb, var(--gray-a3) 50%, transparent);
+  color: var(--gray-12);
+}
+
+.portal-sidebar-area-nav-link[data-active="true"] {
+  background: #fff;
+  color: #000;
+  box-shadow:
+    0 1px 2px color-mix(in srgb, #000 6%, transparent),
+    0 0 0 1px color-mix(in srgb, #000 4%, transparent);
+}
+
+.portal-sidebar-area-nav-link[data-active="true"]:hover {
+  background: #fff;
+  color: #000;
 }
 
 .portal-sidebar-link {

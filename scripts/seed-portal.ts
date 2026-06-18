@@ -11,6 +11,7 @@ import config from "../payload.config";
 import { componentDocsBySlug, type PropRow } from "../lib/component-docs";
 import { storybookStoryUrl } from "../lib/storybook/portal-preview-config";
 import { syncDesignChecklistOnAllComponents } from "../lib/payload/sync-component-design-checklist";
+import { syncTextGlossary } from "../lib/payload/sync-text-glossary";
 
 function propsTableRowsFromDoc(props: PropRow[]) {
   return props.map((row) => ({
@@ -1759,8 +1760,10 @@ async function main() {
     await upsertIcon(payload, { ...row, preview });
   }
 
+  const { termsCreated } = await syncTextGlossary(payload);
+
   console.log(
-    "Seed OK: portal-sources, portal-seo, design-checklist-items, components×12, colors×8, icons×4, field-showcase×1 + SVG в Media.",
+    `Seed OK: portal-sources, portal-seo, design-checklist-items, components×12, colors×8, icons×4, field-showcase×1, glossary-terms×${termsCreated} + SVG в Media.`,
   );
   process.exit(0);
 }

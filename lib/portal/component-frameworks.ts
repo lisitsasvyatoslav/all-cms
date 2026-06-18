@@ -1,3 +1,4 @@
+import { portalPath } from "@/lib/portal/portal-base-path";
 import { PORTAL_COMPONENTS_WEB_PATH } from "@/lib/portal/component-routes";
 
 export const PORTAL_COMPONENT_FRAMEWORKS = [
@@ -12,21 +13,21 @@ export const PORTAL_COMPONENT_FRAMEWORKS = [
     id: "kotlin",
     label: "Kotlin",
     iconSrc: "/kotlin.svg",
-    href: "/components/kotlin",
+    href: portalPath("/components/kotlin"),
     enabled: false,
   },
   {
     id: "swift",
     label: "SwiftUI",
     iconSrc: "/swift.svg",
-    href: "/components/swift",
+    href: portalPath("/components/swift"),
     enabled: false,
   },
   {
     id: "flutter",
     label: "Flutter",
     iconSrc: "/flutter.svg",
-    href: "/components/flutter",
+    href: portalPath("/components/flutter"),
     enabled: false,
   },
 ] as const;

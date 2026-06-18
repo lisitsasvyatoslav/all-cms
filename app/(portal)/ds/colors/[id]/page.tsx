@@ -8,6 +8,7 @@ import { PortalBreadcrumbs } from "@/components/portal/portal-breadcrumbs";
 import { PortalHeaderDivider, PortalPageContainer } from "@/components/portal/portal-shell";
 import { buildColorPageOpenGraphMetadata } from "@/lib/portal/component-open-graph";
 import { portalClass } from "@/lib/portal/classes";
+import { colorPagePath } from "@/lib/portal/component-routes";
 import { portalSwatchBg } from "@/lib/portal/css-vars";
 
 import { ComponentDocumentation } from "../../components/web/[slug]/documentation";
@@ -33,7 +34,7 @@ export async function generateMetadata({ params }: Props) {
   return buildColorPageOpenGraphMetadata({
     title: `${doc.name} · Colors`,
     description: doc.caption ?? doc.tokenKey ?? doc.hex ?? undefined,
-    path: `/colors/${numericId}`,
+    path: colorPagePath(numericId),
   });
 }
 

@@ -72,6 +72,7 @@ export interface Config {
     media: Media;
     components: Component;
     'design-checklist-items': DesignChecklistItem;
+    'glossary-terms': GlossaryTerm;
     colors: Color;
     icons: Icon;
     notes: Note;
@@ -93,6 +94,7 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     components: ComponentsSelect<false> | ComponentsSelect<true>;
     'design-checklist-items': DesignChecklistItemsSelect<false> | DesignChecklistItemsSelect<true>;
+    'glossary-terms': GlossaryTermsSelect<false> | GlossaryTermsSelect<true>;
     colors: ColorsSelect<false> | ColorsSelect<true>;
     icons: IconsSelect<false> | IconsSelect<true>;
     notes: NotesSelect<false> | NotesSelect<true>;
@@ -111,10 +113,12 @@ export interface Config {
   globals: {
     'portal-sources': PortalSource;
     'portal-seo': PortalSeo;
+    'text-glossary': TextGlossary;
   };
   globalsSelect: {
     'portal-sources': PortalSourcesSelect<false> | PortalSourcesSelect<true>;
     'portal-seo': PortalSeoSelect<false> | PortalSeoSelect<true>;
+    'text-glossary': TextGlossarySelect<false> | TextGlossarySelect<true>;
   };
   locale: null;
   widgets: {
@@ -601,6 +605,29 @@ export interface FolderInterface {
   createdAt: string;
 }
 /**
+ * Слова для интерфейса и коммуникации с пользователями. Список сгруппирован по букве (латиница, затем кириллица).
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "glossary-terms".
+ */
+export interface GlossaryTerm {
+  id: number;
+  /**
+   * Правильное слово или формулировка для интерфейса и текстов.
+   */
+  preferred: string;
+  /**
+   * Неправильные варианты через запятую — на портале показываются перечёркнутыми.
+   */
+  avoid?: string | null;
+  /**
+   * Первая буква «Используем» — для группировки (EN, затем RU).
+   */
+  letter?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * Цветовые токены / образцы палитры; вкладка «Документация» — те же 24 блока, что у components.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -963,6 +990,24 @@ export interface PayloadMcpApiKey {
      */
     update?: boolean | null;
   };
+  glossaryTerms?: {
+    /**
+     * Allow clients to find glossary-terms.
+     */
+    find?: boolean | null;
+    /**
+     * Allow clients to create glossary-terms.
+     */
+    create?: boolean | null;
+    /**
+     * Allow clients to update glossary-terms.
+     */
+    update?: boolean | null;
+    /**
+     * Allow clients to delete glossary-terms.
+     */
+    delete?: boolean | null;
+  };
   portalSources?: {
     /**
      * Allow clients to find portal-sources global.
@@ -980,6 +1025,16 @@ export interface PayloadMcpApiKey {
     find?: boolean | null;
     /**
      * Allow clients to update portal-seo global.
+     */
+    update?: boolean | null;
+  };
+  textGlossary?: {
+    /**
+     * Allow clients to find text-glossary global.
+     */
+    find?: boolean | null;
+    /**
+     * Allow clients to update text-glossary global.
      */
     update?: boolean | null;
   };
@@ -1043,6 +1098,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'design-checklist-items';
         value: number | DesignChecklistItem;
+      } | null)
+    | ({
+        relationTo: 'glossary-terms';
+        value: number | GlossaryTerm;
       } | null)
     | ({
         relationTo: 'colors';
@@ -1429,6 +1488,17 @@ export interface DesignChecklistItemsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "glossary-terms_select".
+ */
+export interface GlossaryTermsSelect<T extends boolean = true> {
+  preferred?: T;
+  avoid?: T;
+  letter?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "colors_select".
  */
 export interface ColorsSelect<T extends boolean = true> {
@@ -1685,6 +1755,14 @@ export interface PayloadMcpApiKeysSelect<T extends boolean = true> {
         create?: T;
         update?: T;
       };
+  glossaryTerms?:
+    | T
+    | {
+        find?: T;
+        create?: T;
+        update?: T;
+        delete?: T;
+      };
   portalSources?:
     | T
     | {
@@ -1692,6 +1770,12 @@ export interface PayloadMcpApiKeysSelect<T extends boolean = true> {
         update?: T;
       };
   portalSeo?:
+    | T
+    | {
+        find?: T;
+        update?: T;
+      };
+  textGlossary?:
     | T
     | {
         find?: T;
@@ -1822,6 +1906,36 @@ export interface PortalSeo {
   createdAt?: string | null;
 }
 /**
+ * Заголовок, вводный текст и принципы на странице /text/glossary. Сами термины — коллекция «Глоссарий — термины».
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "text-glossary".
+ */
+export interface TextGlossary {
+  id: number;
+  title?: string | null;
+  intro?: string | null;
+  principlesHeading?: string | null;
+  /**
+   * Нумерованный список под заголовком «Как мы выбираем слова».
+   */
+  principles?:
+    | {
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
+  principlesFooter?: string | null;
+  /**
+   * Заголовок над таблицей терминов из коллекции.
+   */
+  termsSectionHeading?: string | null;
+  shareTitle?: string | null;
+  shareDescription?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "portal-sources_select".
  */
@@ -1854,6 +1968,28 @@ export interface PortalSeoSelect<T extends boolean = true> {
   showcaseShareTitle?: T;
   showcaseShareDescription?: T;
   showcaseShareImage?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "text-glossary_select".
+ */
+export interface TextGlossarySelect<T extends boolean = true> {
+  title?: T;
+  intro?: T;
+  principlesHeading?: T;
+  principles?:
+    | T
+    | {
+        text?: T;
+        id?: T;
+      };
+  principlesFooter?: T;
+  termsSectionHeading?: T;
+  shareTitle?: T;
+  shareDescription?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

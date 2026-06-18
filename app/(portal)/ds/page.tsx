@@ -10,7 +10,7 @@ import { PortalPageContainer } from "@/components/portal/portal-shell";
 import { buildHomeOpenGraphMetadata } from "@/lib/portal/component-open-graph";
 import { isComponentVisibleOnPortal } from "@/lib/portal/component-status";
 import { portalClass } from "@/lib/portal/classes";
-import { componentWebPagePath } from "@/lib/portal/component-routes";
+import { componentWebPagePath, colorPagePath } from "@/lib/portal/component-routes";
 import { portalSwatchBg } from "@/lib/portal/css-vars";
 
 export const dynamic = "force-dynamic";
@@ -166,7 +166,7 @@ export default async function Home() {
             <Grid columns={{ initial: "1", sm: "2" }} gap="3">
               {colors.map((color) => (
                 <Link key={color.id} asChild>
-                  <NextLink href={`/colors/${color.id}`} className={portalClass.linkPlain}>
+                  <NextLink href={colorPagePath(color.id)} className={portalClass.linkPlain}>
                     <Card size="2" variant="surface">
                       <Flex align="center" gap="3">
                         <Box

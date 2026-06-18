@@ -6,6 +6,9 @@ import * as migration_20260610_150000_design_checklist_items from './20260610_15
 import * as migration_20260610_150100_design_checklist_locked_docs_rels from './20260610_150100_design_checklist_locked_docs_rels';
 import * as migration_20260610_150200_fix_components_design_checklist_schema from './20260610_150200_fix_components_design_checklist_schema';
 import * as migration_20260616_120000_portal_seo_global from './20260616_120000_portal_seo_global';
+import * as migration_20260617_120000_text_glossary from './20260617_120000_text_glossary';
+import * as migration_20260618_120000_glossary_letter from './20260618_120000_glossary_letter';
+import * as migration_20260619_120000_glossary_drop_sort_order from './20260619_120000_glossary_drop_sort_order';
 
 export const migrations = [
   {
@@ -47,5 +50,20 @@ export const migrations = [
     up: migration_20260616_120000_portal_seo_global.up,
     down: migration_20260616_120000_portal_seo_global.down,
     name: '20260616_120000_portal_seo_global',
+  },
+  {
+    up: migration_20260617_120000_text_glossary.up,
+    down: migration_20260617_120000_text_glossary.down,
+    name: '20260617_120000_text_glossary',
+  },
+  {
+    up: migration_20260618_120000_glossary_letter.up,
+    down: migration_20260618_120000_glossary_letter.down,
+    name: '20260618_120000_glossary_letter',
+  },
+  {
+    up: migration_20260619_120000_glossary_drop_sort_order.up,
+    down: migration_20260619_120000_glossary_drop_sort_order.down,
+    name: '20260619_120000_glossary_drop_sort_order',
   },
 ];

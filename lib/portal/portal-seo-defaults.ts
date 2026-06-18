@@ -1,4 +1,8 @@
-import { PORTAL_COMPONENTS_WEB_PATH } from "@/lib/portal/component-routes";
+import {
+  PORTAL_COMPONENTS_WEB_PATH,
+  PORTAL_HOME_PATH,
+  PORTAL_SHOWCASE_DOCUMENTATION_BLOCKS_PATH,
+} from "@/lib/portal/component-routes";
 import { PORTAL_SITE_OG_RELATIVE_PATH } from "@/lib/portal/portal-default-og";
 
 export type NormalizedPortalSeo = {
@@ -41,7 +45,7 @@ export const PORTAL_SEO_FALLBACKS: NormalizedPortalSeo = {
   showcaseShareDescription:
     "Демо 13 блоков вкладки «Документация» коллекции components — как на реальной странице компонента.",
   showcaseShareImagePath: null as string | null,
-  homePath: "/",
+  homePath: PORTAL_HOME_PATH,
   catalogWebPath: PORTAL_COMPONENTS_WEB_PATH,
-  showcasePath: "/showcase/documentation-blocks",
+  showcasePath: PORTAL_SHOWCASE_DOCUMENTATION_BLOCKS_PATH,
 };

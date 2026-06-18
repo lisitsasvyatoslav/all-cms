@@ -83,6 +83,7 @@ Storybook: [http://127.0.0.1:6006](http://127.0.0.1:6006)
 | `npm run build` | Production-сборка |
 | `npm run start` | Запуск после `build` |
 | `npm run seed:portal` | Демо-данные и синхронизация схемы SQLite |
+| `npm run turso:setup` | Миграции + seed на Turso (нужны DATABASE_URI и DATABASE_AUTH_TOKEN) |
 | `npm run storybook` | Storybook на порту 6006 |
 | `npm run generate:types` | Перегенерация `payload-types.ts` после смены схемы CMS |
 | `npm run lint` | ESLint |
@@ -95,20 +96,59 @@ Storybook: [http://127.0.0.1:6006](http://127.0.0.1:6006)
 
 ## Деплой на Vercel
 
-1. **Environment Variables** (Settings → Environment Variables):
-   - `PAYLOAD_SECRET` — случайная строка ≥ 32 символов (обязательно)
-   - `NEXT_PUBLIC_SITE_URL` — `https://ваш-проект.vercel.app` (для OG в мессенджерах; можно после первого деплоя)
+### Обязательные переменные
 
-2. **База данных:** `payload.sqlite` в git не попадает. На Vercel — **`data/payload.seed.sqlite`**. Обновить seed после локального `seed:portal`:
-   ```powershell
-   Copy-Item payload.sqlite data/payload.seed.sqlite -Force
+В **Settings → Environment Variables** (Production + Preview):
+
+| Переменная | Описание |
+|------------|----------|
+| `PAYLOAD_SECRET` | Случайная строка ≥ 32 символов |
+| `NEXT_PUBLIC_SITE_URL` | `https://ваш-проект.vercel.app` |
+| `DATABASE_URI` | URL Turso: `libsql://…` |
+| `DATABASE_AUTH_TOKEN` | Токен Turso |
+
+Без `DATABASE_URI` + `DATABASE_AUTH_TOKEN` Admin пишет в эфемерный `/tmp` — **MCP API keys и другие изменения пропадают** после cold start или смены serverless-инстанса.
+
+### Turso (персистентная SQLite)
+
+1. Установите [Turso CLI](https://docs.turso.tech/cli/installation) и войдите: `turso auth login`
+
+2. Создайте базу:
+   ```bash
+   turso db create next-app-portal
    ```
-   OG главной и каталога — **`public/og/portal-site.webp`** (нейтральная, не превью Button). Сгенерировать:
-   ```powershell
-   npm run generate:portal-site-og
+
+3. Получите URL и токен:
+   ```bash
+   turso db show next-app-portal --url
+   turso db tokens create next-app-portal
    ```
-   Закоммитьте `data/payload.seed.sqlite` и `public/og/portal-site.webp`.
 
-3. Изменения в Admin на Vercel **не сохраняются** между cold start (эфемерный `/tmp`). Для продакшена — `DATABASE_URI` на Turso или Postgres.
+4. Локально в `.env.local`:
+   ```env
+   DATABASE_URI=libsql://next-app-portal-….turso.io
+   DATABASE_AUTH_TOKEN=eyJhbG…
+   PAYLOAD_SECRET=…
+   ```
 
-4. **Redeploy** после добавления env-переменных.
+5. Первичная настройка (миграции + seed, если БД пустая):
+   ```bash
+   npm run turso:setup
+   ```
+
+6. Те же `DATABASE_URI` и `DATABASE_AUTH_TOKEN` добавьте в Vercel → **Redeploy**.
+
+**Импорт локальной БД** (если уже есть `payload.sqlite` с данными):
+```bash
+turso db import next-app-portal --from-file payload.sqlite
+```
+
+### Seed для preview без Turso (только демо)
+
+`payload.sqlite` в git не попадает. На Vercel без Turso — **`data/payload.seed.sqlite`**. Обновить после локального `seed:portal`:
+```powershell
+Copy-Item payload.sqlite data/payload.seed.sqlite -Force
+```
+OG главной — **`public/og/portal-site.webp`**: `npm run generate:portal-site-og`
+
+Закоммитьте `data/payload.seed.sqlite` и `public/og/portal-site.webp` только если используете demo-режим без Turso.
