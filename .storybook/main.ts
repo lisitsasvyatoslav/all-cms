@@ -12,8 +12,10 @@ const config: StorybookConfig = {
     name: "@storybook/react-vite",
     options: {},
   },
-  staticDirs: ["../public"],
+  // Не копируем public/ в storybook-static: на Vercel Storybook 8.6 падает с
+  // EEXIST при параллельном mkdir (brand/logos). Stories не используют public.
   viteFinal: async (viteConfig) => {
+    viteConfig.publicDir = false;
     viteConfig.resolve = {
       ...viteConfig.resolve,
       alias: {
