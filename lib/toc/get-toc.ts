@@ -1,6 +1,6 @@
 import type { Component } from "@/payload-types";
 
-import { getContentDocumentationBlocks as filterContentDocumentationBlocks } from "@/lib/portal/live-preview-blocks";
+import { getContentDocumentationBlocks as filterContentDocumentationBlocks } from "@/lib/portal/documentation/live-preview-blocks";
 
 export type TocItem = {
   id: string;

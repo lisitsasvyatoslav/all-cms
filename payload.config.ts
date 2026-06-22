@@ -14,6 +14,9 @@ import {
   documentationBlocksForComponents,
 } from "./collections/componentDocumentationBlocks";
 import { DesignChecklistItemsCollection } from "./collections/designChecklistItems";
+import { BrandPagesCollection } from "./collections/brandPages";
+import { BrandOverviewGlobal } from "./collections/brandOverviewGlobal";
+import { DsOverviewGlobal } from "./collections/dsOverviewGlobal";
 import { GlossaryTermsCollection } from "./collections/glossaryTerms";
 import { PortalSeoGlobal } from "./collections/portalSeoGlobal";
 import { TextGlossaryGlobal } from "./collections/textGlossaryGlobal";
@@ -576,12 +579,13 @@ export default buildConfig({
     Components,
     DesignChecklistItemsCollection,
     GlossaryTermsCollection,
+    BrandPagesCollection,
     Colors,
     Icons,
     Notes,
     FieldShowcaseCollection,
   ],
-  globals: [PortalSources, PortalSeoGlobal, TextGlossaryGlobal],
+  globals: [PortalSources, PortalSeoGlobal, TextGlossaryGlobal, BrandOverviewGlobal, DsOverviewGlobal],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",
   typescript: {
@@ -626,6 +630,10 @@ export default buildConfig({
           description: "Термины глоссария для страницы /text/glossary.",
           enabled: { find: true, create: true, update: true, delete: true },
         },
+        "brand-pages": {
+          description: "Страницы раздела /brand: логотипы, иконки, типографика, палитра, визуальный стиль.",
+          enabled: { find: true, create: true, update: true, delete: true },
+        },
       },
       globals: {
         "portal-sources": {
@@ -638,6 +646,14 @@ export default buildConfig({
         },
         "text-glossary": {
           description: "Тексты страницы /text/glossary: заголовок, принципы, SEO.",
+          enabled: { find: true, update: true },
+        },
+        "brand-overview": {
+          description: "Тексты страницы /brand (обзор): заголовок, intro, SEO.",
+          enabled: { find: true, update: true },
+        },
+        "ds-overview": {
+          description: "Тексты главной /ds: обзор PoC и карточки источников.",
           enabled: { find: true, update: true },
         },
       },

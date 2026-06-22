@@ -6,7 +6,7 @@ import "./load-env.js";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { generatePortalSiteOgImage } from "../lib/portal/portal-default-og.js";
+import { generatePortalSiteOgImage } from "../lib/portal/seo/default-og.js";
 
 const projectRoot = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 

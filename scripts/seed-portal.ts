@@ -8,10 +8,19 @@ import { fileURLToPath } from "url";
 import { getPayload } from "payload";
 
 import config from "../payload.config";
+import type { Component } from "../payload-types";
 import { componentDocsBySlug, type PropRow } from "../lib/component-docs";
 import { storybookStoryUrl } from "../lib/storybook/portal-preview-config";
 import { syncDesignChecklistOnAllComponents } from "../lib/payload/sync-component-design-checklist";
+import { syncBrandPages } from "../lib/payload/sync-brand-pages";
+import { syncDsOverview } from "../lib/payload/sync-ds-overview";
 import { syncTextGlossary } from "../lib/payload/sync-text-glossary";
+import {
+  buildRadixComponentSeeds,
+  componentFolderNameForSlug,
+} from "../lib/portal/components/seed-data";
+import { COMPONENT_FOLDER_ORDER } from "../lib/portal/components/folders";
+import { RADIX_THEMES_CATALOG } from "../lib/portal/components/catalog";
 
 function propsTableRowsFromDoc(props: PropRow[]) {
   return props.map((row) => ({
@@ -995,176 +1004,45 @@ const badgeDocumentationSeed = [
   },
 ];
 
-const components = [
-  {
-    name: "Button",
-    slug: "button",
-    status: "stable" as const,
-    description:
-      "Триггер действия: варианты primary / outline / ghost, размеры sm–lg, состояние disabled.",
-    figmaUrl: "https://www.figma.com/design/",
-    storybookUrl: defaultStorybookUrl("button"),
-    docsUrl: "https://payloadcms.com/docs",
-  },
-  {
-    name: "Input",
-    slug: "input",
-    status: "stable" as const,
-    description:
-      "Текстовое поле с label, ошибкой и подсказкой; размеры sm–lg, invalid state.",
-    figmaUrl: "https://www.figma.com/design/",
-    storybookUrl: defaultStorybookUrl("input"),
-    docsUrl: "https://payloadcms.com/docs/getting-started/installation",
-  },
-  {
-    name: "Link",
-    slug: "link",
-    status: "stable" as const,
-    description:
-      "Текстовая ссылка для навигации: внутренние маршруты и внешние URL, состояния hover/focus.",
-    figmaUrl: "https://www.figma.com/design/",
-    storybookUrl: defaultStorybookUrl("link"),
-    docsUrl: "https://payloadcms.com/docs",
-    documentation: [...linkDocumentationSeed],
-  },
-  {
-    name: "Badge",
-    slug: "badge",
-    status: "stable" as const,
-    description:
-      "Метка статуса или счётчика: варианты neutral / success / warning, компактный размер.",
-    figmaUrl: "https://www.figma.com/design/",
-    storybookUrl: defaultStorybookUrl("badge"),
-    docsUrl: "https://payloadcms.com/docs",
-    documentation: [...badgeDocumentationSeed],
-  },
-  {
-    name: "Tabs",
-    slug: "tabs",
-    status: "stable" as const,
-    description: "",
-    storybookUrl: defaultStorybookUrl("tabs"),
-    documentation: [
-      {
-        blockType: "section" as const,
-        heading: "Черновик",
-        body: "Нет краткого описания — карточка скрыта на портале, пока не заполните обязательные поля.",
-      },
-    ],
-  },
-  {
-    name: "Card",
-    slug: "card",
-    status: "beta" as const,
-    statusNote: "API может измениться до релиза v1.",
-    description:
-      "Контейнер с заголовком и телом. Статус Preview — в сайдбаре бейдж Preview.",
-    figmaUrl: "https://www.figma.com/design/",
-    storybookUrl: defaultStorybookUrl("card"),
-    docsUrl: "https://payloadcms.com/docs",
-    documentation: [
-      ...cardLivePreviewSeed,
-      {
-        blockType: "section" as const,
-        heading: "Preview",
-        body: "Компонент в стадии preview: можно смотреть документацию, но контракт не зафиксирован.",
-      },
-      {
-        blockType: "section" as const,
-        heading: "When not to use",
-        body: "Обратная совместимость не гарантируется до перевода в stable.",
-      },
-    ],
-  },
-  {
-    name: "Legacy Chip",
-    slug: "legacy-chip",
-    status: "deprecated" as const,
-    statusNote: "Удалим в v2.0. Используйте Badge вместо Legacy Chip.",
-    description:
-      "Устаревший чип. Статус Deprecated — бейдж в сайдбаре и замена на Badge.",
-    storybookUrl: defaultStorybookUrl("legacy-chip"),
-    docsUrl: "https://payloadcms.com/docs",
-    documentation: [
-      ...legacyChipLivePreviewSeed,
-      {
-        blockType: "section" as const,
-        heading: "Deprecated",
-        body: "Не используйте в новых интерфейсах. Мигрируйте на Badge.",
-      },
-      {
-        blockType: "section" as const,
-        heading: "Migration",
-        body: "Компонент будет удалён в следующем мажорном релизе. Используйте Badge.",
-      },
-    ],
-  },
-  {
-    name: "Icon Button",
-    slug: "icon-button",
-    status: "stable" as const,
-    description:
-      "Компактная кнопка только с иконкой: aria-label обязателен, размеры sm–lg.",
-    figmaUrl: "https://www.figma.com/design/",
-    storybookUrl: defaultStorybookUrl("icon-button"),
-    docsUrl: "https://payloadcms.com/docs",
-    documentation: [
-      {
-        blockType: "section" as const,
-        heading: "Когда использовать",
-        body: "Действия в тулбарах, закрытие диалогов, иконки без текстовой подписи.",
-      },
-    ],
-  },
-  {
-    name: "Modal",
-    slug: "modal",
-    status: "stable" as const,
-    description:
-      "Модальное окно с заголовком, телом и футером; фокус-ловушка и закрытие по Esc.",
-    figmaUrl: "https://www.figma.com/design/",
-    storybookUrl: defaultStorybookUrl("modal"),
-    docsUrl: "https://payloadcms.com/docs",
-  },
-  {
-    name: "Select",
-    slug: "select",
-    status: "stable" as const,
-    description:
-      "Выпадающий список для выбора одного значения из набора опций.",
-    figmaUrl: "https://www.figma.com/design/",
-    storybookUrl: defaultStorybookUrl("select"),
-    docsUrl: "https://payloadcms.com/docs",
-    documentation: [
-      {
-        blockType: "section" as const,
-        heading: "Когда использовать",
-        body: "5+ вариантов или длинные подписи — вместо Radio Group.",
-      },
-    ],
-  },
-  {
-    name: "Checkbox",
-    slug: "checkbox",
-    status: "stable" as const,
-    description:
-      "Флажок для булева выбора или группы независимых опций.",
-    figmaUrl: "https://www.figma.com/design/",
-    storybookUrl: defaultStorybookUrl("checkbox"),
-    docsUrl: "https://payloadcms.com/docs",
-  },
-  {
-    name: "Alert",
-    slug: "alert",
-    status: "beta" as const,
-    statusNote: "API уточняется до stable.",
-    description:
-      "Инлайн-сообщение о статусе: info, success, warning, error.",
-    figmaUrl: "https://www.figma.com/design/",
-    storybookUrl: defaultStorybookUrl("alert"),
-    docsUrl: "https://payloadcms.com/docs",
-  },
-];
+const componentDocumentationBySlug: Record<string, NonNullable<Component["documentation"]>> = {
+  link: linkDocumentationSeed,
+  badge: badgeDocumentationSeed,
+  card: [
+    ...cardLivePreviewSeed,
+    {
+      blockType: "section" as const,
+      heading: "Preview",
+      body: "Компонент в стадии preview: можно смотреть документацию, но контракт не зафиксирован.",
+    },
+    {
+      blockType: "section" as const,
+      heading: "When not to use",
+      body: "Обратная совместимость не гарантируется до перевода в stable.",
+    },
+  ],
+  "legacy-chip": [
+    ...legacyChipLivePreviewSeed,
+    {
+      blockType: "section" as const,
+      heading: "Deprecated",
+      body: "Не используйте в новых интерфейсах. Мигрируйте на Badge.",
+    },
+    {
+      blockType: "section" as const,
+      heading: "Migration",
+      body: "Компонент будет удалён в следующем мажорном релизе. Используйте Badge.",
+    },
+  ],
+  select: [
+    {
+      blockType: "section" as const,
+      heading: "Когда использовать",
+      body: "5+ вариантов или длинные подписи — вместо Radio Group.",
+    },
+  ],
+};
+
+const components = buildRadixComponentSeeds(defaultStorybookUrl, componentDocumentationBySlug);
 
 /** Связи по slug (применяются после создания всех записей). */
 const componentRelationsBySlug: Record<
@@ -1187,10 +1065,7 @@ const componentRelationsBySlug: Record<
     relatedSlugs: ["input", "select"],
   },
   modal: {
-    relatedSlugs: ["button", "icon-button"],
-  },
-  alert: {
-    relatedSlugs: ["badge", "card"],
+    relatedSlugs: ["button"],
   },
   link: {
     parentSlug: "button",
@@ -1206,21 +1081,6 @@ const componentRelationsBySlug: Record<
     replacedBySlug: "badge",
     relatedSlugs: ["badge"],
   },
-};
-
-const componentFolderBySlug: Record<string, string> = {
-  button: "Actions",
-  "icon-button": "Actions",
-  modal: "Actions",
-  input: "Forms",
-  select: "Forms",
-  checkbox: "Forms",
-  link: "Actions",
-  badge: "Feedback",
-  tabs: "Forms",
-  card: "Feedback",
-  alert: "Feedback",
-  "legacy-chip": "Feedback",
 };
 
 const colors = [
@@ -1334,11 +1194,6 @@ async function seedFormAndFeedbackDocumentation(payload: Awaited<ReturnType<type
       relatedSlugs: componentRelationsBySlug.modal?.relatedSlugs ?? [],
       build: buildModalDocumentation,
     },
-    {
-      slug: "alert",
-      relatedSlugs: componentRelationsBySlug.alert?.relatedSlugs ?? [],
-      build: buildAlertDocumentation,
-    },
   ];
 
   for (const { slug, relatedSlugs, build } of specs) {
@@ -1346,12 +1201,7 @@ async function seedFormAndFeedbackDocumentation(payload: Awaited<ReturnType<type
     if (!id) continue;
 
     const relatedComponentIds = await relatedComponentIdsForSlugs(payload, relatedSlugs);
-    await payload.update({
-      collection: "components",
-      id,
-      data: { documentation: build(relatedComponentIds) },
-      overrideAccess: true,
-    });
+    await updateComponentDocumentation(payload, id, build(relatedComponentIds));
   }
 }
 
@@ -1373,14 +1223,78 @@ async function seedButtonDocumentation(payload: Awaited<ReturnType<typeof getPay
     )
   ).filter((id): id is number => id != null);
 
+  await updateComponentDocumentation(
+    payload,
+    buttonId,
+    buildButtonDocumentation({ anatomyImageId, relatedComponentIds }),
+  );
+}
+
+async function updateComponentDocumentation(
+  payload: Awaited<ReturnType<typeof getPayload>>,
+  id: number,
+  documentation: NonNullable<Component["documentation"]>,
+) {
   await payload.update({
     collection: "components",
-    id: buttonId,
-    data: {
-      documentation: buildButtonDocumentation({ anatomyImageId, relatedComponentIds }),
-    },
+    id,
+    data: { documentation: [] },
     overrideAccess: true,
   });
+  await payload.update({
+    collection: "components",
+    id,
+    data: { documentation },
+    overrideAccess: true,
+  });
+}
+
+const PORTAL_COMPONENT_SLUGS = new Set(RADIX_THEMES_CATALOG.map((entry) => entry.slug));
+
+async function deleteRemovedPortalComponents(
+  payload: Awaited<ReturnType<typeof getPayload>>,
+) {
+  const { docs } = await payload.find({
+    collection: "components",
+    limit: 200,
+    overrideAccess: true,
+  });
+
+  for (const doc of docs) {
+    const slug = String(doc.slug);
+    if (PORTAL_COMPONENT_SLUGS.has(slug)) continue;
+    await payload.delete({
+      collection: "components",
+      id: doc.id,
+      overrideAccess: true,
+    });
+    console.log(`  removed from portal: ${slug}`);
+  }
+}
+
+async function deleteUnusedComponentFolders(
+  payload: Awaited<ReturnType<typeof getPayload>>,
+) {
+  const allowed = new Set<string>(COMPONENT_FOLDER_ORDER);
+  const { docs } = await payload.find({
+    collection: "payload-folders",
+    limit: 100,
+    overrideAccess: true,
+  });
+
+  for (const doc of docs) {
+    const name = String(doc.name ?? "");
+    if (!name || allowed.has(name)) continue;
+    if (!Array.isArray(doc.folderType) || !doc.folderType.includes("components")) continue;
+    if (doc.folder) continue;
+
+    await payload.delete({
+      collection: "payload-folders",
+      id: doc.id,
+      overrideAccess: true,
+    });
+    console.log(`  removed folder: ${name}`);
+  }
 }
 
 async function upsertComponent(
@@ -1395,8 +1309,9 @@ async function upsertComponent(
     overrideAccess: true,
   });
   const doc = found.docs[0];
+  const { documentation, ...scalarData } = data;
   const dataWithFolder = {
-    ...data,
+    ...scalarData,
     ...(folderId ? { folder: folderId } : {}),
   };
   if (doc) {
@@ -1410,10 +1325,21 @@ async function upsertComponent(
   }
   const created = await payload.create({
     collection: "components",
-    data: dataWithFolder,
+    data: {
+      ...dataWithFolder,
+      ...(documentation ? { documentation } : {}),
+    },
     overrideAccess: true,
   });
   return Number(created.id);
+}
+
+async function seedInlineDocumentation(payload: Awaited<ReturnType<typeof getPayload>>) {
+  for (const [slug, documentation] of Object.entries(componentDocumentationBySlug)) {
+    const id = await getComponentIdBySlug(payload, slug);
+    if (!id) continue;
+    await updateComponentDocumentation(payload, id, documentation);
+  }
 }
 
 async function upsertDesignChecklistItem(
@@ -1716,34 +1642,46 @@ async function main() {
     overrideAccess: true,
   });
 
+  await syncDsOverview(payload, demoSources);
+
   await payload.updateGlobal({
     slug: "portal-seo",
     data: demoPortalSeo,
     overrideAccess: true,
   });
 
-  const actionsFolderId = await ensureComponentFolder(payload, "Actions");
-  const formsFolderId = await ensureComponentFolder(payload, "Forms");
-  const feedbackFolderId = await ensureComponentFolder(payload, "Feedback");
-
-  const folderIdByName: Record<string, number> = {
-    Actions: actionsFolderId,
-    Forms: formsFolderId,
-    Feedback: feedbackFolderId,
-  };
-
-  for (const row of components) {
-    const folderName = componentFolderBySlug[row.slug];
-    const folderId = folderName ? folderIdByName[folderName] : undefined;
-    await upsertComponent(payload, row, folderId);
+  const folderIdByName: Record<string, number> = {};
+  console.log(`Creating ${COMPONENT_FOLDER_ORDER.length} component folders (HeroUI groups)…`);
+  for (const folderName of COMPONENT_FOLDER_ORDER) {
+    folderIdByName[folderName] = await ensureComponentFolder(payload, folderName);
+    console.log(`  folder: ${folderName}`);
   }
 
+  console.log(`Upserting ${components.length} components…`);
+  for (let i = 0; i < components.length; i++) {
+    const row = components[i]!;
+    const folderName = componentFolderNameForSlug(row.slug);
+    const folderId = folderName ? folderIdByName[folderName] : undefined;
+    await upsertComponent(payload, row, folderId);
+    console.log(`  [${i + 1}/${components.length}] ${row.slug} → ${folderName ?? "—"}`);
+  }
+
+  console.log("Removing components excluded from portal catalog…");
+  await deleteRemovedPortalComponents(payload);
+
+  console.log("Removing unused component folders…");
+  await deleteUnusedComponentFolders(payload);
+
   await applyComponentRelations(payload);
+  console.log("Applied component relations.");
 
   await seedDesignChecklist(payload);
+  console.log("Seeded design checklist.");
 
+  await seedInlineDocumentation(payload);
   await seedButtonDocumentation(payload);
   await seedFormAndFeedbackDocumentation(payload);
+  console.log("Seeded component documentation.");
 
   for (const row of colors) {
     await upsertColor(payload, row);
@@ -1760,10 +1698,13 @@ async function main() {
     await upsertIcon(payload, { ...row, preview });
   }
 
-  const { termsCreated } = await syncTextGlossary(payload);
+  const [{ termsCreated }, { pagesUpserted }] = await Promise.all([
+    syncTextGlossary(payload),
+    syncBrandPages(payload),
+  ]);
 
   console.log(
-    `Seed OK: portal-sources, portal-seo, design-checklist-items, components×12, colors×8, icons×4, field-showcase×1, glossary-terms×${termsCreated} + SVG в Media.`,
+    `Seed OK: portal-sources, portal-seo, design-checklist-items, components×${components.length}, colors×8, icons×4, field-showcase×1, glossary-terms×${termsCreated}, brand-pages×${pagesUpserted} + SVG в Media.`,
   );
   process.exit(0);
 }

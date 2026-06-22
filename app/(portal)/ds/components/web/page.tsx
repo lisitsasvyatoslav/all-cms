@@ -1,18 +1,18 @@
 import { Box, Heading, Text } from "@radix-ui/themes";
 import type { Metadata } from "next";
 
-import { ComponentsCatalog } from "@/components/portal/components-catalog";
-import { ComponentsCatalogFrameworkTabs } from "@/components/portal/components-catalog-framework-tabs";
-import { PortalBreadcrumbs } from "@/components/portal/portal-breadcrumbs";
+import { ComponentsCatalog } from "@/components/portal/catalog/components-catalog";
+import { ComponentsCatalogFrameworkTabs } from "@/components/portal/catalog/components-catalog-framework-tabs";
+import { PortalBreadcrumbs } from "@/components/portal/layout/portal-breadcrumbs";
 import {
   PortalPageContainer,
   PortalPageWithToc,
-} from "@/components/portal/portal-shell";
-import { TableOfContents } from "@/components/portal/table-of-contents";
-import { buildComponentsCatalogOpenGraphMetadata } from "@/lib/portal/component-open-graph";
-import { PORTAL_COMPONENTS_WEB_PATH } from "@/lib/portal/component-routes";
-import { portalClass } from "@/lib/portal/classes";
-import { loadComponentsCatalogGroups } from "@/lib/portal/group-components-by-folder";
+} from "@/components/portal/layout/portal-shell";
+import { TableOfContents } from "@/components/portal/layout/table-of-contents";
+import { buildComponentsCatalogOpenGraphMetadata } from "@/lib/portal/components/open-graph";
+import { PORTAL_COMPONENTS_WEB_PATH } from "@/lib/portal/components/routes";
+import { portalClass } from "@/lib/portal/core/classes";
+import { loadComponentsCatalogGroups } from "@/lib/portal/components/group-by-folder";
 import type { TocItem } from "@/lib/toc/get-toc";
 
 export const dynamic = "force-dynamic";

@@ -1,1 +1,0 @@
-export { portalClass } from "./classes";

@@ -154,7 +154,7 @@ async function startStorybookDev(port: number): Promise<() => Promise<void>> {
 async function startStaticServer(port: number): Promise<() => Promise<void>> {
   const child = spawn(
     "npx",
-    ["serve", storybookStaticDir, "-l", `tcp://127.0.0.1:${port}`, "--no-clipboard"],
+    ["serve", storybookStaticDir, "-l", String(port), "--no-clipboard"],
     {
       cwd: projectRoot,
       stdio: "pipe",
@@ -168,16 +168,10 @@ async function startStaticServer(port: number): Promise<() => Promise<void>> {
 }
 
 async function waitForStoryReady(page: Page): Promise<void> {
-  await page.waitForFunction(
-    () => {
-      const root = document.querySelector("#storybook-root");
-      if (!root || root.hasAttribute("hidden")) return false;
-      return Boolean(root.querySelector(".radix-themes"));
-    },
-    undefined,
-    { timeout: 60_000 },
-  );
-  await page.waitForSelector(".portal-related-preview-capture", { timeout: 60_000 });
+  await page.waitForSelector("#storybook-root:not([hidden])", { timeout: 90_000 });
+  await page.waitForSelector(".portal-related-preview-capture, .portal-embed-shell", {
+    timeout: 90_000,
+  });
   await page.waitForTimeout(RELATED_PREVIEW_CAPTURE.settleMs);
 }
 
@@ -237,12 +231,14 @@ async function main() {
 
   await mkdir(outputDir, { recursive: true });
 
-  if (mode === "dev") freePort(port);
+  freePort(port);
 
   const baseUrl = `http://127.0.0.1:${port}`;
   console.log(`Starting Storybook (${mode}) at ${baseUrl}…`);
   const stopServer =
     mode === "static" ? await startStaticServer(port) : await startStorybookDev(port);
+
+  await new Promise((r) => setTimeout(r, 2_000));
 
   const browser = await chromium.launch();
   const context = await browser.newContext({

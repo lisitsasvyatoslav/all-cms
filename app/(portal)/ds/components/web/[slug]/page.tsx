@@ -1,29 +1,29 @@
 import { Box, Code, Flex, Heading, Text } from "@radix-ui/themes";
 import { notFound } from "next/navigation";
 
-import { ComponentApiFromUiKit } from "@/components/portal/component-api-from-kit";
-import { ComponentDesignChecklist } from "@/components/portal/component-design-checklist";
-import { PortalBreadcrumbs } from "@/components/portal/portal-breadcrumbs";
-import { PortalComponentDeprecatedBanner } from "@/components/portal/portal-component-deprecated-banner";
-import { PortalComponentStatusBadge } from "@/components/portal/portal-component-status-badge";
-import { PortalCodeBlock } from "@/components/portal/portal-code-block";
-import { PortalPageActions } from "@/components/portal/portal-page-actions";
-import { PortalSourcePill } from "@/components/portal/portal-source-pill";
+import { ComponentApiFromUiKit } from "@/components/portal/catalog/component-api-from-kit";
+import { ComponentDesignChecklist } from "@/components/portal/catalog/component-design-checklist";
+import { PortalBreadcrumbs } from "@/components/portal/layout/portal-breadcrumbs";
+import { PortalComponentDeprecatedBanner } from "@/components/portal/catalog/portal-component-deprecated-banner";
+import { PortalComponentStatusBadge } from "@/components/portal/catalog/portal-component-status-badge";
+import { PortalCodeBlock } from "@/components/portal/documentation/portal-code-block";
+import { PortalPageActions } from "@/components/portal/page-actions/portal-page-actions";
+import { PortalSourcePill } from "@/components/portal/sources/portal-source-pill";
 import {
   PortalHeaderDivider,
   PortalPageContainer,
   PortalPageWithToc,
   PortalSection,
-} from "@/components/portal/portal-shell";
-import { TableOfContents } from "@/components/portal/table-of-contents";
+} from "@/components/portal/layout/portal-shell";
+import { TableOfContents } from "@/components/portal/layout/table-of-contents";
 import { getComponentDoc } from "@/lib/component-docs";
 import { hasUiKitProps } from "@/lib/ui-kit/props-from-manifest";
-import { loadMergedDesignChecklist } from "@/lib/portal/design-checklist";
-import { portalClass } from "@/lib/portal/classes";
-import { PORTAL_COMPONENTS_WEB_PATH } from "@/lib/portal/component-routes";
+import { loadMergedDesignChecklist } from "@/lib/portal/documentation/design-checklist";
+import { portalClass } from "@/lib/portal/core/classes";
+import { PORTAL_COMPONENTS_WEB_PATH } from "@/lib/portal/components/routes";
 import { loadComponentDocument } from "@/lib/markdown/load-component-document";
 import { parseComponentRouteSlug } from "@/lib/markdown/parse-component-route-slug";
-import { buildComponentOpenGraphMetadata } from "@/lib/portal/component-open-graph";
+import { buildComponentOpenGraphMetadata } from "@/lib/portal/components/open-graph";
 import {
   buildComponentPageToc,
 } from "@/lib/toc/get-toc";

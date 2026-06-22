@@ -5,7 +5,7 @@ import { getUiKitPropsForSlug } from "@/lib/ui-kit/props-from-manifest";
 import {
   getContentDocumentationBlocks,
   getLivePreviewItems,
-} from "@/lib/portal/live-preview-blocks";
+} from "@/lib/portal/documentation/live-preview-blocks";
 
 import { documentationToMarkdown } from "./documentation-block-to-markdown";
 import {
@@ -17,14 +17,7 @@ import {
   mdLink,
   mdParagraph,
 } from "./md-utils";
-
-function resolveSiteBaseUrl(): string {
-  const fromEnv =
-    process.env.NEXT_PUBLIC_SITE_URL?.trim() ||
-    process.env.VERCEL_URL?.trim();
-  if (!fromEnv) return "http://127.0.0.1:3000";
-  return fromEnv.startsWith("http") ? fromEnv : `https://${fromEnv}`;
-}
+import { resolveSiteBaseUrl } from "./site-base-url";
 
 export function componentDocToMarkdown(doc: Component): string {
   const baseUrl = resolveSiteBaseUrl();

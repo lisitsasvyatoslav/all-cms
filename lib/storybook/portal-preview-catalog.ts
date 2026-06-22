@@ -1,7 +1,12 @@
 import type { PortalPreviewEntry } from "./portal-preview-config";
+import { UI_KIT_SLUGS } from "@next-app/ui-kit";
 
-/** Каталог превью на портале — без импорта *.stories (быстрее cold compile в dev). */
-export const portalPreviewCatalogBySlug = {
+const basePreview = (): PortalPreviewEntry[] => [
+  { storyId: "Default", title: "По умолчанию" },
+  { storyId: "RelatedPreview", title: "Related preview" },
+];
+
+const PORTAL_PREVIEW_EXTENDED: Record<string, PortalPreviewEntry[]> = {
   button: [
     { storyId: "Default", title: "По умолчанию" },
     { storyId: "RelatedPreview", title: "Related preview" },
@@ -41,11 +46,6 @@ export const portalPreviewCatalogBySlug = {
     { storyId: "RelatedPreview", title: "Related preview" },
     { storyId: "Group", title: "Группа" },
   ],
-  "icon-button": [
-    { storyId: "Default", title: "По умолчанию" },
-    { storyId: "RelatedPreview", title: "Related preview" },
-    { storyId: "Sizes", title: "Размеры" },
-  ],
   modal: [
     { storyId: "Default", title: "По умолчанию" },
     { storyId: "RelatedPreview", title: "Related preview" },
@@ -60,9 +60,9 @@ export const portalPreviewCatalogBySlug = {
     { storyId: "RelatedPreview", title: "Related preview" },
     { storyId: "Group", title: "Группа" },
   ],
-  alert: [
-    { storyId: "Default", title: "По умолчанию" },
-    { storyId: "RelatedPreview", title: "Related preview" },
-    { storyId: "Variants", title: "Варианты" },
-  ],
+};
+
+export const portalPreviewCatalogBySlug = {
+  ...Object.fromEntries(UI_KIT_SLUGS.map((slug) => [slug, basePreview()])),
+  ...PORTAL_PREVIEW_EXTENDED,
 } as const satisfies Record<string, PortalPreviewEntry[]>;

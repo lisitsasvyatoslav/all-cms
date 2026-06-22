@@ -8,7 +8,11 @@ import * as migration_20260610_150200_fix_components_design_checklist_schema fro
 import * as migration_20260616_120000_portal_seo_global from './20260616_120000_portal_seo_global';
 import * as migration_20260617_120000_text_glossary from './20260617_120000_text_glossary';
 import * as migration_20260618_120000_glossary_letter from './20260618_120000_glossary_letter';
+import * as migration_20260618_213235_brand_pages from './20260618_213235_brand_pages';
 import * as migration_20260619_120000_glossary_drop_sort_order from './20260619_120000_glossary_drop_sort_order';
+import * as migration_20260619_140000_brand_figure_logo_blocks from './20260619_140000_brand_figure_logo_blocks';
+import * as migration_20260622_120000_brand_color_to_brand_pages from './20260622_120000_brand_color_to_brand_pages';
+import * as migration_20260623_120000_ds_overview from './20260623_120000_ds_overview';
 
 export const migrations = [
   {
@@ -24,7 +28,7 @@ export const migrations = [
   {
     up: migration_20260609_134127_documentation_blocks.up,
     down: migration_20260609_134127_documentation_blocks.down,
-    name: '20260609_134127_documentation_blocks'
+    name: '20260609_134127_documentation_blocks',
   },
   {
     up: migration_20260610_120000_component_related_previews.up,
@@ -62,8 +66,28 @@ export const migrations = [
     name: '20260618_120000_glossary_letter',
   },
   {
+    up: migration_20260618_213235_brand_pages.up,
+    down: migration_20260618_213235_brand_pages.down,
+    name: '20260618_213235_brand_pages',
+  },
+  {
     up: migration_20260619_120000_glossary_drop_sort_order.up,
     down: migration_20260619_120000_glossary_drop_sort_order.down,
     name: '20260619_120000_glossary_drop_sort_order',
+  },
+  {
+    up: migration_20260619_140000_brand_figure_logo_blocks.up,
+    down: migration_20260619_140000_brand_figure_logo_blocks.down,
+    name: '20260619_140000_brand_figure_logo_blocks',
+  },
+  {
+    up: migration_20260622_120000_brand_color_to_brand_pages.up,
+    down: migration_20260622_120000_brand_color_to_brand_pages.down,
+    name: '20260622_120000_brand_color_to_brand_pages',
+  },
+  {
+    up: migration_20260623_120000_ds_overview.up,
+    down: migration_20260623_120000_ds_overview.down,
+    name: '20260623_120000_ds_overview',
   },
 ];

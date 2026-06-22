@@ -1,10 +1,10 @@
 import { Heading, Text } from "@radix-ui/themes";
 import type { Metadata } from "next";
 
-import { PortalPageContainer } from "@/components/portal/portal-shell";
-import { buildCustomPortalShareMetadata } from "@/lib/portal/resolve-portal-seo-metadata";
-import { loadPortalSeo } from "@/lib/portal/load-portal-seo";
-import { PORTAL_TEXT_PATH } from "@/lib/portal/portal-base-path";
+import { PortalPageContainer } from "@/components/portal/layout/portal-shell";
+import { buildCustomPortalShareMetadata } from "@/lib/portal/seo/resolve-metadata";
+import { loadPortalSeo } from "@/lib/portal/seo/load";
+import { PORTAL_TEXT_PATH } from "@/lib/portal/core/portal-base-path";
 
 export const dynamic = "force-dynamic";
 

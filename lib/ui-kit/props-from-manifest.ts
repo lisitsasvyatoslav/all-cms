@@ -1,6 +1,6 @@
 import manifest from "@next-app/ui-kit/props-manifest.json";
 
-import type { PortalPropsTableRow } from "@/components/portal/portal-props-table";
+import type { PortalPropsTableRow } from "@/components/portal/documentation/portal-props-table";
 
 import type { PropsManifest, PropsManifestProp } from "./props-manifest-types";
 

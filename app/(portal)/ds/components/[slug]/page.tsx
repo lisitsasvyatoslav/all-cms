@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 
-import { componentWebPagePath } from "@/lib/portal/component-routes";
+import { componentWebPagePath } from "@/lib/portal/components/routes";
 
 type Props = { params: Promise<{ slug: string }> };
 

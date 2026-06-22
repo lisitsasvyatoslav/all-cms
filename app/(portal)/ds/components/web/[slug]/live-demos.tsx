@@ -2,11 +2,11 @@
 
 import { Box, Code, Flex, Strong, Text } from "@radix-ui/themes";
 
-import { PortalCollapsibleCodeBlock } from "@/components/portal/portal-collapsible-code-block";
-import { PortalDocumentationBlockLabel } from "@/components/portal/portal-documentation-block-label";
-import { StorybookOpenLink } from "@/components/portal/storybook-open-link";
-import { portalClass } from "@/lib/portal/classes";
-import { getLivePreviewItems } from "@/lib/portal/live-preview-blocks";
+import { PortalCollapsibleCodeBlock } from "@/components/portal/documentation/portal-collapsible-code-block";
+import { PortalDocumentationBlockLabel } from "@/components/portal/documentation/portal-documentation-block-label";
+import { StorybookOpenLink } from "@/components/portal/storybook/storybook-open-link";
+import { portalClass } from "@/lib/portal/core/classes";
+import { getLivePreviewItems } from "@/lib/portal/documentation/live-preview-blocks";
 
 import type { DocumentationBlock } from "./documentation";
 

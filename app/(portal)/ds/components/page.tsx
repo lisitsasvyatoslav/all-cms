@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 
-import { PORTAL_COMPONENTS_WEB_PATH } from "@/lib/portal/component-routes";
+import { PORTAL_COMPONENTS_WEB_PATH } from "@/lib/portal/components/routes";
 
 /** /components → каталог /components/web */
 export default function ComponentsIndexRedirect() {

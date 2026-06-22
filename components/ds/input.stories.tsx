@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Box, Flex, Text, TextField } from "@radix-ui/themes";
 
-import { portalClass } from "@/lib/portal/classes";
+import { portalClass } from "@/lib/portal/core/classes";
 import { portalPreviewCatalogBySlug } from "@/lib/storybook/portal-preview-catalog";
 import { relatedPreviewDecorator, relatedPreviewStoryParameters } from "@/lib/storybook/related-preview-story";
 

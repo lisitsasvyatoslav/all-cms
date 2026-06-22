@@ -1,4 +1,4 @@
-import { glossaryLetterFromPreferred } from "@/lib/portal/glossary-letter";
+import { glossaryLetterFromPreferred } from "@/lib/portal/glossary/letter";
 
 type GlossaryTermLike = {
   preferred?: string | null;

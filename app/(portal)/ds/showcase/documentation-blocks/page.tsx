@@ -3,19 +3,19 @@ import NextLink from "next/link";
 import { getPayload } from "payload";
 
 import config from "@payload-config";
-import { PortalBreadcrumbs } from "@/components/portal/portal-breadcrumbs";
-import { PortalSourcePill } from "@/components/portal/portal-source-pill";
+import { PortalBreadcrumbs } from "@/components/portal/layout/portal-breadcrumbs";
+import { PortalSourcePill } from "@/components/portal/sources/portal-source-pill";
 import {
   PortalHeaderDivider,
   PortalPageContainer,
   PortalPageWithToc,
   PortalSection,
-} from "@/components/portal/portal-shell";
-import { TableOfContents } from "@/components/portal/table-of-contents";
-import { buildShowcaseOpenGraphMetadata } from "@/lib/portal/component-open-graph";
-import { componentWebPagePath } from "@/lib/portal/component-routes";
-import { portalClass } from "@/lib/portal/classes";
-import { buildDocumentationBlocksShowcase } from "@/lib/portal/documentation-blocks-showcase";
+} from "@/components/portal/layout/portal-shell";
+import { TableOfContents } from "@/components/portal/layout/table-of-contents";
+import { buildShowcaseOpenGraphMetadata } from "@/lib/portal/components/open-graph";
+import { componentWebPagePath } from "@/lib/portal/components/routes";
+import { portalClass } from "@/lib/portal/core/classes";
+import { buildDocumentationBlocksShowcase } from "@/lib/portal/documentation/blocks-showcase";
 import { buildPortalPageToc, getContentDocumentationBlocks } from "@/lib/toc/get-toc";
 
 import { ComponentDocumentation } from "../../components/web/[slug]/documentation";

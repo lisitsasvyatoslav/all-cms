@@ -17,7 +17,7 @@ import {
   type PortalAppearance,
   PORTAL_APPEARANCE_STORAGE_KEY,
 } from "@/lib/radix/portal-appearance";
-import { portalClass } from "@/lib/portal/classes";
+import { portalClass } from "@/lib/portal/core/classes";
 import { portalRadixThemeProps } from "@/lib/radix/portal-theme-config";
 
 type PortalThemeContextValue = {

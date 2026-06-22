@@ -73,6 +73,7 @@ export interface Config {
     components: Component;
     'design-checklist-items': DesignChecklistItem;
     'glossary-terms': GlossaryTerm;
+    'brand-pages': BrandPage;
     colors: Color;
     icons: Icon;
     notes: Note;
@@ -95,6 +96,7 @@ export interface Config {
     components: ComponentsSelect<false> | ComponentsSelect<true>;
     'design-checklist-items': DesignChecklistItemsSelect<false> | DesignChecklistItemsSelect<true>;
     'glossary-terms': GlossaryTermsSelect<false> | GlossaryTermsSelect<true>;
+    'brand-pages': BrandPagesSelect<false> | BrandPagesSelect<true>;
     colors: ColorsSelect<false> | ColorsSelect<true>;
     icons: IconsSelect<false> | IconsSelect<true>;
     notes: NotesSelect<false> | NotesSelect<true>;
@@ -114,11 +116,15 @@ export interface Config {
     'portal-sources': PortalSource;
     'portal-seo': PortalSeo;
     'text-glossary': TextGlossary;
+    'brand-overview': BrandOverview;
+    'ds-overview': DsOverview;
   };
   globalsSelect: {
     'portal-sources': PortalSourcesSelect<false> | PortalSourcesSelect<true>;
     'portal-seo': PortalSeoSelect<false> | PortalSeoSelect<true>;
     'text-glossary': TextGlossarySelect<false> | TextGlossarySelect<true>;
+    'brand-overview': BrandOverviewSelect<false> | BrandOverviewSelect<true>;
+    'ds-overview': DsOverviewSelect<false> | DsOverviewSelect<true>;
   };
   locale: null;
   widgets: {
@@ -628,6 +634,345 @@ export interface GlossaryTerm {
   createdAt: string;
 }
 /**
+ * Контент страниц /brand/*: логотипы, иконки, типографика, палитра, визуальный стиль.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "brand-pages".
+ */
+export interface BrandPage {
+  id: number;
+  slug: 'logos' | 'icons' | 'typography' | 'color' | 'visual-style' | 'social-media';
+  sortOrder?: number | null;
+  title: string;
+  description: string;
+  intro: string;
+  sections?:
+    | (
+        | {
+            /**
+             * Латиница и дефис, например logo-background.
+             */
+            sectionId: string;
+            heading?: string | null;
+            blocks?:
+              | (
+                  | {
+                      text: string;
+                      id?: string | null;
+                      blockName?: string | null;
+                      blockType: 'subheading';
+                    }
+                  | {
+                      text: string;
+                      id?: string | null;
+                      blockName?: string | null;
+                      blockType: 'paragraph';
+                    }
+                  | {
+                      items?:
+                        | {
+                            text: string;
+                            id?: string | null;
+                          }[]
+                        | null;
+                      id?: string | null;
+                      blockName?: string | null;
+                      blockType: 'list';
+                    }
+                  | {
+                      src: string;
+                      alt: string;
+                      id?: string | null;
+                      blockName?: string | null;
+                      blockType: 'figure';
+                    }
+                )[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'contentBlocks';
+          }
+        | {
+            /**
+             * Необязательный якорь для всей секции.
+             */
+            sectionId?: string | null;
+            items: {
+              anchorId: string;
+              heading: string;
+              blocks?:
+                | (
+                    | {
+                        text: string;
+                        id?: string | null;
+                        blockName?: string | null;
+                        blockType: 'subheading';
+                      }
+                    | {
+                        text: string;
+                        id?: string | null;
+                        blockName?: string | null;
+                        blockType: 'paragraph';
+                      }
+                    | {
+                        items?:
+                          | {
+                              text: string;
+                              id?: string | null;
+                            }[]
+                          | null;
+                        id?: string | null;
+                        blockName?: string | null;
+                        blockType: 'list';
+                      }
+                    | {
+                        src: string;
+                        alt: string;
+                        id?: string | null;
+                        blockName?: string | null;
+                        blockType: 'figure';
+                      }
+                  )[]
+                | null;
+              id?: string | null;
+            }[];
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'contentAccordion';
+          }
+        | {
+            sectionId: string;
+            heading: string;
+            groups: {
+              groupId: string;
+              title: string;
+              rows: {
+                name: string;
+                fontSize: number;
+                lineHeight: number;
+                letterSpacing: number;
+                weight: number;
+                id?: string | null;
+              }[];
+              id?: string | null;
+            }[];
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'typographyScale';
+          }
+        | {
+            sectionId: string;
+            heading: string;
+            desktopLabel: string;
+            downloadHref: string;
+            downloadLabel: string;
+            cssLabel: string;
+            cssCode: string;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'fontSetup';
+          }
+        | {
+            sectionId: string;
+            heading: string;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'colorSystem';
+          }
+        | {
+            sectionId: string;
+            heading: string;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'colorGradients';
+          }
+        | {
+            sectionId: string;
+            heading: string;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'colorChartPalette';
+          }
+        | {
+            sectionId: string;
+            heading: string;
+            rules: {
+              label: string;
+              surface: 'light' | 'dark';
+              logoSrc: string;
+              id?: string | null;
+            }[];
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'logoBackgroundGrid';
+          }
+        | {
+            sectionId: string;
+            heading: string;
+            items: {
+              text: string;
+              id?: string | null;
+            }[];
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'logoClearspace';
+          }
+        | {
+            sectionId: string;
+            heading: string;
+            intro?: string | null;
+            items: {
+              imageSrc: string;
+              text: string;
+              id?: string | null;
+            }[];
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'logoMisuseGrid';
+          }
+      )[]
+    | null;
+  /**
+   * Если пусто — используется заголовок страницы.
+   */
+  shareTitle?: string | null;
+  /**
+   * Если пусто — используется описание страницы.
+   */
+  shareDescription?: string | null;
+  hierarchyBase?: {
+    title?: string | null;
+    description?: string | null;
+    tokens?:
+      | {
+          name: string;
+          hex: string;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  hierarchySemantic?: {
+    title?: string | null;
+    description?: string | null;
+    tokens?:
+      | {
+          name: string;
+          hex: string;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  hierarchyComponent?: {
+    title?: string | null;
+    description?: string | null;
+    tokens?:
+      | {
+          name: string;
+          hex: string;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  hierarchyMappings?:
+    | {
+        from: string;
+        to: string;
+        id?: string | null;
+      }[]
+    | null;
+  semanticsSections?:
+    | {
+        title: string;
+        body: string;
+        items?:
+          | {
+              text: string;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  semanticsNamingParts?:
+    | {
+        part: string;
+        required?: boolean | null;
+        examples?:
+          | {
+              text: string;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  semanticsExamples?:
+    | {
+        token: string;
+        description: string;
+        id?: string | null;
+      }[]
+    | null;
+  componentTokensIntro?:
+    | {
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
+  componentTokensNamingParts?:
+    | {
+        part: string;
+        examples?:
+          | {
+              text: string;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  componentTokensExamples?:
+    | {
+        token: string;
+        description: string;
+        id?: string | null;
+      }[]
+    | null;
+  gradients?:
+    | {
+        gradientId: string;
+        title: string;
+        angle?: number | null;
+        stops: {
+          hex: string;
+          rgb: string;
+          id?: string | null;
+        }[];
+        id?: string | null;
+      }[]
+    | null;
+  chartPaletteLightLabel?: string | null;
+  chartPaletteLight?:
+    | {
+        hex: string;
+        rgb: string;
+        name?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  chartPaletteDarkLabel?: string | null;
+  chartPaletteDark?:
+    | {
+        hex: string;
+        rgb: string;
+        name?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * Цветовые токены / образцы палитры; вкладка «Документация» — те же 24 блока, что у components.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1008,6 +1353,24 @@ export interface PayloadMcpApiKey {
      */
     delete?: boolean | null;
   };
+  brandPages?: {
+    /**
+     * Allow clients to find brand-pages.
+     */
+    find?: boolean | null;
+    /**
+     * Allow clients to create brand-pages.
+     */
+    create?: boolean | null;
+    /**
+     * Allow clients to update brand-pages.
+     */
+    update?: boolean | null;
+    /**
+     * Allow clients to delete brand-pages.
+     */
+    delete?: boolean | null;
+  };
   portalSources?: {
     /**
      * Allow clients to find portal-sources global.
@@ -1035,6 +1398,26 @@ export interface PayloadMcpApiKey {
     find?: boolean | null;
     /**
      * Allow clients to update text-glossary global.
+     */
+    update?: boolean | null;
+  };
+  brandOverview?: {
+    /**
+     * Allow clients to find brand-overview global.
+     */
+    find?: boolean | null;
+    /**
+     * Allow clients to update brand-overview global.
+     */
+    update?: boolean | null;
+  };
+  dsOverview?: {
+    /**
+     * Allow clients to find ds-overview global.
+     */
+    find?: boolean | null;
+    /**
+     * Allow clients to update ds-overview global.
      */
     update?: boolean | null;
   };
@@ -1102,6 +1485,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'glossary-terms';
         value: number | GlossaryTerm;
+      } | null)
+    | ({
+        relationTo: 'brand-pages';
+        value: number | BrandPage;
       } | null)
     | ({
         relationTo: 'colors';
@@ -1499,6 +1886,368 @@ export interface GlossaryTermsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "brand-pages_select".
+ */
+export interface BrandPagesSelect<T extends boolean = true> {
+  slug?: T;
+  sortOrder?: T;
+  title?: T;
+  description?: T;
+  intro?: T;
+  sections?:
+    | T
+    | {
+        contentBlocks?:
+          | T
+          | {
+              sectionId?: T;
+              heading?: T;
+              blocks?:
+                | T
+                | {
+                    subheading?:
+                      | T
+                      | {
+                          text?: T;
+                          id?: T;
+                          blockName?: T;
+                        };
+                    paragraph?:
+                      | T
+                      | {
+                          text?: T;
+                          id?: T;
+                          blockName?: T;
+                        };
+                    list?:
+                      | T
+                      | {
+                          items?:
+                            | T
+                            | {
+                                text?: T;
+                                id?: T;
+                              };
+                          id?: T;
+                          blockName?: T;
+                        };
+                    figure?:
+                      | T
+                      | {
+                          src?: T;
+                          alt?: T;
+                          id?: T;
+                          blockName?: T;
+                        };
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        contentAccordion?:
+          | T
+          | {
+              sectionId?: T;
+              items?:
+                | T
+                | {
+                    anchorId?: T;
+                    heading?: T;
+                    blocks?:
+                      | T
+                      | {
+                          subheading?:
+                            | T
+                            | {
+                                text?: T;
+                                id?: T;
+                                blockName?: T;
+                              };
+                          paragraph?:
+                            | T
+                            | {
+                                text?: T;
+                                id?: T;
+                                blockName?: T;
+                              };
+                          list?:
+                            | T
+                            | {
+                                items?:
+                                  | T
+                                  | {
+                                      text?: T;
+                                      id?: T;
+                                    };
+                                id?: T;
+                                blockName?: T;
+                              };
+                          figure?:
+                            | T
+                            | {
+                                src?: T;
+                                alt?: T;
+                                id?: T;
+                                blockName?: T;
+                              };
+                        };
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        typographyScale?:
+          | T
+          | {
+              sectionId?: T;
+              heading?: T;
+              groups?:
+                | T
+                | {
+                    groupId?: T;
+                    title?: T;
+                    rows?:
+                      | T
+                      | {
+                          name?: T;
+                          fontSize?: T;
+                          lineHeight?: T;
+                          letterSpacing?: T;
+                          weight?: T;
+                          id?: T;
+                        };
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        fontSetup?:
+          | T
+          | {
+              sectionId?: T;
+              heading?: T;
+              desktopLabel?: T;
+              downloadHref?: T;
+              downloadLabel?: T;
+              cssLabel?: T;
+              cssCode?: T;
+              id?: T;
+              blockName?: T;
+            };
+        colorSystem?:
+          | T
+          | {
+              sectionId?: T;
+              heading?: T;
+              id?: T;
+              blockName?: T;
+            };
+        colorGradients?:
+          | T
+          | {
+              sectionId?: T;
+              heading?: T;
+              id?: T;
+              blockName?: T;
+            };
+        colorChartPalette?:
+          | T
+          | {
+              sectionId?: T;
+              heading?: T;
+              id?: T;
+              blockName?: T;
+            };
+        logoBackgroundGrid?:
+          | T
+          | {
+              sectionId?: T;
+              heading?: T;
+              rules?:
+                | T
+                | {
+                    label?: T;
+                    surface?: T;
+                    logoSrc?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        logoClearspace?:
+          | T
+          | {
+              sectionId?: T;
+              heading?: T;
+              items?:
+                | T
+                | {
+                    text?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        logoMisuseGrid?:
+          | T
+          | {
+              sectionId?: T;
+              heading?: T;
+              intro?: T;
+              items?:
+                | T
+                | {
+                    imageSrc?: T;
+                    text?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+      };
+  shareTitle?: T;
+  shareDescription?: T;
+  hierarchyBase?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        tokens?:
+          | T
+          | {
+              name?: T;
+              hex?: T;
+              id?: T;
+            };
+      };
+  hierarchySemantic?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        tokens?:
+          | T
+          | {
+              name?: T;
+              hex?: T;
+              id?: T;
+            };
+      };
+  hierarchyComponent?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        tokens?:
+          | T
+          | {
+              name?: T;
+              hex?: T;
+              id?: T;
+            };
+      };
+  hierarchyMappings?:
+    | T
+    | {
+        from?: T;
+        to?: T;
+        id?: T;
+      };
+  semanticsSections?:
+    | T
+    | {
+        title?: T;
+        body?: T;
+        items?:
+          | T
+          | {
+              text?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  semanticsNamingParts?:
+    | T
+    | {
+        part?: T;
+        required?: T;
+        examples?:
+          | T
+          | {
+              text?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  semanticsExamples?:
+    | T
+    | {
+        token?: T;
+        description?: T;
+        id?: T;
+      };
+  componentTokensIntro?:
+    | T
+    | {
+        text?: T;
+        id?: T;
+      };
+  componentTokensNamingParts?:
+    | T
+    | {
+        part?: T;
+        examples?:
+          | T
+          | {
+              text?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  componentTokensExamples?:
+    | T
+    | {
+        token?: T;
+        description?: T;
+        id?: T;
+      };
+  gradients?:
+    | T
+    | {
+        gradientId?: T;
+        title?: T;
+        angle?: T;
+        stops?:
+          | T
+          | {
+              hex?: T;
+              rgb?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  chartPaletteLightLabel?: T;
+  chartPaletteLight?:
+    | T
+    | {
+        hex?: T;
+        rgb?: T;
+        name?: T;
+        id?: T;
+      };
+  chartPaletteDarkLabel?: T;
+  chartPaletteDark?:
+    | T
+    | {
+        hex?: T;
+        rgb?: T;
+        name?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "colors_select".
  */
 export interface ColorsSelect<T extends boolean = true> {
@@ -1763,6 +2512,14 @@ export interface PayloadMcpApiKeysSelect<T extends boolean = true> {
         update?: T;
         delete?: T;
       };
+  brandPages?:
+    | T
+    | {
+        find?: T;
+        create?: T;
+        update?: T;
+        delete?: T;
+      };
   portalSources?:
     | T
     | {
@@ -1776,6 +2533,18 @@ export interface PayloadMcpApiKeysSelect<T extends boolean = true> {
         update?: T;
       };
   textGlossary?:
+    | T
+    | {
+        find?: T;
+        update?: T;
+      };
+  brandOverview?:
+    | T
+    | {
+        find?: T;
+        update?: T;
+      };
+  dsOverview?:
     | T
     | {
         find?: T;
@@ -1936,6 +2705,69 @@ export interface TextGlossary {
   createdAt?: string | null;
 }
 /**
+ * Заголовок и вводный текст на странице /brand. Карточки разделов — из коллекции «Brand · Страницы».
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "brand-overview".
+ */
+export interface BrandOverview {
+  id: number;
+  title?: string | null;
+  intro?: string | null;
+  shareTitle?: string | null;
+  shareDescription?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Секции «Обзор» и «Источники» на странице /ds.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ds-overview".
+ */
+export interface DsOverview {
+  id: number;
+  eyebrow?: string | null;
+  title?: string | null;
+  lead?: string | null;
+  capabilitiesHeading?: string | null;
+  capabilities?:
+    | {
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
+  stackHeading?: string | null;
+  stackItems?:
+    | {
+        label: string;
+        id?: string | null;
+      }[]
+    | null;
+  navigationNote?: string | null;
+  roadmapHeading?: string | null;
+  roadmap?:
+    | {
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
+  sourcesHeading?: string | null;
+  sourcesIntro?: string | null;
+  sourceItems?:
+    | {
+        label: string;
+        description?: string | null;
+        href: string;
+        icon?: ('figma' | 'github' | 'storybook' | 'docs' | 'markdown' | 'link') | null;
+        external?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "portal-sources_select".
  */
@@ -1990,6 +2822,65 @@ export interface TextGlossarySelect<T extends boolean = true> {
   termsSectionHeading?: T;
   shareTitle?: T;
   shareDescription?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "brand-overview_select".
+ */
+export interface BrandOverviewSelect<T extends boolean = true> {
+  title?: T;
+  intro?: T;
+  shareTitle?: T;
+  shareDescription?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ds-overview_select".
+ */
+export interface DsOverviewSelect<T extends boolean = true> {
+  eyebrow?: T;
+  title?: T;
+  lead?: T;
+  capabilitiesHeading?: T;
+  capabilities?:
+    | T
+    | {
+        text?: T;
+        id?: T;
+      };
+  stackHeading?: T;
+  stackItems?:
+    | T
+    | {
+        label?: T;
+        id?: T;
+      };
+  navigationNote?: T;
+  roadmapHeading?: T;
+  roadmap?:
+    | T
+    | {
+        text?: T;
+        id?: T;
+      };
+  sourcesHeading?: T;
+  sourcesIntro?: T;
+  sourceItems?:
+    | T
+    | {
+        label?: T;
+        description?: T;
+        href?: T;
+        icon?: T;
+        external?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

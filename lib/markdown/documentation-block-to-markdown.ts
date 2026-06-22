@@ -1,6 +1,6 @@
 import type { Component, Media } from "@/payload-types";
 
-import { componentWebPagePath } from "@/lib/portal/component-routes";
+import { componentWebPagePath } from "@/lib/portal/components/routes";
 
 import {
   mdBulletList,

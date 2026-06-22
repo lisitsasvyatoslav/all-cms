@@ -1,45 +1,46 @@
 "use client";
 
-import { Box, Flex, Link, Text } from "@radix-ui/themes";
-import type { Component } from "@/payload-types";
+import { Box, Flex } from "@radix-ui/themes";
+import type { PortalComponentNavGroup } from "@/lib/portal/components/load-nav-groups";
 import NextLink from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 
 import { PortalAppearanceToggle } from "@/components/providers/portal-theme-provider";
-import { PortalComponentStatusBadge } from "@/components/portal/portal-component-status-badge";
-import { PortalSidebarAreaNav } from "@/components/portal/portal-sidebar-area-nav";
-import { PortalSidebarFrameworkFilter } from "@/components/portal/portal-sidebar-framework-filter";
-import { PortalSidebarLink } from "@/components/portal/portal-nav-item";
-import { portalClass } from "@/lib/portal/classes";
+import { PortalComponentStatusBadge } from "@/components/portal/catalog/portal-component-status-badge";
+import { PortalSidebarFrameworkFilter } from "@/components/portal/navigation/portal-sidebar-framework-filter";
+import { PortalSidebarLink } from "@/components/portal/navigation/portal-nav-item";
+import { portalClass } from "@/lib/portal/core/classes";
 import {
   portalAreaFromPathname,
   portalHomeHash,
   PORTAL_BRAND_PATH,
   PORTAL_TEXT_GLOSSARY_PATH,
   PORTAL_TEXT_PATH,
-} from "@/lib/portal/portal-base-path";
+} from "@/lib/portal/core/portal-base-path";
+import type { BrandNavItem } from "@/lib/portal/brand/nav";
 import {
   componentSlugFromWebPathname,
   componentWebPagePath,
   PORTAL_COMPONENTS_WEB_PATH,
   PORTAL_HOME_PATH,
   PORTAL_SHOWCASE_DOCUMENTATION_BLOCKS_PATH,
-} from "@/lib/portal/component-routes";
+} from "@/lib/portal/components/routes";
 
 export type SidebarComponent = {
   slug: string;
   name: string;
-  status?: Component["status"] | null;
+  status?: PortalComponentNavGroup["items"][number]["status"] | null;
 };
 
 type Props = {
-  components: SidebarComponent[];
+  componentGroups: PortalComponentNavGroup[];
+  brandNavItems: BrandNavItem[];
 };
 
 const SIDEBAR_SCROLLBAR_HIDE_MS = 700;
 
-export function PortalSidebar({ components }: Props) {
+export function PortalSidebar({ componentGroups, brandNavItems }: Props) {
   const pathname = usePathname();
   const [hash, setHash] = useState("#overview");
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -83,27 +84,16 @@ export function PortalSidebar({ components }: Props) {
 
   return (
     <Flex direction="column" className="portal-sidebar">
-      <Box px="4" py="4">
-        <Link asChild size="3" weight="bold">
-          <NextLink href={PORTAL_HOME_PATH} className={portalClass.linkPlain}>
-            Design System
-          </NextLink>
-        </Link>
-        <Text size="1" color="gray" mt="1" as="p">
-          Документация
-        </Text>
-        {area === "ds" ? (
-          <Box mt="3">
-            <PortalSidebarFrameworkFilter />
-          </Box>
-        ) : null}
-      </Box>
+      {area === "ds" ? (
+        <Box px="4" pt="3" pb="2">
+          <PortalSidebarFrameworkFilter />
+        </Box>
+      ) : (
+        <Box pt="3" />
+      )}
 
       <div ref={scrollRef} className={portalClass.sidebarScroll}>
         <nav className={portalClass.sidebarNav}>
-          <SidebarSectionLabel>Главная</SidebarSectionLabel>
-          <PortalSidebarAreaNav />
-
           {area === "ds" ? (
             <>
               <PortalSidebarLink
@@ -120,26 +110,23 @@ export function PortalSidebar({ components }: Props) {
               <PortalSidebarLink href={PORTAL_COMPONENTS_WEB_PATH} active={onComponentsWeb}>
                 Все компоненты
               </PortalSidebarLink>
-              {components.map((c) => (
-                <PortalSidebarLink
-                  key={c.slug}
-                  href={componentWebPagePath(c.slug)}
-                  active={activeComponentSlug === c.slug}
-                  badge={
-                    <PortalComponentStatusBadge status={c.status} variant="sidebar" />
-                  }
-                >
-                  {c.name}
-                </PortalSidebarLink>
+              {componentGroups.map((group) => (
+                <Box key={group.id}>
+                  <SidebarSectionLabel>{group.name}</SidebarSectionLabel>
+                  {group.items.map((c) => (
+                    <PortalSidebarLink
+                      key={c.slug}
+                      href={componentWebPagePath(c.slug)}
+                      active={activeComponentSlug === c.slug}
+                      badge={
+                        <PortalComponentStatusBadge status={c.status} variant="sidebar" />
+                      }
+                    >
+                      {c.name}
+                    </PortalSidebarLink>
+                  ))}
+                </Box>
               ))}
-
-              <SidebarSectionLabel>Основы</SidebarSectionLabel>
-              <PortalSidebarLink href={portalHomeHash("#colors")} active={onHome && hash === "#colors"}>
-                Цвета
-              </PortalSidebarLink>
-              <PortalSidebarLink href={portalHomeHash("#icons")} active={onHome && hash === "#icons"}>
-                Иконки
-              </PortalSidebarLink>
 
               <SidebarSectionLabel>Справочник</SidebarSectionLabel>
               <PortalSidebarLink
@@ -166,9 +153,20 @@ export function PortalSidebar({ components }: Props) {
           ) : null}
 
           {area === "brand" ? (
-            <PortalSidebarLink href={PORTAL_BRAND_PATH} active={onBrandHome}>
-              Обзор
-            </PortalSidebarLink>
+            <>
+              <PortalSidebarLink href={PORTAL_BRAND_PATH} active={onBrandHome}>
+                Обзор
+              </PortalSidebarLink>
+              {brandNavItems.map((item) => (
+                <PortalSidebarLink
+                  key={item.href}
+                  href={item.href}
+                  active={pathname === item.href}
+                >
+                  {item.label}
+                </PortalSidebarLink>
+              ))}
+            </>
           ) : null}
         </nav>
       </div>

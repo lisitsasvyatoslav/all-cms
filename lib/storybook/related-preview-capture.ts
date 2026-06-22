@@ -1,4 +1,4 @@
-import { RELATED_PREVIEW_HEIGHT, RELATED_PREVIEW_WIDTH } from "@/lib/portal/related-preview-layout";
+import { RELATED_PREVIEW_HEIGHT, RELATED_PREVIEW_WIDTH } from "@/lib/portal/documentation/related-preview-layout";
 import { PORTAL_EMBED_QUERY_PARAM } from "@/lib/storybook/portal-embed-mode";
 import { portalPreviewCatalogBySlug } from "@/lib/storybook/portal-preview-catalog";
 import { storybookStoryId } from "@/lib/storybook/portal-preview-config";

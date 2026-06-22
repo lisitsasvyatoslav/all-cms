@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 
-import { TextGlossaryPageView } from "@/components/portal/text-glossary-page";
-import { loadTextGlossaryContent } from "@/lib/portal/load-text-glossary";
-import { loadPortalSeo } from "@/lib/portal/load-portal-seo";
-import { PORTAL_TEXT_GLOSSARY_PATH } from "@/lib/portal/portal-base-path";
-import { buildCustomPortalShareMetadata } from "@/lib/portal/resolve-portal-seo-metadata";
+import { TextGlossaryPageView } from "@/components/portal/glossary/text-glossary-page";
+import { loadTextGlossaryContent } from "@/lib/portal/glossary/load";
+import { loadPortalSeo } from "@/lib/portal/seo/load";
+import { PORTAL_TEXT_GLOSSARY_PATH } from "@/lib/portal/core/portal-base-path";
+import { buildCustomPortalShareMetadata } from "@/lib/portal/seo/resolve-metadata";
 
 export const dynamic = "force-dynamic";
 

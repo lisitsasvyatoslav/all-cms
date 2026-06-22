@@ -75,6 +75,52 @@ npm run storybook
 
 Storybook: [http://127.0.0.1:6006](http://127.0.0.1:6006)
 
+## 6. MCP в Cursor
+
+MCP-сервер портала даёт агенту в Cursor доступ к документации компонентов через Payload.
+
+### Быстрая установка
+
+1. **Создайте MCP API key** в [Payload Admin → MCP → API Keys](http://127.0.0.1:3000/admin/collections/payload-mcp-api-keys/create). Включите tools: `getComponent`, `listComponents`, `listComponentsFull`.
+2. **Откройте страницу компонента** на портале, например [Button](http://127.0.0.1:3000/ds/components/web/button).
+3. В шапке страницы нажмите **Copy Markdown**, затем в меню (стрелка справа) — **Add to Cursor**.
+4. В модальном окне вставьте **MCP API key** и нажмите **Установить в Cursor**.
+5. Cursor предложит установить MCP-сервер `design-system-portal` — подтвердите установку.
+
+### Ручная настройка (`mcp.json`)
+
+Если нужно добавить сервер вручную (Cursor Settings → MCP или `~/.cursor/mcp.json`), используйте конфиг ниже. В `Authorization: Bearer …` подставьте свой ключ из админки.
+
+```json
+{
+  "mcpServers": {
+    "design-system-portal": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote",
+        "https://all-cms.vercel.app/api/mcp",
+        "--header",
+        "Authorization: Bearer API_KEY"
+      ],
+      "env": {
+        "NODE_TLS_REJECT_UNAUTHORIZED": "0"
+      }
+    }
+  }
+}
+```
+
+Для локального dev-сервера замените URL на `http://127.0.0.1:3000/api/mcp`.
+
+### MCP tools
+
+| Tool | Назначение |
+|------|------------|
+| `getComponent` | Документация одного компонента по `slug` |
+| `listComponents` | Краткий список компонентов (карточки) |
+| `listComponentsFull` | Полный список с описаниями и связями |
+
 ## Полезные команды
 
 | Команда | Описание |
@@ -87,68 +133,3 @@ Storybook: [http://127.0.0.1:6006](http://127.0.0.1:6006)
 | `npm run storybook` | Storybook на порту 6006 |
 | `npm run generate:types` | Перегенерация `payload-types.ts` после смены схемы CMS |
 | `npm run lint` | ESLint |
-
-## Типичные проблемы
-
-**Пустой каталог компонентов на портале** — выполните `npm run seed:portal` или проверьте, что у записей в CMS заполнены обязательные поля (`name`, `slug`, `description`).
-
-**Превью Storybook не встраивается** — запущен ли `npm run storybook` на порту 6006.
-
-## Деплой на Vercel
-
-### Обязательные переменные
-
-В **Settings → Environment Variables** (Production + Preview):
-
-| Переменная | Описание |
-|------------|----------|
-| `PAYLOAD_SECRET` | Случайная строка ≥ 32 символов |
-| `NEXT_PUBLIC_SITE_URL` | `https://ваш-проект.vercel.app` |
-| `DATABASE_URI` | URL Turso: `libsql://…` |
-| `DATABASE_AUTH_TOKEN` | Токен Turso |
-
-Без `DATABASE_URI` + `DATABASE_AUTH_TOKEN` Admin пишет в эфемерный `/tmp` — **MCP API keys и другие изменения пропадают** после cold start или смены serverless-инстанса.
-
-### Turso (персистентная SQLite)
-
-1. Установите [Turso CLI](https://docs.turso.tech/cli/installation) и войдите: `turso auth login`
-
-2. Создайте базу:
-   ```bash
-   turso db create next-app-portal
-   ```
-
-3. Получите URL и токен:
-   ```bash
-   turso db show next-app-portal --url
-   turso db tokens create next-app-portal
-   ```
-
-4. Локально в `.env.local`:
-   ```env
-   DATABASE_URI=libsql://next-app-portal-….turso.io
-   DATABASE_AUTH_TOKEN=eyJhbG…
-   PAYLOAD_SECRET=…
-   ```
-
-5. Первичная настройка (миграции + seed, если БД пустая):
-   ```bash
-   npm run turso:setup
-   ```
-
-6. Те же `DATABASE_URI` и `DATABASE_AUTH_TOKEN` добавьте в Vercel → **Redeploy**.
-
-**Импорт локальной БД** (если уже есть `payload.sqlite` с данными):
-```bash
-turso db import next-app-portal --from-file payload.sqlite
-```
-
-### Seed для preview без Turso (только демо)
-
-`payload.sqlite` в git не попадает. На Vercel без Turso — **`data/payload.seed.sqlite`**. Обновить после локального `seed:portal`:
-```powershell
-Copy-Item payload.sqlite data/payload.seed.sqlite -Force
-```
-OG главной — **`public/og/portal-site.webp`**: `npm run generate:portal-site-og`
-
-Закоммитьте `data/payload.seed.sqlite` и `public/og/portal-site.webp` только если используете demo-режим без Turso.

@@ -1,31 +1,36 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist_Mono, Inter, Montserrat } from "next/font/google";
 import Script from "next/script";
-import { getPayload } from "payload";
 
-import config from "@payload-config";
-
-import { PortalAppShell } from "@/components/portal/portal-shell";
+import { PortalAppShell } from "@/components/portal/layout/portal-shell";
 import { PortalThemeProvider } from "@/components/providers/portal-theme-provider";
-import { isComponentVisibleOnPortal } from "@/lib/portal/component-status";
+import { loadComponentNavGroups } from "@/lib/portal/components/load-nav-groups";
+import { loadBrandNavItems } from "@/lib/portal/brand/load-pages";
+import { loadPortalSources } from "@/lib/portal/core/load-portal-sources";
 import { portalAppearanceInitScript } from "@/lib/radix/portal-appearance";
 
 import { PortalSidebar } from "./portal-sidebar";
 
-import { buildPortalLayoutMetadataFromCms } from "@/lib/portal/component-open-graph";
+import { buildPortalLayoutMetadataFromCms } from "@/lib/portal/components/open-graph";
 
 import "@radix-ui/themes/styles.css";
 import "../globals.css";
 import "../radix-themes.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+const montserrat = Montserrat({
+  variable: "--font-montserrat",
+  subsets: ["latin", "cyrillic"],
+  weight: ["400", "500", "600", "700"],
+});
+
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin", "cyrillic"],
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
-  subsets: ["latin"],
+  subsets: ["latin", "cyrillic"],
 });
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -37,27 +42,16 @@ export default async function PortalLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const payload = await getPayload({ config });
-  const { docs } = await payload.find({
-    collection: "components",
-    depth: 0,
-    limit: 100,
-    sort: "name",
-    overrideAccess: true,
-  });
-
-  const componentNav = docs
-    .filter((d) => isComponentVisibleOnPortal(d))
-    .map((d) => ({
-      slug: String(d.slug),
-      name: String(d.name),
-      status: d.status,
-    }));
+  const [componentNavGroups, brandNavItems, sources] = await Promise.all([
+    loadComponentNavGroups(),
+    loadBrandNavItems(),
+    loadPortalSources(),
+  ]);
 
   return (
     <html
       lang="ru"
-      className={`${geistSans.variable} ${geistMono.variable}`}
+      className={`${montserrat.variable} ${inter.variable} ${geistMono.variable}`}
       suppressHydrationWarning
     >
       <body suppressHydrationWarning>
@@ -67,7 +61,12 @@ export default async function PortalLayout({
           dangerouslySetInnerHTML={{ __html: portalAppearanceInitScript }}
         />
         <PortalThemeProvider>
-          <PortalAppShell sidebar={<PortalSidebar components={componentNav} />}>
+          <PortalAppShell
+            sidebar={
+              <PortalSidebar componentGroups={componentNavGroups} brandNavItems={brandNavItems} />
+            }
+            sources={sources}
+          >
             {children}
           </PortalAppShell>
         </PortalThemeProvider>

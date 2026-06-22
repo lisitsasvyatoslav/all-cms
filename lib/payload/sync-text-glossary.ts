@@ -1,6 +1,6 @@
 import type { Payload } from "payload";
 
-import { glossarySeedTermsWithMeta } from "@/lib/portal/glossary-seed-data";
+import { glossarySeedTermsWithMeta } from "@/lib/portal/glossary/seed-data";
 import { applyGlossaryTermLetter } from "@/lib/payload/glossary-term-letter";
 
 export const TEXT_GLOSSARY_PAGE_SEED = {

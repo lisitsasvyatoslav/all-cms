@@ -2,7 +2,7 @@ import { getPayload } from "payload";
 
 import config from "@payload-config";
 import type { Component } from "@/payload-types";
-import { isComponentVisibleOnPortal } from "@/lib/portal/component-status";
+import { isComponentVisibleOnPortal } from "@/lib/portal/components/status";
 
 export async function loadComponentDocument(
   componentSlug: string,

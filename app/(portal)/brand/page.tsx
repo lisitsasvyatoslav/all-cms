@@ -1,31 +1,23 @@
-import { Heading, Text } from "@radix-ui/themes";
 import type { Metadata } from "next";
 
-import { PortalPageContainer } from "@/components/portal/portal-shell";
-import { buildCustomPortalShareMetadata } from "@/lib/portal/resolve-portal-seo-metadata";
-import { loadPortalSeo } from "@/lib/portal/load-portal-seo";
-import { PORTAL_BRAND_PATH } from "@/lib/portal/portal-base-path";
+import { BrandOverviewPageView } from "@/components/portal/brand/brand-foundation-page";
+import { loadBrandNavItems, loadBrandOverview } from "@/lib/portal/brand/load-pages";
+import { buildCustomPortalShareMetadata } from "@/lib/portal/seo/resolve-metadata";
+import { loadPortalSeo } from "@/lib/portal/seo/load";
+import { PORTAL_BRAND_PATH } from "@/lib/portal/core/portal-base-path";
 
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const seo = await loadPortalSeo();
+  const [seo, overview] = await Promise.all([loadPortalSeo(), loadBrandOverview()]);
   return buildCustomPortalShareMetadata(seo, {
-    title: "Brand",
-    description: "Бренд-гайдлайны: логотипы, иконки, шрифты и палитра.",
+    title: overview.shareTitle,
+    description: overview.shareDescription,
     path: PORTAL_BRAND_PATH,
   });
 }
 
-export default function BrandPage() {
-  return (
-    <PortalPageContainer>
-      <Heading size="8" weight="bold" mb="2">
-        Brand
-      </Heading>
-      <Text size="3" color="gray" as="p">
-        Бренд-гайдлайны: логотипы, иконки, шрифты и палитра.
-      </Text>
-    </PortalPageContainer>
-  );
+export default async function BrandPage() {
+  const [overview, navItems] = await Promise.all([loadBrandOverview(), loadBrandNavItems()]);
+  return <BrandOverviewPageView overview={overview} navItems={navItems} />;
 }

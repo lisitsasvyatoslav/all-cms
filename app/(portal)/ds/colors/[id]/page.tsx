@@ -4,12 +4,12 @@ import { getPayload } from "payload";
 
 import config from "@payload-config";
 
-import { PortalBreadcrumbs } from "@/components/portal/portal-breadcrumbs";
-import { PortalHeaderDivider, PortalPageContainer } from "@/components/portal/portal-shell";
-import { buildColorPageOpenGraphMetadata } from "@/lib/portal/component-open-graph";
-import { portalClass } from "@/lib/portal/classes";
-import { colorPagePath } from "@/lib/portal/component-routes";
-import { portalSwatchBg } from "@/lib/portal/css-vars";
+import { PortalBreadcrumbs } from "@/components/portal/layout/portal-breadcrumbs";
+import { PortalHeaderDivider, PortalPageContainer } from "@/components/portal/layout/portal-shell";
+import { buildColorPageOpenGraphMetadata } from "@/lib/portal/components/open-graph";
+import { portalClass } from "@/lib/portal/core/classes";
+import { colorPagePath } from "@/lib/portal/components/routes";
+import { portalSwatchBg } from "@/lib/portal/core/css-vars";
 
 import { ComponentDocumentation } from "../../components/web/[slug]/documentation";
 
