@@ -1,12 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Button } from "@radix-ui/themes";
 
-import { portalPreviewCatalogBySlug } from "@/lib/storybook/portal-preview-catalog";
 import { relatedPreviewDecorator, relatedPreviewStoryParameters } from "@/lib/storybook/related-preview-story";
 
 import { Modal } from "@next-app/ui-kit";
-
-export const portalPreviewCatalog = portalPreviewCatalogBySlug.modal;
 
 const meta = {
   title: "Design System/Modal",
