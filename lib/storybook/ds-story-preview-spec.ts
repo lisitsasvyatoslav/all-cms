@@ -34,6 +34,8 @@ type StoryPreviewSpec = {
   defaultBody: string;
   relatedPreviewBody: string;
   metaComponent?: string;
+  /** Args в meta — для компонентов с обязательными пропсами (Avatar, Radio). */
+  metaArgs?: string;
 };
 
 const PREVIEW_BY_SLUG: Record<string, StoryPreviewSpec> = {
@@ -114,6 +116,11 @@ const PREVIEW_BY_SLUG: Record<string, StoryPreviewSpec> = {
   avatar: {
     defaultBody: `<Avatar fallback="A" radius="full" size="3" />`,
     relatedPreviewBody: `<Avatar fallback="A" radius="full" size="3" />`,
+    metaArgs: `{
+    fallback: "A",
+    radius: "full",
+    size: "3",
+  }`,
   },
   progress: {
     defaultBody: `<Progress value={60} />`,
@@ -123,6 +130,11 @@ const PREVIEW_BY_SLUG: Record<string, StoryPreviewSpec> = {
     defaultBody: `<Flex align="center" gap="2"><Radio name="demo" value="a" defaultChecked /> <Text size="2">Option</Text></Flex>`,
     relatedPreviewBody: `<Flex align="center" gap="2"><Radio name="preview" value="a" defaultChecked /> <Text size="2">Radio</Text></Flex>`,
     extraImports: ["Flex", "Text"],
+    metaArgs: `{
+    name: "demo",
+    value: "a",
+    defaultChecked: true,
+  }`,
   },
   separator: {
     defaultBody: `<Flex direction="column" gap="3" width="240px"><Text size="2">Above</Text><Separator size="4" /><Text size="2">Below</Text></Flex>`,

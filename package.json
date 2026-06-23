@@ -29,6 +29,7 @@
     "generate:props-manifest": "npm run generate:props-manifest -w @next-app/ui-kit",
     "generate:radix-wrappers": "tsx packages/ui-kit/scripts/generate-radix-wrappers.ts",
     "generate:ds-stories": "tsx scripts/generate-ds-stories.ts",
+    "typecheck:stories": "tsc --noEmit -p tsconfig.stories.json",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },

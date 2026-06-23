@@ -8,6 +8,11 @@ import { Radio } from "@next-app/ui-kit";
 const meta = {
   title: "Design System/Radio",
   component: Radio,
+  args: {
+    name: "demo",
+    value: "a",
+    defaultChecked: true,
+  },
   tags: ["autodocs"],
   parameters: { layout: "centered" },
 } satisfies Meta<typeof Radio>;

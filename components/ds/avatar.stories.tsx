@@ -7,6 +7,11 @@ import { Avatar } from "@next-app/ui-kit";
 const meta = {
   title: "Design System/Avatar",
   component: Avatar,
+  args: {
+    fallback: "A",
+    radius: "full",
+    size: "3",
+  },
   tags: ["autodocs"],
   parameters: { layout: "centered" },
 } satisfies Meta<typeof Avatar>;
