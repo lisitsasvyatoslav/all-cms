@@ -1,6 +1,6 @@
 "use client";
 
-import { DropdownMenu, Text } from "@radix-ui/themes";
+import { DropdownMenu, Link, Text } from "@radix-ui/themes";
 import { useCallback, useMemo, useState } from "react";
 
 import { CursorMcpSetupDialog } from "@/components/portal/page-actions/cursor-mcp-setup-dialog";
@@ -14,7 +14,7 @@ import {
   buildCursorStarterPrompt,
   buildDesignSystemPortalMcpDeeplink,
   openCursorMcpInstallDeeplink,
-  readStoredMcpApiKey,
+  resolvePortalMcpApiKey,
 } from "@/lib/portal/core/cursor-mcp-install";
 import { portalBrandIconPaths } from "@/lib/portal/core/public-icon-paths";
 
@@ -84,23 +84,28 @@ export function PortalPageActions({ componentSlug }: Props) {
     }
   }, [copying, markdownApiUrl]);
 
-  const addToCursor = useCallback(() => {
-    const savedKey = readStoredMcpApiKey();
-    if (savedKey) {
-      try {
-        openCursorMcpInstallDeeplink(buildDesignSystemPortalMcpDeeplink(savedKey));
-        void navigator.clipboard
-          .writeText(buildCursorStarterPrompt(componentSlug))
-          .catch(() => undefined);
-        setCursorHint(true);
-        window.setTimeout(() => setCursorHint(false), 4000);
-        return;
-      } catch (error) {
-        console.error("Failed to open Cursor MCP deeplink:", error);
-      }
+  const installMcpInCursor = useCallback(() => {
+    try {
+      const apiKey = resolvePortalMcpApiKey();
+      openCursorMcpInstallDeeplink(buildDesignSystemPortalMcpDeeplink(apiKey));
+      void navigator.clipboard
+        .writeText(buildCursorStarterPrompt(componentSlug))
+        .catch(() => undefined);
+      setCursorHint(true);
+      window.setTimeout(() => setCursorHint(false), 4000);
+    } catch (error) {
+      console.error("Failed to open Cursor MCP deeplink:", error);
+      setCursorDialogOpen(true);
     }
-    setCursorDialogOpen(true);
   }, [componentSlug]);
+
+  const addToCursor = useCallback(() => {
+    installMcpInCursor();
+  }, [installMcpInCursor]);
+
+  const openMcpKeyDialog = useCallback(() => {
+    setCursorDialogOpen(true);
+  }, []);
 
   const menuItems = useMemo<MenuItem[]>(() => {
     return [
@@ -121,6 +126,13 @@ export function PortalPageActions({ componentSlug }: Props) {
         onSelect: addToCursor,
       },
       {
+        key: "mcp-key",
+        title: "MCP API key",
+        description: "Copy key for other AI agents",
+        iconSrc: portalBrandIconPaths.markdown,
+        onSelect: openMcpKeyDialog,
+      },
+      {
         key: "claude",
         title: "Open in Claude",
         description: "Ask questions about this page",
@@ -130,7 +142,7 @@ export function PortalPageActions({ componentSlug }: Props) {
         },
       },
     ];
-  }, [addToCursor, markdownViewUrl]);
+  }, [addToCursor, markdownViewUrl, openMcpKeyDialog]);
 
   return (
     <div className={portalClass.pageActions}>
@@ -192,7 +204,15 @@ export function PortalPageActions({ componentSlug }: Props) {
 
       {cursorHint ? (
         <Text as="p" size="1" color="gray" mt="2" className="portal-page-actions__cursor-hint">
-          Откройте Cursor и подтвердите установку MCP. Стартовый промпт скопирован в буфер.
+          Откройте Cursor и подтвердите установку MCP. Стартовый промпт скопирован в буфер.{" "}
+          <Link
+            as="button"
+            type="button"
+            size="1"
+            onClick={openMcpKeyDialog}
+          >
+            Скопировать API key
+          </Link>
         </Text>
       ) : null}
 

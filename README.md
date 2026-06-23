@@ -81,15 +81,14 @@ MCP-сервер портала даёт агенту в Cursor доступ к 
 
 ### Быстрая установка
 
-1. **Создайте MCP API key** в [Payload Admin → MCP → API Keys](http://127.0.0.1:3000/admin/collections/payload-mcp-api-keys/create). Включите tools: `getComponent`, `listComponents`, `listComponentsFull`.
-2. **Откройте страницу компонента** на портале, например [Button](http://127.0.0.1:3000/ds/components/web/button).
-3. В шапке страницы нажмите **Copy Markdown**, затем в меню (стрелка справа) — **Add to Cursor**.
-4. В модальном окне вставьте **MCP API key** и нажмите **Установить в Cursor**.
-5. Cursor предложит установить MCP-сервер `design-system-portal` — подтвердите установку.
+1. **Откройте страницу компонента** на портале, например [Button](http://127.0.0.1:3000/ds/components/web/button).
+2. В шапке страницы нажмите **Copy Markdown**, затем в меню (стрелка справа) — **Add to Cursor**.
+3. Cursor откроет установку MCP-сервера `design-system-portal` — подтвердите установку. **Вводить API key не нужно** — портал подставляет демо-ключ автоматически.
+4. Для **других агентов** (Claude, VS Code и т.д.) в том же меню выберите **MCP API key** — откроется окно с ключом и кнопкой копирования.
 
 ### Ручная настройка (`mcp.json`)
 
-Если нужно добавить сервер вручную (Cursor Settings → MCP или `~/.cursor/mcp.json`), используйте конфиг ниже. В `Authorization: Bearer …` подставьте свой ключ из админки.
+Если нужно добавить сервер вручную (Cursor Settings → MCP или `~/.cursor/mcp.json`), используйте конфиг ниже. Ключ можно скопировать на странице компонента через **MCP API key** или создать свой в [Payload Admin → MCP → API Keys](http://127.0.0.1:3000/admin/collections/payload-mcp-api-keys/create) (tools: `getComponent`, `listComponents`, `listComponentsFull`).
 
 ```json
 {

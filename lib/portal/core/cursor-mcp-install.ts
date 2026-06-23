@@ -5,6 +5,9 @@ export const CURSOR_MCP_SERVER_NAME = "design-system-portal";
 
 export const PAYLOAD_MCP_API_KEY_STORAGE_KEY = "portal:payload-mcp-api-key";
 
+/** PoC-ключ для MCP; переопределяется через NEXT_PUBLIC_PORTAL_MCP_DEMO_API_KEY. */
+const PORTAL_MCP_DEMO_API_KEY_FALLBACK = "546cc94a-9951-4ecc-9e15-01ca4d3d79de";
+
 export type McpRemoteServerConfig = {
   command: string;
   args: string[];
@@ -77,6 +80,18 @@ export function buildDesignSystemPortalMcpDeeplink(apiKey: string): string {
 
 export function openCursorMcpInstallDeeplink(deeplink: string): void {
   window.location.assign(deeplink);
+}
+
+export function readDefaultMcpApiKey(): string {
+  return (
+    process.env.NEXT_PUBLIC_PORTAL_MCP_DEMO_API_KEY?.trim() ||
+    PORTAL_MCP_DEMO_API_KEY_FALLBACK
+  );
+}
+
+/** Ключ из localStorage или демо-ключ портала. */
+export function resolvePortalMcpApiKey(): string {
+  return readStoredMcpApiKey() ?? readDefaultMcpApiKey();
 }
 
 export function readStoredMcpApiKey(): string | null {

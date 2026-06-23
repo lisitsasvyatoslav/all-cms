@@ -1,14 +1,16 @@
 "use client";
 
-import { Button, Checkbox, Code, Flex, Link, Text, TextField } from "@radix-ui/themes";
+import { Button, Checkbox, Code, Flex, IconButton, Link, Text, TextField } from "@radix-ui/themes";
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { CheckIcon, CopyMarkdownIcon } from "@/components/portal/page-actions/page-action-icons";
 import { portalClass } from "@/lib/portal/core/classes";
 import {
   buildDesignSystemPortalMcpDeeplink,
   openCursorMcpInstallDeeplink,
   payloadMcpApiKeysAdminUrl,
   readStoredMcpApiKey,
+  resolvePortalMcpApiKey,
   resolvePayloadMcpEndpointUrl,
   writeStoredMcpApiKey,
 } from "@/lib/portal/core/cursor-mcp-install";
@@ -30,15 +32,17 @@ export function CursorMcpSetupDialog({
   const [apiKey, setApiKey] = useState("");
   const [remember, setRemember] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     const dialog = dialogRef.current;
     if (!dialog) return;
     if (open && !dialog.open) {
       const stored = readStoredMcpApiKey();
-      setApiKey(stored ?? "");
-      setRemember(Boolean(stored));
+      setApiKey(resolvePortalMcpApiKey());
+      setRemember(true);
       setError(null);
+      setCopied(false);
       dialog.showModal();
       return;
     }
@@ -54,7 +58,7 @@ export function CursorMcpSetupDialog({
   const install = useCallback(() => {
     const trimmed = apiKey.trim();
     if (!trimmed) {
-      setError("Введите MCP API key из админки Payload.");
+      setError("MCP API key не задан.");
       return;
     }
 
@@ -75,6 +79,18 @@ export function CursorMcpSetupDialog({
     }
   }, [apiKey, remember, close, onInstalled]);
 
+  const copyApiKey = useCallback(async () => {
+    const trimmed = apiKey.trim();
+    if (!trimmed) return;
+    try {
+      await navigator.clipboard.writeText(trimmed);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 2000);
+    } catch {
+      setError("Не удалось скопировать ключ в буфер обмена.");
+    }
+  }, [apiKey]);
+
   return (
     <dialog
       ref={dialogRef}
@@ -94,61 +110,57 @@ export function CursorMcpSetupDialog({
         }}
       >
         <Text as="p" size="4" weight="medium" mb="1">
-          Add to Cursor
+          MCP API key
         </Text>
         <Text as="p" size="2" color="gray" mb="4">
-          Подключите MCP-сервер Payload, чтобы агент в Cursor мог вызывать{" "}
+          Ключ для подключения к MCP-серверу портала (
           <Text as="span" weight="medium">
             getComponent
           </Text>
           ,{" "}
           <Text as="span" weight="medium">
             listComponents
-          </Text>{" "}
-          и{" "}
+          </Text>
+          ,{" "}
           <Text as="span" weight="medium">
             listComponentsFull
-          </Text>{" "}
-          для компонента{" "}
-          <Code size="2" variant="ghost">
-            {componentSlug}
-          </Code>
-          .
+          </Text>
+          ). Скопируйте для Claude, VS Code и других агентов или установите в Cursor.
         </Text>
 
         <label className={portalClass.cursorMcpDialogLabel}>
           <Text as="span" size="2" weight="medium" mb="1">
-            MCP API key
+            API key
           </Text>
-          <TextField.Root
-            type="password"
-            autoComplete="off"
-            placeholder="MCP-…"
-            value={apiKey}
-            onChange={(event) => {
-              setApiKey(event.target.value);
-              if (error) setError(null);
-            }}
-          />
+          <Flex gap="2" align="center">
+            <TextField.Root
+              style={{ flex: 1 }}
+              type="text"
+              autoComplete="off"
+              spellCheck={false}
+              value={apiKey}
+              onChange={(event) => {
+                setApiKey(event.target.value);
+                if (error) setError(null);
+              }}
+            />
+            <IconButton
+              type="button"
+              variant="soft"
+              color="gray"
+              aria-label={copied ? "Скопировано" : "Скопировать API key"}
+              onClick={() => void copyApiKey()}
+            >
+              {copied ? <CheckIcon /> : <CopyMarkdownIcon />}
+            </IconButton>
+          </Flex>
         </label>
 
         <Text as="p" size="1" color="gray" mt="2" mb="3">
-          Создайте ключ в{" "}
+          Свой ключ:{" "}
           <Link href={payloadMcpApiKeysAdminUrl()} target="_blank" rel="noopener noreferrer">
             Payload → MCP → API Keys
           </Link>
-          . Включите tools{" "}
-          <Code size="1" variant="ghost">
-            getComponent
-          </Code>
-          ,{" "}
-          <Code size="1" variant="ghost">
-            listComponents
-          </Code>
-          ,{" "}
-          <Code size="1" variant="ghost">
-            listComponentsFull
-          </Code>
           .
         </Text>
 
@@ -156,6 +168,13 @@ export function CursorMcpSetupDialog({
           Endpoint:{" "}
           <Code size="1" variant="ghost">
             {resolvePayloadMcpEndpointUrl()}
+          </Code>
+        </Text>
+
+        <Text as="p" size="1" color="gray" mb="3">
+          Компонент:{" "}
+          <Code size="2" variant="ghost">
+            {componentSlug}
           </Code>
         </Text>
 
@@ -177,7 +196,7 @@ export function CursorMcpSetupDialog({
 
         <Flex gap="2" justify="end" mt="2">
           <Button type="button" variant="soft" color="gray" onClick={close}>
-            Отмена
+            Закрыть
           </Button>
           <Button type="submit">Установить в Cursor</Button>
         </Flex>
