@@ -4,7 +4,7 @@ import {
   buildDsOverviewSourceItemsSeed,
   DS_OVERVIEW_PAGE_SEED,
 } from "@/lib/portal/components/ds-overview-seed";
-
+import { defaultStorybookBaseUrl } from "@/lib/storybook/portal-preview-config";
 type PortalSourcesDoc = {
   figmaLibraryUrl?: string | null;
   storybookUrl?: string | null;
@@ -29,7 +29,7 @@ export async function syncDsOverview(
     portalSources.figmaLibraryUrl?.trim() ||
     "https://www.figma.com/community/file/1199125538294350451";
   const storybookUrl =
-    portalSources.storybookUrl?.trim() || "http://127.0.0.1:6006";
+    portalSources.storybookUrl?.trim() || defaultStorybookBaseUrl();
   const documentationUrl =
     portalSources.documentationUrl?.trim() || "https://payloadcms.com/docs";
   const repositoryUrl =

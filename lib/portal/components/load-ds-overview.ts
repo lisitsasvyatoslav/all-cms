@@ -101,7 +101,8 @@ function normalizeSourceItems(
 
   return buildDsOverviewSourceItemsSeed({
     figmaLibraryUrl: "https://www.figma.com/community/file/1199125538294350451",
-    storybookUrl: "http://127.0.0.1:6006",
+    storybookUrl: process.env.NEXT_PUBLIC_STORYBOOK_URL?.trim().replace(/\/$/, "") ||
+      "http://127.0.0.1:6006",
     documentationUrl: "https://payloadcms.com/docs",
     repositoryUrl: "https://github.com/payloadcms/payload",
   });

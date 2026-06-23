@@ -15,6 +15,7 @@ import { syncDesignChecklistOnAllComponents } from "../lib/payload/sync-componen
 import { syncBrandPages } from "../lib/payload/sync-brand-pages";
 import { syncDsOverview } from "../lib/payload/sync-ds-overview";
 import { syncTextGlossary } from "../lib/payload/sync-text-glossary";
+import { syncStorybookUrls } from "../lib/payload/sync-storybook-urls";
 import {
   buildRadixComponentSeeds,
   componentFolderNameForSlug,
@@ -36,9 +37,13 @@ const __dirname = path.dirname(__filename);
 const projectRoot = path.join(__dirname, "..");
 const iconAssetsDir = path.join(projectRoot, "public", "icons", "ui");
 
+const storybookBase =
+  process.env.NEXT_PUBLIC_STORYBOOK_URL?.replace(/\/$/, "") ||
+  "http://127.0.0.1:6006";
+
 const demoSources = {
   figmaLibraryUrl: "https://www.figma.com/community/file/1199125538294350451",
-  storybookUrl: "https://storybook.js.org/showcase",
+  storybookUrl: storybookBase,
   documentationUrl: "https://payloadcms.com/docs",
   repositoryUrl: "https://github.com/payloadcms/payload",
 };
@@ -122,10 +127,6 @@ const componentDesignChecklistByTitle: Record<string, Record<string, boolean>> =
     "Dark mode": true,
   },
 };
-
-const storybookBase =
-  process.env.NEXT_PUBLIC_STORYBOOK_URL?.replace(/\/$/, "") ||
-  "http://127.0.0.1:6006";
 
 function codeExamplePreviewSeed(
   componentSlug: string,
@@ -1702,6 +1703,12 @@ async function main() {
     syncTextGlossary(payload),
     syncBrandPages(payload),
   ]);
+
+  const storybookSync = await syncStorybookUrls(payload, storybookBase);
+  console.log(
+    `Storybook URLs: portal-sources ${storybookSync.portalSourcesUpdated ? "updated" : "ok"}, ` +
+      `components ${storybookSync.componentsUpdated}, colors ${storybookSync.colorsUpdated}, icons ${storybookSync.iconsUpdated}.`,
+  );
 
   console.log(
     `Seed OK: portal-sources, portal-seo, design-checklist-items, components×${components.length}, colors×8, icons×4, field-showcase×1, glossary-terms×${termsCreated}, brand-pages×${pagesUpserted} + SVG в Media.`,

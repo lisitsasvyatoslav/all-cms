@@ -21,6 +21,7 @@
     "sync:text-glossary": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/sync-text-glossary.ts",
     "sync:brand-pages": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/sync-brand-pages.ts",
     "sync:ds-overview": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/sync-ds-overview.ts",
+    "sync:storybook-urls": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/sync-storybook-urls.ts",
     "capture:related-previews": "tsx scripts/capture-related-previews.ts",
     "generate:portal-site-og": "tsx scripts/sync-portal-default-og.ts",
     "sync:portal-default-og": "npm run generate:portal-site-og",

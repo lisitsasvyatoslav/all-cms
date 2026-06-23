@@ -1,14 +1,14 @@
-const DEFAULT_STORYBOOK_ORIGIN = "http://127.0.0.1:6006";
+import { defaultStorybookBaseUrl } from "@/lib/storybook/portal-preview-config";
+import { rewriteStorybookDocumentUrl } from "@/lib/storybook/rewrite-storybook-url";
 
+const DEFAULT_STORYBOOK_ORIGIN = "http://127.0.0.1:6006";
 function configuredStorybookOrigins(): string[] {
-  const fromEnv = process.env.NEXT_PUBLIC_STORYBOOK_URL?.trim();
+  const fromEnv = defaultStorybookBaseUrl();
   const origins = new Set<string>([DEFAULT_STORYBOOK_ORIGIN, "http://localhost:6006"]);
-  if (fromEnv) {
-    try {
-      origins.add(new URL(fromEnv).origin);
-    } catch {
-      /* ignore invalid env */
-    }
+  try {
+    origins.add(new URL(fromEnv).origin);
+  } catch {
+    /* ignore invalid env */
   }
   return [...origins];
 }
@@ -35,8 +35,7 @@ export function storybookUrlToIframeSrc(
   input: string,
   options?: StorybookIframeOptions,
 ): string | null {
-  const trimmed = input.trim();
-  if (!trimmed) return null;
+  const trimmed = rewriteStorybookDocumentUrl(input).trim();  if (!trimmed) return null;
 
   let parsed: URL;
   try {

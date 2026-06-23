@@ -24,6 +24,7 @@ import { PORTAL_COMPONENTS_WEB_PATH } from "@/lib/portal/components/routes";
 import { loadComponentDocument } from "@/lib/markdown/load-component-document";
 import { parseComponentRouteSlug } from "@/lib/markdown/parse-component-route-slug";
 import { buildComponentOpenGraphMetadata } from "@/lib/portal/components/open-graph";
+import { rewriteStorybookDocumentUrl } from "@/lib/storybook/rewrite-storybook-url";
 import {
   buildComponentPageToc,
 } from "@/lib/toc/get-toc";
@@ -117,7 +118,10 @@ export default async function ComponentDocPage({ params }: Props) {
             </PortalSourcePill>
           ) : null}
           {doc.storybookUrl ? (
-            <PortalSourcePill href={doc.storybookUrl} icon="storybook">
+            <PortalSourcePill
+              href={rewriteStorybookDocumentUrl(doc.storybookUrl)}
+              icon="storybook"
+            >
               Storybook
             </PortalSourcePill>
           ) : null}
