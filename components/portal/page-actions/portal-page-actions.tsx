@@ -1,6 +1,6 @@
 "use client";
 
-import { DropdownMenu, Link, Text } from "@radix-ui/themes";
+import { DropdownMenu, Text } from "@radix-ui/themes";
 import { useCallback, useMemo, useState } from "react";
 
 import { CursorMcpSetupDialog } from "@/components/portal/page-actions/cursor-mcp-setup-dialog";
@@ -205,14 +205,9 @@ export function PortalPageActions({ componentSlug }: Props) {
       {cursorHint ? (
         <Text as="p" size="1" color="gray" mt="2" className="portal-page-actions__cursor-hint">
           Откройте Cursor и подтвердите установку MCP. Стартовый промпт скопирован в буфер.{" "}
-          <Link
-            as="button"
-            type="button"
-            size="1"
-            onClick={openMcpKeyDialog}
-          >
+          <button type="button" className="portal-page-actions__cursor-hint-link" onClick={openMcpKeyDialog}>
             Скопировать API key
-          </Link>
+          </button>
         </Text>
       ) : null}
 
