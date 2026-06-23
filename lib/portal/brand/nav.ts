@@ -5,8 +5,6 @@ export const BRAND_PAGE_SLUGS = [
   "icons",
   "typography",
   "color",
-  "visual-style",
-  "social-media",
 ] as const;
 
 export type BrandPageSlug = (typeof BRAND_PAGE_SLUGS)[number];
@@ -46,18 +44,6 @@ export const BRAND_NAV_ITEMS: BrandNavItem[] = [
     label: "Палитра",
     href: brandPath("/color"),
     description: "Система цвета, градиенты и палитра для графиков.",
-  },
-  {
-    slug: "visual-style",
-    label: "Визуальный стиль",
-    href: brandPath("/visual-style"),
-    description: "3D-изображения, фотостиль и принципы мокапов интерфейсов.",
-  },
-  {
-    slug: "social-media",
-    label: "Соцсети",
-    href: brandPath("/social-media"),
-    description: "Цвета, константы, 3D-элементы, отступы и примеры для соцсетей.",
   },
 ];
 

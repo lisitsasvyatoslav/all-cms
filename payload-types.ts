@@ -634,14 +634,14 @@ export interface GlossaryTerm {
   createdAt: string;
 }
 /**
- * Контент страниц /brand/*: логотипы, иконки, типографика, палитра, визуальный стиль.
+ * Контент страниц /brand/*: логотипы, иконки, типографика, палитра.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "brand-pages".
  */
 export interface BrandPage {
   id: number;
-  slug: 'logos' | 'icons' | 'typography' | 'color' | 'visual-style' | 'social-media';
+  slug: 'logos' | 'icons' | 'typography' | 'color';
   sortOrder?: number | null;
   title: string;
   description: string;

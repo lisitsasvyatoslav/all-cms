@@ -40,15 +40,9 @@ export const DS_OVERVIEW_PAGE_SEED = {
     { label: "Storybook" },
     { label: "ui-kit" },
   ],
-  navigationNote:
-    "Навигация слева ведёт в каталог компонентов и справочник блоков документации. Контент редактируется в /admin. Для интерактивных превью запустите Storybook локально на порту 6006.",
-  roadmapHeading: "Дальше",
-  roadmap: [
-    { text: "Подключить реальную Figma-библиотеку вместо демо-ссылки." },
-    { text: "Заменить seed-компоненты на продуктовый каталог." },
-    { text: "Добавить foundations: типографика, spacing, design tokens." },
-    { text: "Вынести гайды по governance и версионированию, когда DS выйдет из PoC." },
-  ],
+  navigationNote: "",
+  roadmapHeading: "",
+  roadmap: [] as { text: string }[],
   sourcesHeading: "Источники",
   sourcesIntro:
     "Ссылки на инструменты, с которыми работает команда. На этапе PoC часть URL — заглушки; замените их в Globals → «Ссылки на источники» или отредактируйте карточки ниже.",

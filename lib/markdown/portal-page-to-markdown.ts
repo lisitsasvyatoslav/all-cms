@@ -164,7 +164,9 @@ function showcaseDocumentationBlocksToMarkdown(): string {
 function textHomeToMarkdown(): string {
   return mdJoin([
     mdHeading(1, "Text"),
-    mdParagraph("Страница /text на том же уровне, что и /ds."),
+    mdParagraph(
+      "Раздел редакторской политики: правила текстов, формулировок и терминов для продуктов и коммуникаций.",
+    ),
     mdParagraph(mdLink("Глоссарий", `${resolveSiteBaseUrl()}${PORTAL_TEXT_GLOSSARY_PATH}`)),
   ]);
 }

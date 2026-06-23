@@ -91,14 +91,11 @@ export const DsOverviewGlobal: GlobalConfig = {
               name: "navigationNote",
               type: "textarea",
               label: "Как пользоваться",
-              defaultValue:
-                "Навигация слева ведёт в каталог компонентов и справочник блоков документации. Для интерактивных превью запустите Storybook локально на порту 6006.",
             },
             {
               name: "roadmapHeading",
               type: "text",
               label: "Заголовок «Дальше»",
-              defaultValue: "Дальше",
             },
             {
               name: "roadmap",

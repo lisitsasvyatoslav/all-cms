@@ -16,7 +16,7 @@ export const BrandPagesCollection: CollectionConfig = {
     useAsTitle: "title",
     group: "Brand",
     defaultColumns: ["slug", "title", "sortOrder", "updatedAt"],
-    description: "Контент страниц /brand/*: логотипы, иконки, типографика, палитра, визуальный стиль.",
+    description: "Контент страниц /brand/*: логотипы, иконки, типографика, палитра.",
   },
   access: {
     read: () => true,

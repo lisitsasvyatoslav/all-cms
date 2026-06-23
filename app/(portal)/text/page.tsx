@@ -12,7 +12,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const seo = await loadPortalSeo();
   return buildCustomPortalShareMetadata(seo, {
     title: "Text",
-    description: "Text page.",
+    description: "Редакторская политика: правила текстов, формулировок и терминов.",
     path: PORTAL_TEXT_PATH,
   });
 }
@@ -24,7 +24,8 @@ export default function TextPage() {
         Text
       </Heading>
       <Text size="3" color="gray" as="p">
-        Страница /text на том же уровне, что и /ds.
+        Раздел редакторской политики: правила текстов, формулировок и терминов для продуктов и
+        коммуникаций.
       </Text>
     </PortalPageContainer>
   );

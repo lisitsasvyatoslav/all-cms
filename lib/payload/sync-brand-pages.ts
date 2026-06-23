@@ -10,6 +10,7 @@ import {
   BRAND_PAGES_SEED,
   BRAND_PAGE_ORDER,
 } from "@/lib/portal/brand/seed-data";
+import type { BrandPageSlug } from "@/lib/portal/brand/nav";
 
 /** Заполняет brand-overview и коллекцию brand-pages (включая данные палитры на странице color). */
 export async function syncBrandPages(payload: Payload): Promise<{ pagesUpserted: number }> {
@@ -59,6 +60,24 @@ export async function syncBrandPages(payload: Payload): Promise<{ pagesUpserted:
     }
 
     pagesUpserted += 1;
+  }
+
+  const allowedSlugs = new Set<string>(BRAND_PAGE_ORDER);
+  const { docs: existingPages } = await payload.find({
+    collection: "brand-pages",
+    limit: 50,
+    depth: 0,
+    overrideAccess: true,
+  });
+
+  for (const doc of existingPages) {
+    if (!allowedSlugs.has(doc.slug)) {
+      await payload.delete({
+        collection: "brand-pages",
+        id: doc.id,
+        overrideAccess: true,
+      });
+    }
   }
 
   return { pagesUpserted };
