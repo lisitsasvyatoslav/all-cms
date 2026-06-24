@@ -1,8 +1,10 @@
-import { getPayload } from "payload";
+import { cache } from "react";
+import { unstable_cache } from "next/cache";
 
-import config from "@payload-config";
+import { getCachedPayload } from "@/lib/payload/get-cached-payload";
 import type { DsOverview } from "@/payload-types";
 import type { SourceLinkIconKind } from "@/lib/portal/core/source-link-icon";
+import { PORTAL_CACHE_REVALIDATE_SECONDS, PORTAL_CACHE_TAGS } from "@/lib/portal/cache/tags";
 
 import {
   buildDsOverviewSourceItemsSeed,
@@ -130,8 +132,8 @@ function normalizePage(doc: DsOverview | null | undefined): NormalizedDsOverview
   };
 }
 
-export async function loadDsOverviewPage(): Promise<NormalizedDsOverviewPage> {
-  const payload = await getPayload({ config });
+async function fetchDsOverviewPage(): Promise<NormalizedDsOverviewPage> {
+  const payload = await getCachedPayload();
   const doc = await payload.findGlobal({
     slug: "ds-overview",
     depth: 0,
@@ -140,3 +142,12 @@ export async function loadDsOverviewPage(): Promise<NormalizedDsOverviewPage> {
 
   return normalizePage(doc);
 }
+
+const getCachedDsOverviewPage = unstable_cache(fetchDsOverviewPage, ["portal-ds-overview"], {
+  revalidate: PORTAL_CACHE_REVALIDATE_SECONDS,
+  tags: [PORTAL_CACHE_TAGS.dsOverview],
+});
+
+export const loadDsOverviewPage = cache(async (): Promise<NormalizedDsOverviewPage> => {
+  return getCachedDsOverviewPage();
+});

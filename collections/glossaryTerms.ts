@@ -2,6 +2,10 @@ import type { CollectionConfig } from "payload";
 
 import { accessHasRole } from "@/lib/payload/access";
 import { applyGlossaryTermLetter } from "@/lib/payload/glossary-term-letter";
+import {
+  revalidatePortalGlossaryTermsAfterChange,
+  revalidatePortalGlossaryTermsAfterDelete,
+} from "@/lib/payload/portal-cache-hooks";
 
 /** Термины глоссария — /text/glossary и коллекция в Payload Admin. */
 export const GlossaryTermsCollection: CollectionConfig = {
@@ -42,6 +46,8 @@ export const GlossaryTermsCollection: CollectionConfig = {
         return applyGlossaryTermLetter(data);
       },
     ],
+    afterChange: [revalidatePortalGlossaryTermsAfterChange],
+    afterDelete: [revalidatePortalGlossaryTermsAfterDelete],
   },
   fields: [
     {

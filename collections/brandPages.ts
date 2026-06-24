@@ -3,6 +3,10 @@ import type { CollectionConfig } from "payload";
 import { brandColorPaletteTab } from "@/collections/brandColorFields";
 import { brandSectionBlocks } from "@/collections/brandSectionBlocks";
 import { accessHasRole } from "@/lib/payload/access";
+import {
+  revalidatePortalBrandNavAfterChange,
+  revalidatePortalBrandNavAfterDelete,
+} from "@/lib/payload/portal-cache-hooks";
 import { BRAND_PAGE_SLUGS } from "@/lib/portal/brand/nav";
 
 /** Страницы раздела /brand — контент из Payload Admin. */
@@ -23,6 +27,10 @@ export const BrandPagesCollection: CollectionConfig = {
     create: accessHasRole(["admin", "pm", "designer"]),
     update: accessHasRole(["admin", "pm", "designer"]),
     delete: accessHasRole(["admin"]),
+  },
+  hooks: {
+    afterChange: [revalidatePortalBrandNavAfterChange],
+    afterDelete: [revalidatePortalBrandNavAfterDelete],
   },
   fields: [
     {

@@ -1,15 +1,17 @@
 import type { Metadata } from "next";
-import { Geist_Mono, Inter, Montserrat } from "next/font/google";
+import { Suspense } from "react";
 import Script from "next/script";
 
 import { PortalAppShell } from "@/components/portal/layout/portal-shell";
+import { PortalHeaderSkeleton } from "@/components/portal/layout/portal-header-skeleton";
+import { PortalSidebarSkeleton } from "@/components/portal/layout/portal-sidebar-skeleton";
 import { PortalThemeProvider } from "@/components/providers/portal-theme-provider";
-import { loadComponentNavGroups } from "@/lib/portal/components/load-nav-groups";
-import { loadBrandNavItems } from "@/lib/portal/brand/load-pages";
-import { loadPortalSources } from "@/lib/portal/core/load-portal-sources";
+import { PORTAL_PAGE_REVALIDATE_SECONDS } from "@/lib/portal/cache/page-revalidate";
+import { portalFontClassName } from "@/lib/portal/core/portal-fonts";
 import { portalAppearanceInitScript } from "@/lib/radix/portal-appearance";
 
-import { PortalSidebar } from "./portal-sidebar";
+import { PortalHeaderAsync } from "./portal-header-async";
+import { PortalSidebarAsync } from "./portal-sidebar-async";
 
 import { buildPortalLayoutMetadataFromCms } from "@/lib/portal/components/open-graph";
 
@@ -17,41 +19,21 @@ import "@radix-ui/themes/styles.css";
 import "../globals.css";
 import "../radix-themes.css";
 
-const montserrat = Montserrat({
-  variable: "--font-montserrat",
-  subsets: ["latin", "cyrillic"],
-  weight: ["400", "500", "600", "700"],
-});
-
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin", "cyrillic"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin", "cyrillic"],
-});
+export const revalidate = PORTAL_PAGE_REVALIDATE_SECONDS;
 
 export async function generateMetadata(): Promise<Metadata> {
   return buildPortalLayoutMetadataFromCms();
 }
 
-export default async function PortalLayout({
+export default function PortalLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [componentNavGroups, brandNavItems, sources] = await Promise.all([
-    loadComponentNavGroups(),
-    loadBrandNavItems(),
-    loadPortalSources(),
-  ]);
-
   return (
     <html
       lang="ru"
-      className={`${montserrat.variable} ${inter.variable} ${geistMono.variable}`}
+      className={portalFontClassName}
       suppressHydrationWarning
     >
       <body suppressHydrationWarning>
@@ -62,10 +44,16 @@ export default async function PortalLayout({
         />
         <PortalThemeProvider>
           <PortalAppShell
-            sidebar={
-              <PortalSidebar componentGroups={componentNavGroups} brandNavItems={brandNavItems} />
+            header={
+              <Suspense fallback={<PortalHeaderSkeleton />}>
+                <PortalHeaderAsync />
+              </Suspense>
             }
-            sources={sources}
+            sidebar={
+              <Suspense fallback={<PortalSidebarSkeleton />}>
+                <PortalSidebarAsync />
+              </Suspense>
+            }
           >
             {children}
           </PortalAppShell>

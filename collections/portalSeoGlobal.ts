@@ -1,6 +1,7 @@
 import type { GlobalConfig } from "payload";
 
 import { accessHasRole } from "@/lib/payload/access";
+import { revalidatePortalSeoAfterChange } from "@/lib/payload/portal-cache-hooks";
 
 /** SEO / Open Graph портала — title, description, image для шаринга ссылок. */
 export const PortalSeoGlobal: GlobalConfig = {
@@ -13,6 +14,9 @@ export const PortalSeoGlobal: GlobalConfig = {
   access: {
     read: () => true,
     update: accessHasRole(["admin", "pm"]),
+  },
+  hooks: {
+    afterChange: [revalidatePortalSeoAfterChange],
   },
   fields: [
     {

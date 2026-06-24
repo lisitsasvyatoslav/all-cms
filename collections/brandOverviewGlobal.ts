@@ -1,6 +1,7 @@
 import type { GlobalConfig } from "payload";
 
 import { accessHasRole } from "@/lib/payload/access";
+import { revalidatePortalBrandOverviewAfterChange } from "@/lib/payload/portal-cache-hooks";
 
 /** Тексты страницы /brand (обзор). */
 export const BrandOverviewGlobal: GlobalConfig = {
@@ -13,6 +14,9 @@ export const BrandOverviewGlobal: GlobalConfig = {
   access: {
     read: () => true,
     update: accessHasRole(["admin", "pm", "designer"]),
+  },
+  hooks: {
+    afterChange: [revalidatePortalBrandOverviewAfterChange],
   },
   fields: [
     {

@@ -1,6 +1,5 @@
 import type { Component } from "@/payload-types";
 
-import { getComponentDoc } from "@/lib/component-docs";
 import { getUiKitPropsForSlug } from "@/lib/ui-kit/props-from-manifest";
 import {
   getContentDocumentationBlocks,
@@ -21,7 +20,6 @@ import { resolveSiteBaseUrl } from "./site-base-url";
 
 export function componentDocToMarkdown(doc: Component): string {
   const baseUrl = resolveSiteBaseUrl();
-  const staticDoc = getComponentDoc(doc.slug);
   const documentation = doc.documentation ?? [];
   const livePreviewItems = getLivePreviewItems(documentation);
   const contentBlocks = getContentDocumentationBlocks(documentation, { omitPropsTable: true });
@@ -71,25 +69,6 @@ export function componentDocToMarkdown(doc: Component): string {
         ),
       ]),
     );
-  }
-
-  if (staticDoc) {
-    const staticSections: (string | null | undefined)[] = [];
-
-    staticSections.push(
-        mdHeading(2, "Установка"),
-        mdParagraph("Импорт"),
-        mdFence(staticDoc.importSnippet, "tsx"),
-        mdParagraph("Базовый пример"),
-        mdFence(staticDoc.basicSnippet, "tsx"),
-        mdHeading(2, "Примеры кода"),
-        ...staticDoc.variantSnippets.flatMap((block) => [
-          mdParagraph(block.label),
-          mdFence(block.code, "tsx"),
-        ]),
-    );
-
-    sections.push(mdJoin(staticSections));
   }
 
   return mdJoin(sections);

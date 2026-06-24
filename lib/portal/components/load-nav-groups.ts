@@ -1,8 +1,10 @@
-import { getPayload } from "payload";
+import { cache } from "react";
+import { unstable_cache } from "next/cache";
 
-import config from "@payload-config";
 import type { Component } from "@/payload-types";
 
+import { getCachedPayload } from "@/lib/payload/get-cached-payload";
+import { PORTAL_CACHE_REVALIDATE_SECONDS, PORTAL_CACHE_TAGS } from "@/lib/portal/cache/tags";
 import { isComponentVisibleOnPortal } from "@/lib/portal/components/status";
 import {
   COMPONENT_FOLDER_ORDER,
@@ -75,16 +77,7 @@ function buildGroups<TItem extends { name: string }>(
   return groups;
 }
 
-export async function loadComponentNavGroups(): Promise<PortalComponentNavGroup[]> {
-  const payload = await getPayload({ config });
-  const { docs } = await payload.find({
-    collection: "components",
-    depth: 2,
-    limit: 200,
-    sort: "name",
-    overrideAccess: true,
-  });
-
+export function buildComponentNavGroupsFromDocs(docs: Component[]): PortalComponentNavGroup[] {
   const byFolder = new Map<string, PortalComponentNavItem[]>();
   const ungrouped: PortalComponentNavItem[] = [];
 
@@ -109,16 +102,7 @@ export async function loadComponentNavGroups(): Promise<PortalComponentNavGroup[
   return buildGroups(byFolder, ungrouped);
 }
 
-export async function loadComponentsCatalogGroups(): Promise<PortalComponentCatalogGroup[]> {
-  const payload = await getPayload({ config });
-  const { docs } = await payload.find({
-    collection: "components",
-    depth: 2,
-    limit: 200,
-    sort: "name",
-    overrideAccess: true,
-  });
-
+function buildComponentCatalogGroupsFromDocs(docs: Component[]): PortalComponentCatalogGroup[] {
   const byFolder = new Map<string, PortalComponentCatalogItem[]>();
   const ungrouped: PortalComponentCatalogItem[] = [];
 
@@ -147,5 +131,75 @@ export async function loadComponentsCatalogGroups(): Promise<PortalComponentCata
 
   return buildGroups(byFolder, ungrouped);
 }
+
+async function fetchComponentNavDocs() {
+  const payload = await getCachedPayload();
+  const { docs } = await payload.find({
+    collection: "components",
+    depth: 1,
+    limit: 200,
+    sort: "name",
+    overrideAccess: true,
+    select: {
+      slug: true,
+      name: true,
+      description: true,
+      status: true,
+      folder: true,
+    },
+  });
+  return docs as Component[];
+}
+
+async function fetchComponentCatalogDocs() {
+  const payload = await getCachedPayload();
+  const { docs } = await payload.find({
+    collection: "components",
+    depth: 2,
+    limit: 200,
+    sort: "name",
+    overrideAccess: true,
+    select: {
+      slug: true,
+      name: true,
+      description: true,
+      status: true,
+      folder: true,
+      relatedPreviewLight: true,
+      relatedPreviewDark: true,
+    },
+  });
+  return docs as Component[];
+}
+
+const getCachedComponentNavDocs = unstable_cache(
+  fetchComponentNavDocs,
+  ["portal-component-nav-docs", "v2"],
+  {
+    revalidate: PORTAL_CACHE_REVALIDATE_SECONDS,
+    tags: [PORTAL_CACHE_TAGS.componentNav, PORTAL_CACHE_TAGS.shell],
+  },
+);
+
+const getCachedComponentCatalogDocs = unstable_cache(
+  fetchComponentCatalogDocs,
+  ["portal-component-catalog-docs", "v2"],
+  {
+    revalidate: PORTAL_CACHE_REVALIDATE_SECONDS,
+    tags: [PORTAL_CACHE_TAGS.componentCatalog, PORTAL_CACHE_TAGS.shell],
+  },
+);
+
+export const loadComponentNavGroups = cache(async (): Promise<PortalComponentNavGroup[]> => {
+  const docs = await getCachedComponentNavDocs();
+  return buildComponentNavGroupsFromDocs(docs);
+});
+
+export const loadComponentsCatalogGroups = cache(
+  async (): Promise<PortalComponentCatalogGroup[]> => {
+    const docs = await getCachedComponentCatalogDocs();
+    return buildComponentCatalogGroupsFromDocs(docs);
+  },
+);
 
 export { folderSectionId };

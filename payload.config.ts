@@ -29,6 +29,14 @@ import { isPortalDocumentationReadable } from "./lib/payload/documentation-acces
 import { resolvePayloadSqliteClientConfig } from "./lib/payload/resolve-database-uri";
 import { FieldShowcaseCollection } from "./collections/fieldShowcase";
 import { componentAgentMcpTools } from "./lib/mcp/components-agent";
+import {
+  revalidatePortalBrandNavAfterChange,
+  revalidatePortalBrandNavAfterDelete,
+  revalidatePortalComponentNavAfterChange,
+  revalidatePortalComponentNavAfterDelete,
+  revalidatePortalSeoAfterChange,
+  revalidatePortalSourcesAfterChange,
+} from "./lib/payload/portal-cache-hooks";
 import { migrations } from "./migrations";
 
 const filename = fileURLToPath(import.meta.url);
@@ -175,6 +183,8 @@ const Components: CollectionConfig = {
   hooks: {
     beforeChange: [syncComponentDesignChecklistBeforeChange],
     afterRead: [syncComponentDesignChecklistAfterRead],
+    afterChange: [revalidatePortalComponentNavAfterChange],
+    afterDelete: [revalidatePortalComponentNavAfterDelete],
   },
   fields: [
     {
@@ -531,6 +541,9 @@ const PortalSources: GlobalConfig = {
   access: {
     read: () => true,
     update: hasRole(["admin", "pm"]),
+  },
+  hooks: {
+    afterChange: [revalidatePortalSourcesAfterChange],
   },
   fields: [
     {

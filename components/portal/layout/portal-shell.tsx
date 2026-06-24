@@ -2,21 +2,18 @@ import { Box, Container, Flex, Grid, Separator } from "@radix-ui/themes";
 import type { ReactNode } from "react";
 
 import { portalClass } from "@/lib/portal/core/classes";
-import { PortalHeader } from "@/components/portal/layout/portal-header";
-import type { PortalSourcesLinks } from "@/lib/portal/core/load-portal-sources";
-
 export function PortalAppShell({
+  header,
   sidebar,
   children,
-  sources,
 }: {
+  header: ReactNode;
   sidebar: ReactNode;
   children: ReactNode;
-  sources: PortalSourcesLinks;
 }) {
   return (
     <Flex direction="column" className={portalClass.shell} width="100%">
-      <PortalHeader sources={sources} />
+      {header}
       <Flex className={portalClass.shellBody} width="100%">
         {sidebar}
         <Box className={portalClass.mainScroll}>{children}</Box>

@@ -4,6 +4,8 @@ import type { PortalPropsTableRow } from "@/components/portal/documentation/port
 
 import type { PropsManifest, PropsManifestProp } from "./props-manifest-types";
 
+/** Runtime source of truth for component API Reference on portal pages. */
+
 export const UI_KIT_PACKAGE_NAME = "@next-app/ui-kit";
 
 const propsManifest = manifest as PropsManifest;

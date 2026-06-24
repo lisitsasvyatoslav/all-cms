@@ -1,9 +1,10 @@
-import { getPayload } from "payload";
+import { cache } from "react";
+import { unstable_cache } from "next/cache";
 
-import config from "@payload-config";
-
+import { getCachedPayload } from "@/lib/payload/get-cached-payload";
 import { normalizeBrandSections } from "@/lib/payload/normalize-brand-page";
 import { normalizeBrandColorData } from "@/lib/payload/normalize-brand-color";
+import { PORTAL_CACHE_REVALIDATE_SECONDS, PORTAL_CACHE_TAGS } from "@/lib/portal/cache/tags";
 import type { BrandPageContent } from "@/lib/portal/brand/content";
 import type { BrandColorData } from "@/lib/portal/brand/color-data";
 import { brandPath } from "@/lib/portal/core/portal-base-path";
@@ -16,6 +17,13 @@ export type NormalizedBrandOverview = {
   shareTitle: string;
   shareDescription: string;
 };
+
+const BRAND_NAV_SELECT = {
+  slug: true,
+  title: true,
+  description: true,
+  sortOrder: true,
+} as const;
 
 function trimOrNull(value: string | null | undefined): string | null {
   const trimmed = value?.trim();
@@ -48,8 +56,40 @@ function normalizeBrandPageDoc(doc: BrandPageDoc): BrandPageContent | null {
   };
 }
 
-export async function loadBrandOverview(): Promise<NormalizedBrandOverview> {
-  const payload = await getPayload({ config });
+export function mapBrandPagesToNavItems(docs: BrandPageDoc[]): BrandNavItem[] {
+  return docs
+    .filter((doc): doc is BrandPageDoc & { slug: BrandPageSlug } => isBrandPageSlug(doc.slug))
+    .map((doc) => {
+      const title = trimOrNull(doc.title) ?? doc.slug;
+      return {
+        slug: doc.slug,
+        label: title,
+        href: brandPath(`/${doc.slug}`),
+        description: trimOrNull(doc.description) ?? "",
+      };
+    });
+}
+
+async function fetchBrandNavItems(): Promise<BrandNavItem[]> {
+  const payload = await getCachedPayload();
+  const { docs } = await payload.find({
+    collection: "brand-pages",
+    depth: 0,
+    limit: 20,
+    sort: "sortOrder",
+    overrideAccess: true,
+    select: BRAND_NAV_SELECT,
+  });
+  return mapBrandPagesToNavItems(docs);
+}
+
+const getCachedBrandNavItems = unstable_cache(fetchBrandNavItems, ["portal-brand-nav"], {
+  revalidate: PORTAL_CACHE_REVALIDATE_SECONDS,
+  tags: [PORTAL_CACHE_TAGS.brandNav, PORTAL_CACHE_TAGS.shell],
+});
+
+async function fetchBrandOverview(): Promise<NormalizedBrandOverview> {
+  const payload = await getCachedPayload();
   const doc = await payload.findGlobal({
     slug: "brand-overview",
     depth: 0,
@@ -66,8 +106,17 @@ export async function loadBrandOverview(): Promise<NormalizedBrandOverview> {
   };
 }
 
+const getCachedBrandOverview = unstable_cache(fetchBrandOverview, ["portal-brand-overview"], {
+  revalidate: PORTAL_CACHE_REVALIDATE_SECONDS,
+  tags: [PORTAL_CACHE_TAGS.brandOverview],
+});
+
+export const loadBrandOverview = cache(async (): Promise<NormalizedBrandOverview> => {
+  return getCachedBrandOverview();
+});
+
 export async function loadBrandColorData(): Promise<BrandColorData | null> {
-  const payload = await getPayload({ config });
+  const payload = await getCachedPayload();
   const { docs } = await payload.find({
     collection: "brand-pages",
     where: { slug: { equals: "color" } },
@@ -82,23 +131,8 @@ export async function loadBrandColorData(): Promise<BrandColorData | null> {
   return normalizeBrandColorData(doc);
 }
 
-export async function loadBrandPages(): Promise<BrandPageContent[]> {
-  const payload = await getPayload({ config });
-  const { docs } = await payload.find({
-    collection: "brand-pages",
-    depth: 0,
-    limit: 20,
-    sort: "sortOrder",
-    overrideAccess: true,
-  });
-
-  return docs
-    .map((doc) => normalizeBrandPageDoc(doc))
-    .filter((page): page is BrandPageContent => page != null);
-}
-
-export async function loadBrandPage(slug: BrandPageSlug): Promise<BrandPageContent | null> {
-  const payload = await getPayload({ config });
+async function fetchBrandPage(slug: BrandPageSlug): Promise<BrandPageContent | null> {
+  const payload = await getCachedPayload();
   const { docs } = await payload.find({
     collection: "brand-pages",
     where: { slug: { equals: slug } },
@@ -113,27 +147,33 @@ export async function loadBrandPage(slug: BrandPageSlug): Promise<BrandPageConte
   return normalizeBrandPageDoc(doc);
 }
 
-export async function loadBrandNavItems(): Promise<BrandNavItem[]> {
-  const pages = await loadBrandPages();
+const getCachedBrandPage = unstable_cache(
+  fetchBrandPage,
+  ["portal-brand-page"],
+  {
+    revalidate: PORTAL_CACHE_REVALIDATE_SECONDS,
+    tags: [PORTAL_CACHE_TAGS.brandPage],
+  },
+);
 
-  return pages.map((page) => ({
-    slug: page.slug,
-    label: page.title,
-    href: brandPath(`/${page.slug}`),
-    description: page.description,
-  }));
-}
+export const loadBrandPage = cache(async (slug: BrandPageSlug): Promise<BrandPageContent | null> => {
+  return getCachedBrandPage(slug);
+});
 
-export async function loadBrandPageWithColor(slug: BrandPageSlug): Promise<{
+export const loadBrandNavItems = cache(async (): Promise<BrandNavItem[]> => {
+  return getCachedBrandNavItems();
+});
+
+export const loadBrandPageWithColor = cache(async (slug: BrandPageSlug): Promise<{
   page: BrandPageContent;
   colorData: BrandColorData | null;
-} | null> {
+} | null> => {
   const page = await loadBrandPage(slug);
   if (!page) return null;
 
   const colorData = slug === "color" ? await loadBrandColorData() : null;
   return { page, colorData };
-}
+});
 
 export function getBrandPageShareMeta(
   page: BrandPageContent,

@@ -1,27 +1,12 @@
-"use client";
-
 import { Flex, IconButton } from "@radix-ui/themes";
 import NextLink from "next/link";
-import { usePathname } from "next/navigation";
 
+import { PortalHeaderNav } from "@/components/portal/layout/portal-header-nav";
 import { SourceLinkIcon } from "@/components/portal/sources/source-link-icons";
 import { portalClass } from "@/lib/portal/core/classes";
-import {
-  PORTAL_BASE_PATH,
-  PORTAL_BRAND_PATH,
-  PORTAL_TEXT_PATH,
-  portalAreaFromPathname,
-  type PortalAreaId,
-} from "@/lib/portal/core/portal-base-path";
 import type { SourceLinkIconKind } from "@/lib/portal/core/source-link-icon";
 import type { PortalSourcesLinks } from "@/lib/portal/core/load-portal-sources";
 import { PORTAL_HOME_PATH } from "@/lib/portal/components/routes";
-
-const PORTAL_AREAS: { id: PortalAreaId; label: string; href: string }[] = [
-  { id: "ds", label: "DS", href: PORTAL_BASE_PATH },
-  { id: "text", label: "Text", href: PORTAL_TEXT_PATH },
-  { id: "brand", label: "Brand", href: PORTAL_BRAND_PATH },
-];
 
 const HEADER_SOURCE_LINKS: {
   icon: SourceLinkIconKind;
@@ -38,8 +23,6 @@ type Props = {
 };
 
 export function PortalHeader({ sources }: Props) {
-  const pathname = usePathname();
-  const activeArea = portalAreaFromPathname(pathname);
   const visibleSourceLinks = HEADER_SOURCE_LINKS.filter((item) => sources[item.urlKey]);
 
   return (
@@ -54,23 +37,7 @@ export function PortalHeader({ sources }: Props) {
         <span className={portalClass.headerBrandSubtitle}>Документация</span>
       </div>
 
-      <nav
-        className={portalClass.headerNav}
-        role="navigation"
-        aria-label="Разделы портала"
-      >
-        {PORTAL_AREAS.map((area) => (
-          <NextLink
-            key={area.id}
-            href={area.href}
-            className={portalClass.headerNavLink}
-            data-active={activeArea === area.id ? "true" : undefined}
-            aria-current={activeArea === area.id ? "page" : undefined}
-          >
-            {area.label}
-          </NextLink>
-        ))}
-      </nav>
+      <PortalHeaderNav />
 
       {visibleSourceLinks.length ? (
         <Flex

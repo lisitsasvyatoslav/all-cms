@@ -1,7 +1,9 @@
-import { getPayload } from "payload";
+import { unstable_cache } from "next/cache";
 
-import config from "@payload-config";
 import type { Component } from "@/payload-types";
+
+import { getCachedPayload } from "@/lib/payload/get-cached-payload";
+import { PORTAL_CACHE_REVALIDATE_SECONDS, PORTAL_CACHE_TAGS } from "@/lib/portal/cache/tags";
 
 export type MergedDesignChecklistItem = {
   key: string | number;
@@ -9,6 +11,12 @@ export type MergedDesignChecklistItem = {
   description?: string | null;
   done: boolean;
   note?: string | null;
+};
+
+type DesignChecklistCatalogItem = {
+  id: number;
+  title: string;
+  description?: string | null;
 };
 
 function resolveRelationshipId(
@@ -19,19 +27,37 @@ function resolveRelationshipId(
   return value.id ?? null;
 }
 
-/** Все активные пункты справочника + статусы с карточки компонента. */
-export async function loadMergedDesignChecklist(
-  component: Component,
-): Promise<MergedDesignChecklistItem[]> {
-  const payload = await getPayload({ config });
-  const { docs: catalogItems } = await payload.find({
+async function fetchDesignChecklistCatalog(): Promise<DesignChecklistCatalogItem[]> {
+  const payload = await getCachedPayload();
+  const { docs } = await payload.find({
     collection: "design-checklist-items",
     where: { isActive: { equals: true } },
     sort: "sortOrder",
     limit: 100,
     depth: 0,
     overrideAccess: true,
+    select: {
+      title: true,
+      description: true,
+    },
   });
+  return docs;
+}
+
+const getCachedDesignChecklistCatalog = unstable_cache(
+  fetchDesignChecklistCatalog,
+  ["portal-design-checklist-catalog"],
+  {
+    revalidate: PORTAL_CACHE_REVALIDATE_SECONDS,
+    tags: [PORTAL_CACHE_TAGS.designChecklist],
+  },
+);
+
+/** Все активные пункты справочника + статусы с карточки компонента. */
+export async function loadMergedDesignChecklist(
+  component: Component,
+): Promise<MergedDesignChecklistItem[]> {
+  const catalogItems = await getCachedDesignChecklistCatalog();
 
   const statusByItemId = new Map<number, { done: boolean; note?: string | null }>();
   for (const row of component.designChecklist ?? []) {

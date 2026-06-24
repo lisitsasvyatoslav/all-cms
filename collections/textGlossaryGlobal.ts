@@ -1,6 +1,7 @@
 import type { GlobalConfig } from "payload";
 
 import { accessHasRole } from "@/lib/payload/access";
+import { revalidatePortalTextGlossaryAfterChange } from "@/lib/payload/portal-cache-hooks";
 
 /** Тексты страницы /text/glossary (шапка и принципы выбора слов). */
 export const TextGlossaryGlobal: GlobalConfig = {
@@ -14,6 +15,9 @@ export const TextGlossaryGlobal: GlobalConfig = {
   access: {
     read: () => true,
     update: accessHasRole(["admin", "pm", "designer"]),
+  },
+  hooks: {
+    afterChange: [revalidatePortalTextGlossaryAfterChange],
   },
   fields: [
     {

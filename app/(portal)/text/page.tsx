@@ -6,7 +6,9 @@ import { buildCustomPortalShareMetadata } from "@/lib/portal/seo/resolve-metadat
 import { loadPortalSeo } from "@/lib/portal/seo/load";
 import { PORTAL_TEXT_PATH } from "@/lib/portal/core/portal-base-path";
 
-export const dynamic = "force-dynamic";
+import { PORTAL_PAGE_REVALIDATE_SECONDS } from "@/lib/portal/cache/page-revalidate";
+
+export const revalidate = PORTAL_PAGE_REVALIDATE_SECONDS;
 
 export async function generateMetadata(): Promise<Metadata> {
   const seo = await loadPortalSeo();

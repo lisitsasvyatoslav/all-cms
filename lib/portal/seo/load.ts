@@ -1,8 +1,10 @@
-import { getPayload } from "payload";
+import { cache } from "react";
+import { unstable_cache } from "next/cache";
 
-import config from "@payload-config";
 import type { PortalSeo } from "@/payload-types";
 
+import { getCachedPayload } from "@/lib/payload/get-cached-payload";
+import { PORTAL_CACHE_REVALIDATE_SECONDS, PORTAL_CACHE_TAGS } from "@/lib/portal/cache/tags";
 import { PORTAL_SEO_FALLBACKS, type NormalizedPortalSeo } from "./defaults";
 import { PORTAL_SITE_OG_RELATIVE_PATH } from "./default-og";
 
@@ -12,7 +14,6 @@ function trimOrNull(value: string | null | undefined): string | null {
 }
 
 function normalizePortalSeo(doc: PortalSeo | null | undefined): NormalizedPortalSeo {
-  // OG-картинка для не-комponent страниц — только static portal-site.webp (не Payload Media / button preview).
   const siteOgImagePath = PORTAL_SITE_OG_RELATIVE_PATH;
 
   return {
@@ -45,9 +46,9 @@ function normalizePortalSeo(doc: PortalSeo | null | undefined): NormalizedPortal
   };
 }
 
-export async function loadPortalSeo(): Promise<NormalizedPortalSeo> {
+async function fetchPortalSeo(): Promise<NormalizedPortalSeo> {
   try {
-    const payload = await getPayload({ config });
+    const payload = await getCachedPayload();
     const doc = await payload.findGlobal({
       slug: "portal-seo",
       depth: 1,
@@ -58,3 +59,12 @@ export async function loadPortalSeo(): Promise<NormalizedPortalSeo> {
     return PORTAL_SEO_FALLBACKS;
   }
 }
+
+const getCachedPortalSeo = unstable_cache(fetchPortalSeo, ["portal-seo"], {
+  revalidate: PORTAL_CACHE_REVALIDATE_SECONDS,
+  tags: [PORTAL_CACHE_TAGS.portalSeo],
+});
+
+export const loadPortalSeo = cache(async (): Promise<NormalizedPortalSeo> => {
+  return getCachedPortalSeo();
+});

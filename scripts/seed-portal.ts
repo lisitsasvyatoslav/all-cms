@@ -9,28 +9,20 @@ import { getPayload } from "payload";
 
 import config from "../payload.config";
 import type { Component } from "../payload-types";
-import { componentDocsBySlug, type PropRow } from "../lib/component-docs";
-import { storybookStoryUrl } from "../lib/storybook/portal-preview-config";
-import { syncDesignChecklistOnAllComponents } from "../lib/payload/sync-component-design-checklist";
-import { syncBrandPages } from "../lib/payload/sync-brand-pages";
-import { syncDsOverview } from "../lib/payload/sync-ds-overview";
-import { syncTextGlossary } from "../lib/payload/sync-text-glossary";
-import { syncStorybookUrls } from "../lib/payload/sync-storybook-urls";
 import {
   buildRadixComponentSeeds,
+  codeSnippetDocumentationBlocks,
   componentFolderNameForSlug,
-} from "../lib/portal/components/seed-data";
+  propsTableRowsForSlug,
+  RADIX_THEMES_CATALOG,
+} from "../lib/portal/bootstrap";
 import { COMPONENT_FOLDER_ORDER } from "../lib/portal/components/folders";
-import { RADIX_THEMES_CATALOG } from "../lib/portal/components/catalog";
-
-function propsTableRowsFromDoc(props: PropRow[]) {
-  return props.map((row) => ({
-    name: row.name,
-    type: row.type,
-    defaultValue: row.default ?? "—",
-    description: row.description,
-  }));
-}
+import { syncBrandPages } from "../lib/payload/sync-brand-pages";
+import { syncDesignChecklistOnAllComponents } from "../lib/payload/sync-component-design-checklist";
+import { syncDsOverview } from "../lib/payload/sync-ds-overview";
+import { syncStorybookUrls } from "../lib/payload/sync-storybook-urls";
+import { syncTextGlossary } from "../lib/payload/sync-text-glossary";
+import { storybookStoryUrl } from "../lib/storybook/portal-preview-config";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -462,7 +454,7 @@ function buildButtonDocumentation(options: {
       showLLM: true,
       title: "API Reference",
       subtitle: "Button Props",
-      rows: propsTableRowsFromDoc(componentDocsBySlug.button.props),
+      rows: propsTableRowsForSlug("button"),
     },
     {
       blockType: "accessibility" as const,
@@ -604,6 +596,7 @@ function buildButtonDocumentation(options: {
         },
       ],
     },
+    ...codeSnippetDocumentationBlocks("button"),
   ];
 }
 
@@ -751,7 +744,7 @@ function buildInputDocumentation(relatedComponentIds: number[]) {
       showLLM: true,
       title: "API Reference",
       subtitle: "Input Props",
-      rows: propsTableRowsFromDoc(componentDocsBySlug.input.props),
+      rows: propsTableRowsForSlug("input"),
     },
     {
       blockType: "accessibility" as const,
@@ -765,6 +758,7 @@ function buildInputDocumentation(relatedComponentIds: number[]) {
       ],
     },
     relComponentsDocumentationBlock(relatedComponentIds),
+    ...codeSnippetDocumentationBlocks("input"),
   ];
 }
 

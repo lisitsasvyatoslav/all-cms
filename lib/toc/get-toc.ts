@@ -139,7 +139,9 @@ export function buildComponentPageToc(
   doc: Component,
   options?: {
     hasKitProps?: boolean;
+    /** @deprecated Install/examples come from CMS documentation blocks. */
     hasStaticInstall?: boolean;
+    /** @deprecated Install/examples come from CMS documentation blocks. */
     hasStaticExamples?: boolean;
     hasDesignChecklist?: boolean;
     omitPropsTable?: boolean;

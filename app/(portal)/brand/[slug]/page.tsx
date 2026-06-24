@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
 
-import { BrandFoundationPageView } from "@/components/portal/brand/brand-foundation-page";
+import { PortalPageSuspense } from "@/components/portal/layout/portal-page-suspense";
 import { loadBrandPageWithColor } from "@/lib/portal/brand/load-pages";
 import {
   BRAND_PAGE_SLUGS,
@@ -11,8 +10,11 @@ import {
 import { brandPath } from "@/lib/portal/core/portal-base-path";
 import { buildCustomPortalShareMetadata } from "@/lib/portal/seo/resolve-metadata";
 import { loadPortalSeo } from "@/lib/portal/seo/load";
+import { PORTAL_PAGE_REVALIDATE_SECONDS } from "@/lib/portal/cache/page-revalidate";
 
-export const dynamic = "force-dynamic";
+import { BrandSlugPageBody } from "./brand-slug-page-body";
+
+export const revalidate = PORTAL_PAGE_REVALIDATE_SECONDS;
 
 type PageProps = {
   params: Promise<{ slug: string }>;
@@ -44,15 +46,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function BrandFoundationPage({ params }: PageProps) {
   const { slug } = await params;
-  if (!isBrandPageSlug(slug)) {
-    notFound();
-  }
 
-  const result = await loadBrandPageWithColor(slug);
-  if (!result) {
-    notFound();
-  }
-
-  const { page, colorData } = result;
-  return <BrandFoundationPageView page={page} colorData={colorData} />;
+  return (
+    <PortalPageSuspense>
+      <BrandSlugPageBody slug={slug} />
+    </PortalPageSuspense>
+  );
 }

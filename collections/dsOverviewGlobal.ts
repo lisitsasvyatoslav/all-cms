@@ -1,6 +1,7 @@
 import type { GlobalConfig } from "payload";
 
 import { accessHasRole } from "@/lib/payload/access";
+import { revalidatePortalDsOverviewAfterChange } from "@/lib/payload/portal-cache-hooks";
 
 const SOURCE_ICON_OPTIONS = [
   { label: "Figma", value: "figma" },
@@ -22,6 +23,9 @@ export const DsOverviewGlobal: GlobalConfig = {
   access: {
     read: () => true,
     update: accessHasRole(["admin", "pm", "designer"]),
+  },
+  hooks: {
+    afterChange: [revalidatePortalDsOverviewAfterChange],
   },
   fields: [
     {

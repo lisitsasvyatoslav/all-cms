@@ -9,7 +9,7 @@ import { fileURLToPath } from "node:url";
 import {
   RADIX_THEMES_CATALOG,
   type RadixThemesCatalogEntry,
-} from "../../../lib/portal/components/catalog";
+} from "../../../lib/portal/bootstrap/radix-themes-catalog";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const srcDir = path.join(__dirname, "..", "src");

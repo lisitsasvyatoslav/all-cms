@@ -2,6 +2,7 @@ import type { CollectionConfig } from "payload";
 
 import { syncAllComponentsAfterChecklistItemChange } from "@/lib/payload/component-design-checklist-hooks";
 import { accessHasRole } from "@/lib/payload/access";
+import { revalidatePortalDesignChecklistAfterChange } from "@/lib/payload/portal-cache-hooks";
 
 export const DesignChecklistItemsCollection: CollectionConfig = {
   slug: "design-checklist-items",
@@ -63,6 +64,6 @@ export const DesignChecklistItemsCollection: CollectionConfig = {
     },
   ],
   hooks: {
-    afterChange: [syncAllComponentsAfterChecklistItemChange],
+    afterChange: [syncAllComponentsAfterChecklistItemChange, revalidatePortalDesignChecklistAfterChange],
   },
 };

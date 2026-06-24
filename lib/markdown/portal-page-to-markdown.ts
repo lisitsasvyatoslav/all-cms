@@ -1,6 +1,4 @@
-import { getPayload } from "payload";
-
-import config from "@payload-config";
+import { getCachedPayload } from "@/lib/payload/get-cached-payload";
 import type { BrandPageSlug } from "@/lib/portal/brand/nav";
 import {
   loadBrandNavItems,
@@ -127,7 +125,7 @@ async function componentRouteToMarkdown(slug: string): Promise<string | null> {
 }
 
 async function colorPageToMarkdown(id: number): Promise<string | null> {
-  const payload = await getPayload({ config });
+  const payload = await getCachedPayload();
   let doc;
   try {
     doc = await payload.findByID({

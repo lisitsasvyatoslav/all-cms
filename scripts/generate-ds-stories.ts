@@ -6,7 +6,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { RADIX_THEMES_CATALOG } from "../lib/portal/components/catalog";
+import { RADIX_THEMES_CATALOG } from "../lib/portal/bootstrap/radix-themes-catalog";
 import {
   MANUAL_DS_STORY_SLUGS,
   storyPreviewSpecForSlug,

@@ -1,12 +1,15 @@
 import type { Metadata } from "next";
 
-import { TextGlossaryPageView } from "@/components/portal/glossary/text-glossary-page";
+import { PortalPageSuspense } from "@/components/portal/layout/portal-page-suspense";
 import { loadTextGlossaryContent } from "@/lib/portal/glossary/load";
 import { loadPortalSeo } from "@/lib/portal/seo/load";
 import { PORTAL_TEXT_GLOSSARY_PATH } from "@/lib/portal/core/portal-base-path";
 import { buildCustomPortalShareMetadata } from "@/lib/portal/seo/resolve-metadata";
+import { PORTAL_PAGE_REVALIDATE_SECONDS } from "@/lib/portal/cache/page-revalidate";
 
-export const dynamic = "force-dynamic";
+import { TextGlossaryPageBody } from "./text-glossary-page-body";
+
+export const revalidate = PORTAL_PAGE_REVALIDATE_SECONDS;
 
 export async function generateMetadata(): Promise<Metadata> {
   const [seo, { page }] = await Promise.all([loadPortalSeo(), loadTextGlossaryContent()]);
@@ -17,7 +20,10 @@ export async function generateMetadata(): Promise<Metadata> {
   });
 }
 
-export default async function TextGlossaryPage() {
-  const { page, terms } = await loadTextGlossaryContent();
-  return <TextGlossaryPageView page={page} terms={terms} />;
+export default function TextGlossaryPage() {
+  return (
+    <PortalPageSuspense>
+      <TextGlossaryPageBody />
+    </PortalPageSuspense>
+  );
 }
