@@ -1,29 +1,190 @@
 {
   "version": "0.1.0",
   "package": "@next-app/ui-kit",
-  "generatedAt": "2026-06-15T10:56:46.776Z",
+  "generatedAt": "2026-06-26T09:08:43.006Z",
   "components": {
-    "alert": {
-      "exportName": "Alert",
-      "sourceFile": "src/alert.tsx",
+    "container": {
+      "exportName": "Container",
+      "sourceFile": "src/container.tsx",
       "props": [
-        {
-          "name": "children",
-          "type": "ReactNode",
-          "description": "Основной текст уведомления.",
-          "required": true
-        },
-        {
-          "name": "alertVariant",
-          "type": "\"info\" | \"success\" | \"warning\" | \"error\"",
-          "defaultValue": "info",
-          "description": "Семантика: info, success, warning, error.",
-          "required": false
-        },
         {
           "name": "asChild",
           "type": "boolean",
-          "description": "Рендерит дочерний элемент вместо корня (Radix Slot).",
+          "description": "Composes the component into its immediate child instead of rendering its own HTML element.\nYou’ll have to provide a single React Element child.",
+          "required": false
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "description": "Дополнительные CSS-классы для корневого элемента.",
+          "required": false
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "description": "Краткая подсказка при наведении (HTML title).",
+          "required": false
+        }
+      ]
+    },
+    "section": {
+      "exportName": "Section",
+      "sourceFile": "src/section.tsx",
+      "props": [
+        {
+          "name": "asChild",
+          "type": "boolean",
+          "description": "Composes the component into its immediate child instead of rendering its own HTML element.\nYou’ll have to provide a single React Element child.",
+          "required": false
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "description": "Дополнительные CSS-классы для корневого элемента.",
+          "required": false
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "description": "Краткая подсказка при наведении (HTML title).",
+          "required": false
+        }
+      ]
+    },
+    "scroll-area": {
+      "exportName": "ScrollArea",
+      "sourceFile": "src/scroll-area.tsx",
+      "props": [
+        {
+          "name": "asChild",
+          "type": "boolean",
+          "description": "Рендерит дочерний элемент вместо собственного DOM-узла (паттерн Radix Slot).",
+          "required": false
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "description": "Дополнительные CSS-классы для корневого элемента.",
+          "required": false
+        },
+        {
+          "name": "radius",
+          "type": "\"small\" | \"none\" | \"medium\" | \"large\" | \"full\"",
+          "description": "Скругление углов: \"none\" | \"small\" | \"medium\" | \"large\" | \"full\".",
+          "required": false
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "description": "Краткая подсказка при наведении (HTML title).",
+          "required": false
+        },
+        {
+          "name": "type",
+          "type": "\"auto\" | \"always\" | \"scroll\" | \"hover\"",
+          "description": "Семантический тип HTML-элемента (button, submit, text и т.д.).",
+          "required": false
+        }
+      ]
+    },
+    "blockquote": {
+      "exportName": "Blockquote",
+      "sourceFile": "src/blockquote.tsx",
+      "props": [
+        {
+          "name": "asChild",
+          "type": "boolean",
+          "description": "Рендерит дочерний элемент вместо собственного DOM-узла (паттерн Radix Slot).",
+          "required": false
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "description": "Дополнительные CSS-классы для корневого элемента.",
+          "required": false
+        },
+        {
+          "name": "highContrast",
+          "type": "boolean",
+          "description": "Повышенная контрастность для a11y и тёмной темы.",
+          "required": false
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "description": "Краткая подсказка при наведении (HTML title).",
+          "required": false
+        }
+      ]
+    },
+    "em": {
+      "exportName": "Em",
+      "sourceFile": "src/em.tsx",
+      "props": [
+        {
+          "name": "asChild",
+          "type": "boolean",
+          "description": "Рендерит дочерний элемент вместо собственного DOM-узла (паттерн Radix Slot).",
+          "required": false
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "description": "Дополнительные CSS-классы для корневого элемента.",
+          "required": false
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "description": "Краткая подсказка при наведении (HTML title).",
+          "required": false
+        }
+      ]
+    },
+    "heading": {
+      "exportName": "Heading",
+      "sourceFile": "src/heading.tsx",
+      "props": [
+        {
+          "name": "asChild",
+          "type": "boolean",
+          "description": "Рендерит дочерний элемент вместо собственного DOM-узла (паттерн Radix Slot).",
+          "required": false
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "description": "Дополнительные CSS-классы для корневого элемента.",
+          "required": false
+        },
+        {
+          "name": "highContrast",
+          "type": "boolean",
+          "description": "Повышенная контрастность для a11y и тёмной темы.",
+          "required": false
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "description": "Краткая подсказка при наведении (HTML title).",
+          "required": false
+        }
+      ]
+    },
+    "link": {
+      "exportName": "Link",
+      "sourceFile": "src/link.tsx",
+      "props": [
+        {
+          "name": "asChild",
+          "type": "boolean",
+          "description": "Рендерит дочерний элемент вместо корня.",
+          "required": false
+        },
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "description": "Текст ссылки.",
           "required": false
         },
         {
@@ -39,15 +200,135 @@
           "required": false
         },
         {
+          "name": "href",
+          "type": "string",
+          "description": "URL перехода.",
+          "required": false
+        },
+        {
+          "name": "rel",
+          "type": "string",
+          "description": "",
+          "required": false
+        },
+        {
+          "name": "target",
+          "type": "HTMLAttributeAnchorTarget",
+          "description": "Куда открыть ссылку, например \"_blank\".",
+          "required": false
+        },
+        {
           "name": "title",
-          "type": "ReactNode",
-          "description": "Заголовок — выделяется жирным перед текстом.",
+          "type": "string",
+          "description": "Всплывающая подсказка (HTML title).",
+          "required": false
+        },
+        {
+          "name": "type",
+          "type": "string",
+          "description": "MIME или тип ссылки (редко используется).",
+          "required": false
+        }
+      ]
+    },
+    "strong": {
+      "exportName": "Strong",
+      "sourceFile": "src/strong.tsx",
+      "props": [
+        {
+          "name": "asChild",
+          "type": "boolean",
+          "description": "Рендерит дочерний элемент вместо собственного DOM-узла (паттерн Radix Slot).",
+          "required": false
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "description": "Дополнительные CSS-классы для корневого элемента.",
+          "required": false
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "description": "Краткая подсказка при наведении (HTML title).",
+          "required": false
+        }
+      ]
+    },
+    "text": {
+      "exportName": "Text",
+      "sourceFile": "src/text.tsx",
+      "props": [
+        {
+          "name": "asChild",
+          "type": "boolean",
+          "description": "Рендерит дочерний элемент вместо собственного DOM-узла (паттерн Radix Slot).",
+          "required": false
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "description": "Дополнительные CSS-классы для корневого элемента.",
+          "required": false
+        },
+        {
+          "name": "highContrast",
+          "type": "boolean",
+          "description": "Повышенная контрастность для a11y и тёмной темы.",
+          "required": false
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "description": "Краткая подсказка при наведении (HTML title).",
+          "required": false
+        }
+      ]
+    },
+    "avatar": {
+      "exportName": "Avatar",
+      "sourceFile": "src/avatar.tsx",
+      "props": [
+        {
+          "name": "asChild",
+          "type": "boolean",
+          "description": "Рендерит дочерний элемент вместо собственного DOM-узла (паттерн Radix Slot).",
+          "required": false
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "description": "Дополнительные CSS-классы для корневого элемента.",
+          "required": false
+        },
+        {
+          "name": "highContrast",
+          "type": "boolean",
+          "description": "Повышенная контрастность для a11y и тёмной темы.",
+          "required": false
+        },
+        {
+          "name": "loading",
+          "type": "\"eager\" | \"lazy\"",
+          "description": "Показывает индикатор загрузки и блокирует повторные нажатия.",
+          "required": false
+        },
+        {
+          "name": "radius",
+          "type": "\"small\" | \"none\" | \"medium\" | \"large\" | \"full\"",
+          "description": "Скругление углов: \"none\" | \"small\" | \"medium\" | \"large\" | \"full\".",
+          "required": false
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "description": "Краткая подсказка при наведении (HTML title).",
           "required": false
         },
         {
           "name": "variant",
-          "type": "\"soft\" | \"surface\" | \"outline\"",
-          "description": "Вариант поверхности Radix Callout.",
+          "type": "\"solid\" | \"soft\"",
+          "description": "Визуальный вариант Radix Themes (surface, soft, outline…).",
           "required": false
         }
       ]
@@ -139,6 +420,12 @@
           "name": "loading",
           "type": "boolean",
           "description": "Показывает индикатор загрузки.",
+          "required": false
+        },
+        {
+          "name": "onClick",
+          "type": "MouseEventHandler<HTMLButtonElement>",
+          "description": "Обработчик клика.",
           "required": false
         },
         {
@@ -296,26 +583,20 @@
         }
       ]
     },
-    "icon-button": {
-      "exportName": "IconButton",
-      "sourceFile": "src/icon-button.tsx",
+    "legacy-chip": {
+      "exportName": "LegacyChip",
+      "sourceFile": "src/legacy-chip.tsx",
       "props": [
-        {
-          "name": "children",
-          "type": "ReactNode",
-          "description": "Иконка или содержимое кнопки.",
-          "required": true
-        },
-        {
-          "name": "label",
-          "type": "string",
-          "description": "Текст для aria-label — обязателен для скринридеров.",
-          "required": true
-        },
         {
           "name": "asChild",
           "type": "boolean",
           "description": "Рендерит дочерний элемент вместо корня.",
+          "required": false
+        },
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "description": "Текст чипа.",
           "required": false
         },
         {
@@ -325,21 +606,9 @@
           "required": false
         },
         {
-          "name": "disabled",
-          "type": "boolean",
-          "description": "Отключает взаимодействие.",
-          "required": false
-        },
-        {
           "name": "highContrast",
           "type": "boolean",
           "description": "Повышенная контрастность.",
-          "required": false
-        },
-        {
-          "name": "loading",
-          "type": "boolean",
-          "description": "Индикатор загрузки.",
           "required": false
         },
         {
@@ -349,34 +618,365 @@
           "required": false
         },
         {
-          "name": "size",
-          "type": "\"sm\" | \"md\" | \"lg\"",
-          "defaultValue": "md",
-          "description": "Размер: sm, md, lg.",
-          "required": false
-        },
-        {
           "name": "title",
           "type": "string",
           "description": "Всплывающая подсказка (HTML title).",
           "required": false
         },
         {
+          "name": "variant",
+          "type": "\"solid\" | \"soft\" | \"surface\" | \"outline\"",
+          "description": "Вариант Radix Badge (компонент устарел).",
+          "required": false
+        }
+      ]
+    },
+    "progress": {
+      "exportName": "Progress",
+      "sourceFile": "src/progress.tsx",
+      "props": [
+        {
+          "name": "className",
+          "type": "string",
+          "description": "Дополнительные CSS-классы для корневого элемента.",
+          "required": false
+        },
+        {
+          "name": "highContrast",
+          "type": "boolean",
+          "description": "Повышенная контрастность для a11y и тёмной темы.",
+          "required": false
+        },
+        {
+          "name": "radius",
+          "type": "\"small\" | \"none\" | \"medium\" | \"large\" | \"full\"",
+          "description": "Скругление углов: \"none\" | \"small\" | \"medium\" | \"large\" | \"full\".",
+          "required": false
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "description": "Краткая подсказка при наведении (HTML title).",
+          "required": false
+        },
+        {
+          "name": "value",
+          "type": "number | null",
+          "description": "Текущее значение для контролируемого компонента.",
+          "required": false
+        },
+        {
+          "name": "variant",
+          "type": "\"classic\" | \"surface\" | \"soft\"",
+          "description": "Визуальный вариант Radix Themes (surface, soft, outline…).",
+          "required": false
+        }
+      ]
+    },
+    "radio": {
+      "exportName": "Radio",
+      "sourceFile": "src/radio.tsx",
+      "props": [
+        {
+          "name": "value",
+          "type": "string",
+          "description": "Текущее значение для контролируемого компонента.",
+          "required": true
+        },
+        {
+          "name": "checked",
+          "type": "boolean",
+          "description": "Контролируемое состояние: отмечен, не отмечен или indeterminate.",
+          "required": false
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "description": "Дополнительные CSS-классы для корневого элемента.",
+          "required": false
+        },
+        {
+          "name": "defaultChecked",
+          "type": "boolean",
+          "description": "Начальное состояние для неконтролируемого checkbox.",
+          "required": false
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "description": "Отключает взаимодействие с элементом.",
+          "required": false
+        },
+        {
+          "name": "highContrast",
+          "type": "boolean",
+          "description": "Повышенная контрастность для a11y и тёмной темы.",
+          "required": false
+        },
+        {
+          "name": "readOnly",
+          "type": "boolean",
+          "description": "Только для чтения — значение видно, но изменить нельзя.",
+          "required": false
+        },
+        {
+          "name": "required",
+          "type": "boolean",
+          "description": "Поле обязательно для заполнения (HTML required).",
+          "required": false
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "description": "Краткая подсказка при наведении (HTML title).",
+          "required": false
+        },
+        {
+          "name": "variant",
+          "type": "\"classic\" | \"surface\" | \"soft\"",
+          "description": "Визуальный вариант Radix Themes (surface, soft, outline…).",
+          "required": false
+        }
+      ]
+    },
+    "select": {
+      "exportName": "Select",
+      "sourceFile": "src/select.tsx",
+      "props": [
+        {
+          "name": "options",
+          "type": "{ value: string; label: string; }[]",
+          "description": "Список пунктов { value, label }.",
+          "required": true
+        },
+        {
+          "name": "defaultValue",
+          "type": "string",
+          "description": "value выбранного пункта по умолчанию.",
+          "required": false
+        },
+        {
+          "name": "placeholder",
+          "type": "string",
+          "defaultValue": "Выберите…",
+          "description": "Текст, когда значение не выбрано.",
+          "required": false
+        },
+        {
+          "name": "selectSize",
+          "type": "\"sm\" | \"md\" | \"lg\"",
+          "defaultValue": "md",
+          "description": "Высота триггера: sm, md, lg.",
+          "required": false
+        }
+      ]
+    },
+    "slider": {
+      "exportName": "Slider",
+      "sourceFile": "src/slider.tsx",
+      "props": [
+        {
+          "name": "className",
+          "type": "string",
+          "description": "Дополнительные CSS-классы для корневого элемента.",
+          "required": false
+        },
+        {
+          "name": "defaultValue",
+          "type": "number[]",
+          "description": "Начальное значение для неконтролируемого поля или вкладки.",
+          "required": false
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "description": "Отключает взаимодействие с элементом.",
+          "required": false
+        },
+        {
+          "name": "highContrast",
+          "type": "boolean",
+          "description": "Повышенная контрастность для a11y и тёмной темы.",
+          "required": false
+        },
+        {
+          "name": "radius",
+          "type": "\"small\" | \"none\" | \"medium\" | \"large\" | \"full\"",
+          "description": "Скругление углов: \"none\" | \"small\" | \"medium\" | \"large\" | \"full\".",
+          "required": false
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "description": "Краткая подсказка при наведении (HTML title).",
+          "required": false
+        },
+        {
+          "name": "value",
+          "type": "number[]",
+          "description": "Текущее значение для контролируемого компонента.",
+          "required": false
+        },
+        {
+          "name": "variant",
+          "type": "\"classic\" | \"surface\" | \"soft\"",
+          "description": "Визуальный вариант Radix Themes (surface, soft, outline…).",
+          "required": false
+        }
+      ]
+    },
+    "spinner": {
+      "exportName": "Spinner",
+      "sourceFile": "src/spinner.tsx",
+      "props": [
+        {
+          "name": "className",
+          "type": "string",
+          "description": "Дополнительные CSS-классы для корневого элемента.",
+          "required": false
+        },
+        {
+          "name": "loading",
+          "type": "boolean",
+          "description": "Показывает индикатор загрузки и блокирует повторные нажатия.",
+          "required": false
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "description": "Краткая подсказка при наведении (HTML title).",
+          "required": false
+        }
+      ]
+    },
+    "switch": {
+      "exportName": "Switch",
+      "sourceFile": "src/switch.tsx",
+      "props": [
+        {
+          "name": "checked",
+          "type": "boolean",
+          "description": "Контролируемое состояние: отмечен, не отмечен или indeterminate.",
+          "required": false
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "description": "Дополнительные CSS-классы для корневого элемента.",
+          "required": false
+        },
+        {
+          "name": "defaultChecked",
+          "type": "boolean",
+          "description": "Начальное состояние для неконтролируемого checkbox.",
+          "required": false
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "description": "Отключает взаимодействие с элементом.",
+          "required": false
+        },
+        {
+          "name": "highContrast",
+          "type": "boolean",
+          "description": "Повышенная контрастность для a11y и тёмной темы.",
+          "required": false
+        },
+        {
+          "name": "radius",
+          "type": "\"small\" | \"none\" | \"medium\" | \"large\" | \"full\"",
+          "description": "Скругление углов: \"none\" | \"small\" | \"medium\" | \"large\" | \"full\".",
+          "required": false
+        },
+        {
+          "name": "required",
+          "type": "boolean",
+          "description": "Поле обязательно для заполнения (HTML required).",
+          "required": false
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "description": "Краткая подсказка при наведении (HTML title).",
+          "required": false
+        },
+        {
           "name": "type",
           "type": "\"button\" | \"submit\" | \"reset\"",
-          "description": "Семантика для форм.",
+          "description": "Семантический тип HTML-элемента (button, submit, text и т.д.).",
           "required": false
         },
         {
           "name": "value",
           "type": "string | number | readonly string[]",
-          "description": "Значение для формы.",
+          "description": "Текущее значение для контролируемого компонента.",
           "required": false
         },
         {
           "name": "variant",
-          "type": "\"classic\" | \"solid\" | \"soft\" | \"surface\" | \"outline\" | \"ghost\"",
-          "description": "Визуальный вариант Radix IconButton.",
+          "type": "\"classic\" | \"surface\" | \"soft\"",
+          "description": "Визуальный вариант Radix Themes (surface, soft, outline…).",
+          "required": false
+        }
+      ]
+    },
+    "table": {
+      "exportName": "Table",
+      "sourceFile": "src/table.tsx",
+      "props": [
+        {
+          "name": "className",
+          "type": "string",
+          "description": "Дополнительные CSS-классы для корневого элемента.",
+          "required": false
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "description": "Краткая подсказка при наведении (HTML title).",
+          "required": false
+        },
+        {
+          "name": "variant",
+          "type": "\"surface\" | \"ghost\"",
+          "description": "Визуальный вариант Radix Themes (surface, soft, outline…).",
+          "required": false
+        }
+      ]
+    },
+    "tabs": {
+      "exportName": "Tabs",
+      "sourceFile": "src/tabs.tsx",
+      "props": [
+        {
+          "name": "asChild",
+          "type": "boolean",
+          "description": "Рендерит дочерний элемент вместо собственного DOM-узла (паттерн Radix Slot).",
+          "required": false
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "description": "Дополнительные CSS-классы для корневого элемента.",
+          "required": false
+        },
+        {
+          "name": "defaultValue",
+          "type": "string",
+          "description": "The value of the tab to select by default, if uncontrolled",
+          "required": false
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "description": "Краткая подсказка при наведении (HTML title).",
+          "required": false
+        },
+        {
+          "name": "value",
+          "type": "string",
+          "description": "The value for the selected tab, if controlled",
           "required": false
         }
       ]
@@ -467,22 +1067,10 @@
         }
       ]
     },
-    "legacy-chip": {
-      "exportName": "LegacyChip",
-      "sourceFile": "src/legacy-chip.tsx",
+    "password-input": {
+      "exportName": "PasswordInput",
+      "sourceFile": "src/password-input.tsx",
       "props": [
-        {
-          "name": "asChild",
-          "type": "boolean",
-          "description": "Рендерит дочерний элемент вместо корня.",
-          "required": false
-        },
-        {
-          "name": "children",
-          "type": "ReactNode",
-          "description": "Текст чипа.",
-          "required": false
-        },
         {
           "name": "className",
           "type": "string",
@@ -490,9 +1078,35 @@
           "required": false
         },
         {
-          "name": "highContrast",
+          "name": "defaultValue",
+          "type": "any",
+          "description": "Начальное значение (неконтролируемый).",
+          "required": false
+        },
+        {
+          "name": "disabled",
           "type": "boolean",
-          "description": "Повышенная контрастность.",
+          "description": "Отключает ввод.",
+          "required": false
+        },
+        {
+          "name": "inputSize",
+          "type": "\"sm\" | \"md\" | \"lg\"",
+          "defaultValue": "md",
+          "description": "Высота поля: sm, md, lg.",
+          "required": false
+        },
+        {
+          "name": "invalid",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Стиль ошибки: красная обводка и aria-invalid.",
+          "required": false
+        },
+        {
+          "name": "placeholder",
+          "type": "any",
+          "description": "Подсказка в пустом поле.",
           "required": false
         },
         {
@@ -502,33 +1116,57 @@
           "required": false
         },
         {
+          "name": "readOnly",
+          "type": "any",
+          "description": "Только для чтения.",
+          "required": false
+        },
+        {
+          "name": "required",
+          "type": "boolean",
+          "description": "Обязательное поле.",
+          "required": false
+        },
+        {
           "name": "title",
-          "type": "string",
+          "type": "any",
           "description": "Всплывающая подсказка (HTML title).",
           "required": false
         },
         {
+          "name": "value",
+          "type": "any",
+          "description": "Контролируемое значение.",
+          "required": false
+        },
+        {
           "name": "variant",
-          "type": "\"solid\" | \"soft\" | \"surface\" | \"outline\"",
-          "description": "Вариант Radix Badge (компонент устарел).",
+          "type": "\"classic\" | \"surface\" | \"soft\"",
+          "description": "Вариант поверхности Radix TextField.",
           "required": false
         }
       ]
     },
-    "link": {
-      "exportName": "Link",
-      "sourceFile": "src/link.tsx",
+    "icon-button": {
+      "exportName": "IconButton",
+      "sourceFile": "src/icon-button.tsx",
       "props": [
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "description": "Иконка или содержимое кнопки.",
+          "required": true
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "description": "Текст для aria-label — обязателен для скринридеров.",
+          "required": true
+        },
         {
           "name": "asChild",
           "type": "boolean",
           "description": "Рендерит дочерний элемент вместо корня.",
-          "required": false
-        },
-        {
-          "name": "children",
-          "type": "ReactNode",
-          "description": "Текст ссылки.",
           "required": false
         },
         {
@@ -538,21 +1176,34 @@
           "required": false
         },
         {
+          "name": "disabled",
+          "type": "boolean",
+          "description": "Отключает взаимодействие.",
+          "required": false
+        },
+        {
           "name": "highContrast",
           "type": "boolean",
           "description": "Повышенная контрастность.",
           "required": false
         },
         {
-          "name": "href",
-          "type": "string",
-          "description": "URL перехода.",
+          "name": "loading",
+          "type": "boolean",
+          "description": "Индикатор загрузки.",
           "required": false
         },
         {
-          "name": "target",
-          "type": "HTMLAttributeAnchorTarget",
-          "description": "Куда открыть ссылку (_blank и т.д.).",
+          "name": "radius",
+          "type": "\"small\" | \"none\" | \"medium\" | \"large\" | \"full\"",
+          "description": "Скругление углов.",
+          "required": false
+        },
+        {
+          "name": "size",
+          "type": "\"sm\" | \"md\" | \"lg\"",
+          "defaultValue": "md",
+          "description": "Размер: sm, md, lg.",
           "required": false
         },
         {
@@ -563,8 +1214,122 @@
         },
         {
           "name": "type",
+          "type": "\"button\" | \"submit\" | \"reset\"",
+          "description": "Семантика для форм.",
+          "required": false
+        },
+        {
+          "name": "value",
+          "type": "string | number | readonly string[]",
+          "description": "Значение для формы.",
+          "required": false
+        },
+        {
+          "name": "variant",
+          "type": "\"classic\" | \"solid\" | \"soft\" | \"surface\" | \"outline\" | \"ghost\"",
+          "description": "Визуальный вариант Radix IconButton.",
+          "required": false
+        }
+      ]
+    },
+    "illustration": {
+      "exportName": "Illustration",
+      "sourceFile": "src/illustration.tsx",
+      "props": [
+        {
+          "name": "alt",
           "type": "string",
-          "description": "MIME или тип ссылки (редко используется).",
+          "description": "Альтернативный текст для a11y.",
+          "required": true
+        },
+        {
+          "name": "src",
+          "type": "string",
+          "description": "URL или путь к изображению.",
+          "required": true
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "description": "Дополнительные CSS-классы контейнера.",
+          "required": false
+        }
+      ]
+    },
+    "context-menu": {
+      "exportName": "ContextMenu",
+      "sourceFile": "src/context-menu.tsx",
+      "props": []
+    },
+    "dropdown-menu": {
+      "exportName": "DropdownMenu",
+      "sourceFile": "src/dropdown-menu.tsx",
+      "props": [
+        {
+          "name": "open",
+          "type": "boolean",
+          "description": "",
+          "required": false
+        }
+      ]
+    },
+    "alert": {
+      "exportName": "Alert",
+      "sourceFile": "src/alert.tsx",
+      "props": [
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "description": "Основной текст уведомления.",
+          "required": true
+        },
+        {
+          "name": "alertVariant",
+          "type": "\"info\" | \"success\" | \"warning\" | \"error\"",
+          "defaultValue": "info",
+          "description": "Семантика: info, success, warning, error.",
+          "required": false
+        },
+        {
+          "name": "asChild",
+          "type": "boolean",
+          "description": "Рендерит дочерний элемент вместо корня (Radix Slot).",
+          "required": false
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "description": "Дополнительные CSS-классы.",
+          "required": false
+        },
+        {
+          "name": "highContrast",
+          "type": "boolean",
+          "description": "Повышенная контрастность.",
+          "required": false
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "description": "Заголовок — выделяется жирным перед текстом.",
+          "required": false
+        },
+        {
+          "name": "variant",
+          "type": "\"soft\" | \"surface\" | \"outline\"",
+          "description": "Вариант поверхности Radix Callout.",
+          "required": false
+        }
+      ]
+    },
+    "alert-dialog": {
+      "exportName": "AlertDialog",
+      "sourceFile": "src/alert-dialog.tsx",
+      "props": [
+        {
+          "name": "open",
+          "type": "boolean",
+          "description": "",
           "required": false
         }
       ]
@@ -592,83 +1357,41 @@
           "required": false
         },
         {
+          "name": "onClose",
+          "type": "(() => void)",
+          "description": "Колбэк при закрытии диалога.",
+          "required": false
+        },
+        {
           "name": "open",
           "type": "boolean",
           "description": "Открыть диалог без триггера — для превью и Storybook.",
           "required": false
         },
         {
+          "name": "preview",
+          "type": "boolean",
+          "description": "Только панель контента — для скриншотов каталога (без overlay).",
+          "required": false
+        },
+        {
+          "name": "showActions",
+          "type": "boolean",
+          "defaultValue": "true",
+          "description": "Стандартные кнопки «Отмена» / «Подтвердить» внизу (по умолчанию true).",
+          "required": false
+        },
+        {
+          "name": "showCloseButton",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Кнопка закрытия (×) в шапке — как dismiss в макете.",
+          "required": false
+        },
+        {
           "name": "trigger",
           "type": "ReactNode",
           "description": "Элемент, по клику открывающий modal (обычно кнопка).",
-          "required": false
-        }
-      ]
-    },
-    "select": {
-      "exportName": "Select",
-      "sourceFile": "src/select.tsx",
-      "props": [
-        {
-          "name": "options",
-          "type": "{ value: string; label: string; }[]",
-          "description": "Список пунктов { value, label }.",
-          "required": true
-        },
-        {
-          "name": "defaultValue",
-          "type": "string",
-          "description": "value выбранного пункта по умолчанию.",
-          "required": false
-        },
-        {
-          "name": "placeholder",
-          "type": "string",
-          "defaultValue": "Выберите…",
-          "description": "Текст, когда значение не выбрано.",
-          "required": false
-        },
-        {
-          "name": "selectSize",
-          "type": "\"sm\" | \"md\" | \"lg\"",
-          "defaultValue": "md",
-          "description": "Высота триггера: sm, md, lg.",
-          "required": false
-        }
-      ]
-    },
-    "tabs": {
-      "exportName": "Tabs",
-      "sourceFile": "src/tabs.tsx",
-      "props": [
-        {
-          "name": "asChild",
-          "type": "boolean",
-          "description": "Рендерит дочерний элемент вместо собственного DOM-узла (паттерн Radix Slot).",
-          "required": false
-        },
-        {
-          "name": "className",
-          "type": "string",
-          "description": "Дополнительные CSS-классы для корневого элемента.",
-          "required": false
-        },
-        {
-          "name": "defaultValue",
-          "type": "string",
-          "description": "The value of the tab to select by default, if uncontrolled",
-          "required": false
-        },
-        {
-          "name": "title",
-          "type": "string",
-          "description": "Краткая подсказка при наведении (HTML title).",
-          "required": false
-        },
-        {
-          "name": "value",
-          "type": "string",
-          "description": "The value for the selected tab, if controlled",
           "required": false
         }
       ]

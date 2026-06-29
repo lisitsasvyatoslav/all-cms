@@ -25,6 +25,7 @@ import {
   PORTAL_COMPONENTS_WEB_PATH,
   PORTAL_HOME_PATH,
   PORTAL_SHOWCASE_DOCUMENTATION_BLOCKS_PATH,
+  PORTAL_SHOWCASE_FIGMA_TO_CODE_PATH,
 } from "@/lib/portal/components/routes";
 
 export type SidebarComponent = {
@@ -134,6 +135,12 @@ export function PortalSidebar({ componentGroups, brandNavItems }: Props) {
                 active={pathname === PORTAL_SHOWCASE_DOCUMENTATION_BLOCKS_PATH}
               >
                 Блоки документации
+              </PortalSidebarLink>
+              <PortalSidebarLink
+                href={PORTAL_SHOWCASE_FIGMA_TO_CODE_PATH}
+                active={pathname === PORTAL_SHOWCASE_FIGMA_TO_CODE_PATH}
+              >
+                Figma-to-Code
               </PortalSidebarLink>
             </>
           ) : null}

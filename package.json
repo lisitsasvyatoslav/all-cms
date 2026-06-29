@@ -8,6 +8,9 @@
   ],
   "scripts": {
     "dev": "cross-env NODE_OPTIONS=--no-deprecation next dev -H 127.0.0.1 -p 3000",
+    "dev:local": "cross-env NODE_OPTIONS=--no-deprecation DATABASE_URI= DATABASE_AUTH_TOKEN= next dev -H 127.0.0.1 -p 3000",
+    "migrate:local": "cross-env NODE_OPTIONS=--no-deprecation DATABASE_URI= DATABASE_AUTH_TOKEN= payload migrate",
+    "sync:mcp-demo-key:local": "cross-env NODE_OPTIONS=--no-deprecation DATABASE_URI= DATABASE_AUTH_TOKEN= tsx scripts/sync-portal-mcp-demo-key.ts",
     "build": "cross-env NODE_OPTIONS=--no-deprecation next build",
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
     "lint": "eslint",
@@ -21,6 +24,7 @@
     "sync:text-glossary": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/sync-text-glossary.ts",
     "sync:brand-pages": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/sync-brand-pages.ts",
     "sync:ds-overview": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/sync-ds-overview.ts",
+    "sync:mcp-demo-key": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/sync-portal-mcp-demo-key.ts",
     "sync:storybook-urls": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/sync-storybook-urls.ts",
     "capture:related-previews": "tsx scripts/capture-related-previews.ts",
     "generate:portal-site-og": "tsx scripts/sync-portal-default-og.ts",
@@ -31,7 +35,8 @@
     "generate:ds-stories": "tsx scripts/generate-ds-stories.ts",
     "typecheck:stories": "tsc --noEmit -p tsconfig.stories.json",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "test:compose": "node --import tsx --test lib/compose/compose.test.ts lib/compose/figma-compose.test.ts lib/compose/compose-from-figma-context.test.ts"
   },
   "dependencies": {
     "@libsql/client": "^0.14.0",

@@ -1434,6 +1434,46 @@ export interface PayloadMcpApiKey {
      * Полный список коллекции components: все поля, documentation только с блоками, у которых в CMS включён showLLM. Большой ответ; для карточки — listComponents.
      */
     listComponentsFull?: boolean | null;
+    /**
+     * For humans/docs: minimal user prompts — only «Через design-system-portal» anchor, no MCP tool names. Call when user asks what to paste in a new Cursor chat.
+     */
+    getComposeUserPromptGuide?: boolean | null;
+    /**
+     * Call when user mentions design-system-portal or «Через design-system-portal» (with Figma URL and/or «собери макет»). Returns pipeline + workflow. MCP server name alone implies Radix compose — user must not list tool names.
+     */
+    resolveComposeIntent?: boolean | null;
+    /**
+     * PRIMARY on design-system-portal MCP. Use when user says «Через design-system-portal» or mentions this server + UI/Figma request. designBrief required; figmaUrl if in message. Output: @radix-ui/themes TSX only — never hand-write HTML/Tailwind. If MCP missing, stop and ask to connect design-system-portal.
+     */
+    composeUi?: boolean | null;
+    /**
+     * Alias of composeUi — prefer composeUi. Same parameters and behavior.
+     */
+    composeFromFigmaContext?: boolean | null;
+    /**
+     * Compose guide for troubleshooting. For user requests (Figma URL or plain-language UI) use resolveComposeIntent → composeUi automatically — never ask user to name tools.
+     */
+    getComposeGuide?: boolean | null;
+    /**
+     * Reference for Figma → compose kinds and parsed fileKey/nodeId. Prefer resolveComposeIntent + composeUi for user-facing requests.
+     */
+    getFigmaComposeWorkflow?: boolean | null;
+    /**
+     * Lower-level: Design Brief → Composition JSON only. Prefer composeUi for full TSX output.
+     */
+    planCompositionFromBrief?: boolean | null;
+    /**
+     * Registry of @radix-ui/themes components for compose: ids, props, types, defaults. Call getComposeGuide first. Use field `id` as CompositionNode.component. Target package: @radix-ui/themes only.
+     */
+    getComponentRegistry?: boolean | null;
+    /**
+     * Validate Composition JSON before render. Returns { valid, issues[] } with JSON paths. Schema: { version: "1", root: { component, props?, text?, children? } }.
+     */
+    validateComposition?: boolean | null;
+    /**
+     * Turn valid Composition JSON into TSX importing only @radix-ui/themes. Always run validateComposition first. Returns tsx, imports, componentName, and projectSetup. Agent should post tsx in chat — do not write project files unless the user asks. Do not hand-write Radix JSX.
+     */
+    renderComposition?: boolean | null;
   };
   updatedAt: string;
   createdAt: string;
@@ -2556,6 +2596,16 @@ export interface PayloadMcpApiKeysSelect<T extends boolean = true> {
         getComponent?: T;
         listComponents?: T;
         listComponentsFull?: T;
+        getComposeUserPromptGuide?: T;
+        resolveComposeIntent?: T;
+        composeUi?: T;
+        composeFromFigmaContext?: T;
+        getComposeGuide?: T;
+        getFigmaComposeWorkflow?: T;
+        planCompositionFromBrief?: T;
+        getComponentRegistry?: T;
+        validateComposition?: T;
+        renderComposition?: T;
       };
   updatedAt?: T;
   createdAt?: T;

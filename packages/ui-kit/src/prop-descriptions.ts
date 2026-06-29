@@ -63,6 +63,17 @@ export const COMPONENT_PROP_DESCRIPTIONS: Record<string, Record<string, string>>
     value: "Контролируемое значение поля.",
     defaultValue: "Начальное значение неконтролируемого поля.",
   },
+  illustration: {
+    src: "URL или путь к изображению.",
+    alt: "Альтернативный текст для a11y.",
+    width: "Ширина в px (по умолчанию 140).",
+    height: "Высота в px (по умолчанию 140).",
+  },
+  "password-input": {
+    inputSize: 'Высота поля: "sm" | "md" | "lg".',
+    invalid: "Стиль ошибки: красная обводка и aria-invalid.",
+    placeholder: "Подсказка в пустом поле.",
+  },
   "legacy-chip": {
     children: "Текст чипа.",
     variant: "Вариант Radix Badge (компонент устарел).",
@@ -77,6 +88,9 @@ export const COMPONENT_PROP_DESCRIPTIONS: Record<string, Record<string, string>>
     description: "Поясняющий текст под заголовком.",
     trigger: "Элемент, по клику открывающий modal (обычно кнопка).",
     children: "Дополнительное содержимое между описанием и кнопками.",
+    showCloseButton: "Кнопка закрытия (×) в шапке диалога.",
+    showActions: "Стандартные кнопки «Отмена» / «Подтвердить» внизу (по умолчанию true).",
+    onClose: "Колбэк при закрытии диалога.",
   },
   select: {
     options: "Список пунктов { value, label } для выпадающего списка.",

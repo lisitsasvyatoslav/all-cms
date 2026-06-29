@@ -24,8 +24,12 @@ export const UI_KIT_CATALOG = [
   {slug:"table",exportName:"Table",file:"table.tsx",propsType:"TableRootProps"},
   { slug: "tabs", exportName: "Tabs", file: "tabs.tsx", propsType: "TabsRootProps" },
   { slug: "input", exportName: "Input", file: "input.tsx" },
+  { slug: "password-input", exportName: "PasswordInput", file: "password-input.tsx" },
+  { slug: "icon-button", exportName: "IconButton", file: "icon-button.tsx" },
+  { slug: "illustration", exportName: "Illustration", file: "illustration.tsx" },
   {slug:"context-menu",exportName:"ContextMenu",file:"context-menu.tsx",propsType:"ContextMenuRootProps"},
   {slug:"dropdown-menu",exportName:"DropdownMenu",file:"dropdown-menu.tsx",propsType:"DropdownMenuRootProps"},
+  { slug: "alert", exportName: "Alert", file: "alert.tsx" },
   {slug:"alert-dialog",exportName:"AlertDialog",file:"alert-dialog.tsx",propsType:"AlertDialogRootProps"},
   { slug: "modal", exportName: "Modal", file: "modal.tsx" },
 ] as const;

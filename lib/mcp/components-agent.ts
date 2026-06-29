@@ -1,10 +1,9 @@
-import crypto from "node:crypto";
-
 import type { MCPPluginConfig } from "@payloadcms/plugin-mcp";
-import type { PayloadRequest, TypedUser } from "payload";
+import type { PayloadRequest } from "payload";
 import { z } from "zod";
 
 import { filterDocumentationForLlm } from "./filter-documentation-for-llm";
+import { resolveMcpUser } from "./resolve-mcp-user";
 
 type McpTools = NonNullable<NonNullable<MCPPluginConfig["mcp"]>["tools"]>;
 
@@ -25,53 +24,6 @@ function mcpText(text: string) {
   return {
     content: [{ type: "text" as const, text }],
   };
-}
-
-/**
- * Встроенные MCP-tools (findColors и т.д.) передают `user` в payload.find явно.
- * Custom tools получают только `req`, а req.user при MCP не заполняется — без user
- * срабатывает access.read: hasRole(["admin", "pm"]) и find отклоняется.
- */
-async function resolveMcpUser(
-  req: PayloadRequest,
-): Promise<TypedUser | undefined> {
-  if (req.user) {
-    return req.user as TypedUser;
-  }
-
-  const authorization = req.headers.get("Authorization");
-  const apiKey = authorization?.startsWith("Bearer ")
-    ? authorization.replace("Bearer ", "").trim()
-    : null;
-
-  if (!apiKey) {
-    return undefined;
-  }
-
-  const apiKeyIndex = crypto
-    .createHmac("sha256", req.payload.secret)
-    .update(apiKey)
-    .digest("hex");
-
-  const { docs } = await req.payload.find({
-    collection: "payload-mcp-api-keys",
-    depth: 1,
-    limit: 1,
-    pagination: false,
-    overrideAccess: true,
-    where: {
-      apiKeyIndex: {
-        equals: apiKeyIndex,
-      },
-    },
-  });
-
-  const user = docs[0]?.user;
-  if (user && typeof user === "object") {
-    return user as TypedUser;
-  }
-
-  return undefined;
 }
 
 export const componentAgentMcpTools: McpTools = [

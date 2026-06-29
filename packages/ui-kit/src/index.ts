@@ -4,6 +4,8 @@ export { ScrollArea, type ScrollAreaProps } from "./scroll-area";
 export { Blockquote, type BlockquoteProps } from "./blockquote";
 export { Em, type EmProps } from "./em";
 export { Heading, type HeadingProps } from "./heading";
+export { IconButton, type IconButtonProps, type IconButtonSize } from "./icon-button";
+export { Illustration, type IllustrationProps } from "./illustration";
 export { Link, type LinkProps } from "./link";
 export { Strong, type StrongProps } from "./strong";
 export { Text, type TextProps } from "./text";
@@ -28,8 +30,10 @@ export {
   type TabsTriggerProps,
 } from "./tabs";
 export { Input, type InputProps, type InputSize } from "./input";
+export { PasswordInput, type PasswordInputProps } from "./password-input";
 export { ContextMenu, type ContextMenuProps } from "./context-menu";
 export { DropdownMenu, type DropdownMenuProps } from "./dropdown-menu";
+export { Alert, type AlertProps, type AlertVariant } from "./alert";
 export { AlertDialog, type AlertDialogProps } from "./alert-dialog";
 export { Modal, type ModalProps } from "./modal";
 

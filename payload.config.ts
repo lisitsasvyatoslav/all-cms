@@ -29,6 +29,8 @@ import { isPortalDocumentationReadable } from "./lib/payload/documentation-acces
 import { resolvePayloadSqliteClientConfig } from "./lib/payload/resolve-database-uri";
 import { FieldShowcaseCollection } from "./collections/fieldShowcase";
 import { componentAgentMcpTools } from "./lib/mcp/components-agent";
+import { composeAgentMcpTools } from "./lib/mcp/compose-agent";
+import { createMcpOverrideAuth } from "./lib/mcp/demo-mcp-access";
 import {
   revalidatePortalBrandNavAfterChange,
   revalidatePortalBrandNavAfterDelete,
@@ -614,13 +616,17 @@ export default buildConfig({
   sharp,
   plugins: [
     mcpPlugin({
+      overrideAuth: createMcpOverrideAuth(),
       mcp: {
-        tools: componentAgentMcpTools,
+        tools: [...componentAgentMcpTools, ...composeAgentMcpTools],
+        handlerOptions: {
+          verboseLogs: process.env.NODE_ENV === "development",
+        },
       },
       collections: {
         components: {
           description:
-            "UI-kit: getComponent / listComponents — карточка; listComponentsFull — все поля и documentation.",
+            "Radix Themes UI compose. User says «Через design-system-portal» or Figma URL + «собери макет» with this server → agent uses composeUi (Radix only). No manual HTML. Docs → getComponent / listComponentsFull.",
           enabled: { find: false, create: false, update: false, delete: false },
         },
         colors: {

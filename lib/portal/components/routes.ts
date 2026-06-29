@@ -7,6 +7,8 @@ export const PORTAL_SHOWCASE_DOCUMENTATION_BLOCKS_PATH = portalPath(
   "/showcase/documentation-blocks",
 );
 
+export const PORTAL_SHOWCASE_FIGMA_TO_CODE_PATH = portalPath("/showcase/figma-to-code");
+
 export function componentWebPagePath(slug: string): string {
   return `${PORTAL_COMPONENTS_WEB_PATH}/${slug}`;
 }

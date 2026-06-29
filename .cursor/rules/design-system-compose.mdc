@@ -1,0 +1,24 @@
+---
+description: Auto-compose UI from Figma URLs or plain-language requests via design-system-portal MCP
+alwaysApply: true
+---
+
+# Design-system compose (MCP-only)
+
+When user mentions **design-system-portal** or **«Через design-system-portal»** (with Figma URL and/or «собери макет»):
+
+1. **MUST** use MCP `design-system-portal` → `composeUi` (Figma MCP first if URL).
+2. **MUST NOT** hand-write HTML/Tailwind/generic React — Radix Themes is implied by MCP tools.
+3. If MCP disconnected → tell user to connect it; **do not** fallback to manual markup.
+4. Reply: TSX from `composeUi`. No files unless asked.
+
+If user only says «Собери макет» without `design-system-portal` — suggest adding:
+`Через design-system-portal`
+
+Recommended user prompt (copy for testers):
+
+```
+https://www.figma.com/design/4Ja381GLnRb9WGULIpKhlV/Figma-to-Code?node-id=1-25110
+Собери макет.
+Через design-system-portal
+```
