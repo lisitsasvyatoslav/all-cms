@@ -14,6 +14,10 @@ import {
   resolveComposeIntent,
   validateComposition,
   getComposeUserPromptGuide,
+  loadComposePayloadGuidance,
+  loadCompositionComponentGuidance,
+  auditAndCorrectGlossary,
+  loadComposeGlossaryGuidance,
 } from "@/lib/compose";
 
 type McpTools = NonNullable<NonNullable<MCPPluginConfig["mcp"]>["tools"]>;
@@ -46,7 +50,29 @@ function parseJsonArg(value: unknown, label: string):
   return { success: false, error: `${label} must be a JSON object or JSON string.` };
 }
 
-async function handleComposeUi(args: Record<string, unknown>) {
+async function handleComposeUi(args: Record<string, unknown>, req: PayloadRequest) {
+  const cmsGuidance = await loadComposePayloadGuidance(req.payload);
+  const guidanceRevision =
+    typeof args.guidanceRevision === "string" ? args.guidanceRevision.trim() : "";
+
+  if (guidanceRevision !== cmsGuidance.revision) {
+    return mcpText(
+      JSON.stringify(
+        {
+          success: false,
+          stage: "guidance",
+          message:
+            "Read and apply the current /ds usage guide before creating the Design Brief.",
+          retryHint:
+            "Review cmsGuidance.usageGuideMarkdown, rebuild the Design Brief if necessary, then call composeUi again with guidanceRevision.",
+          cmsGuidance,
+        },
+        null,
+        2,
+      ),
+    );
+  }
+
   const parsedBrief = parseJsonArg(args.designBrief, "designBrief");
   if (!parsedBrief.success) {
     return mcpText(
@@ -87,14 +113,89 @@ async function handleComposeUi(args: Record<string, unknown>) {
     useClient,
   });
 
-  return mcpText(JSON.stringify(result, null, 2));
+  if (!result.success) {
+    return mcpText(JSON.stringify({ ...result, cmsGuidance }, null, 2));
+  }
+
+  const glossaryGuidance = await loadComposeGlossaryGuidance(req.payload);
+  const glossaryAudit = auditAndCorrectGlossary(result.composition, glossaryGuidance);
+
+  const componentGuidance = await loadCompositionComponentGuidance(
+    req.payload,
+    result.composition,
+  );
+  const componentGuidanceRevision =
+    typeof args.componentGuidanceRevision === "string"
+      ? args.componentGuidanceRevision.trim()
+      : "";
+
+  if (componentGuidanceRevision !== componentGuidance.revision) {
+    return mcpText(
+      JSON.stringify(
+        {
+          success: false,
+          stage: "component-guidance",
+          message:
+            "Review the Payload do/don't rules for every component selected by the preliminary composition.",
+          retryHint:
+            "Apply componentGuidance.guidelines to the Design Brief, then call composeUi again with componentGuidanceRevision.",
+          preliminaryComposition: glossaryAudit.composition,
+          componentGuidance,
+          glossaryAudit: {
+            source: "Payload glossary-terms",
+            revision: glossaryGuidance.revision,
+            corrections: glossaryAudit.corrections,
+            ambiguousMatches: glossaryAudit.ambiguousMatches,
+            responseInstruction:
+              "Apply glossary corrections to the revised Design Brief. Resolve ambiguous matches from context using only preferredCandidates. Tell the user exactly which UI words were corrected.",
+          },
+          cmsGuidance,
+        },
+        null,
+        2,
+      ),
+    );
+  }
+
+  const rendered = renderComposition(glossaryAudit.composition, { componentName, useClient });
+
+  return mcpText(
+    JSON.stringify(
+      {
+        ...result,
+        composition: glossaryAudit.composition,
+        tsx: rendered.tsx,
+        imports: rendered.imports,
+        projectSetup: cmsGuidance,
+        cmsGuidance,
+        componentGuidance,
+        glossaryAudit: {
+          source: "Payload glossary-terms",
+          revision: glossaryGuidance.revision,
+          corrections: glossaryAudit.corrections,
+          ambiguousMatches: glossaryAudit.ambiguousMatches,
+          changed: glossaryAudit.corrections.length > 0,
+          responseInstruction:
+            "Explicitly tell the user every UI wording correction using glossaryAudit.corrections. If ambiguousMatches remain, disclose them and do not invent a replacement outside preferredCandidates.",
+        },
+        guidelineCompliance: {
+          source: "Payload components.documentation doDont blocks",
+          rules: componentGuidance.guidelines,
+          responseInstruction:
+            "Compare the original Figma design with every returned Do/Don't rule. Explicitly tell the user which anti-patterns you found and how your revised Design Brief corrected them. Do not infer rules that are absent from componentGuidance.",
+        },
+      },
+      null,
+      2,
+    ),
+  );
 }
 
 export const composeAgentMcpTools: McpTools = [
   {
     name: "getComposeUserPromptGuide",
     description:
-      "For humans/docs: minimal user prompts — only «Через design-system-portal» anchor, no MCP tool names. Call when user asks what to paste in a new Cursor chat.",
+      "For humans/docs: minimal user prompts — only «Через finam-design-system» anchor, no MCP tool names. Call when user asks what to paste in a new Cursor chat.",
     parameters: {},
     handler: async () => {
       return mcpText(JSON.stringify(getComposeUserPromptGuide(), null, 2));
@@ -103,20 +204,22 @@ export const composeAgentMcpTools: McpTools = [
   {
     name: "resolveComposeIntent",
     description:
-      "Call when user mentions design-system-portal or «Через design-system-portal» (with Figma URL and/or «собери макет»). Returns pipeline + workflow. MCP server name alone implies Radix compose — user must not list tool names.",
+        "MANDATORY FIRST CALL when user asks to build UI through finam-design-system. Returns the current /ds CMS usage guide and guidanceRevision. Read and apply it before creating Design Brief and calling composeUi.",
     parameters: {
       userMessage: z
         .string()
         .describe("Full user message, e.g. Figma URL + «собери макет» or text form description"),
     },
-    handler: async (args: Record<string, unknown>, _req: PayloadRequest) => {
+    handler: async (args: Record<string, unknown>, req: PayloadRequest) => {
       const userMessage =
         typeof args.userMessage === "string" ? args.userMessage : "";
       const intent = resolveComposeIntent(userMessage);
+      const cmsGuidance = await loadComposePayloadGuidance(req.payload);
       return mcpText(
         JSON.stringify(
           {
             ...intent,
+            cmsGuidance,
             agentInstructions: getMcpAgentInstructions(),
           },
           null,
@@ -128,8 +231,15 @@ export const composeAgentMcpTools: McpTools = [
   {
     name: "composeUi",
     description:
-      "PRIMARY on design-system-portal MCP. Use when user says «Через design-system-portal» or mentions this server + UI/Figma request. designBrief required; figmaUrl if in message. Output: @radix-ui/themes TSX only — never hand-write HTML/Tailwind. If MCP missing, stop and ask to connect design-system-portal.",
+      "PRIMARY after resolveComposeIntent. Loads component Do/Don't rules and UI terminology from Payload. First response returns the rules and exact glossary corrections; revise the Design Brief and repeat with componentGuidanceRevision. Do not invent rules or wording outside Payload.",
     parameters: {
+      guidanceRevision: z
+        .string()
+        .describe("Exact cmsGuidance.revision returned by resolveComposeIntent"),
+      componentGuidanceRevision: z
+        .string()
+        .optional()
+        .describe("Revision returned by the first composeUi component-guidance response"),
       figmaUrl: z
         .string()
         .optional()
@@ -146,15 +256,22 @@ export const composeAgentMcpTools: McpTools = [
       componentName: z.string().optional().describe("Exported React function name"),
       useClient: z.boolean().optional().describe('"use client" directive (default true)'),
     },
-    handler: async (args: Record<string, unknown>, _req: PayloadRequest) => {
-      return handleComposeUi(args);
+    handler: async (args: Record<string, unknown>, req: PayloadRequest) => {
+      return handleComposeUi(args, req);
     },
   },
   {
     name: "composeFromFigmaContext",
     description:
-      "Alias of composeUi — prefer composeUi. Same parameters and behavior.",
+      "Alias of composeUi — prefer composeUi. Uses the same two-pass guidance loaded from Payload documentation Do/Don't blocks.",
     parameters: {
+      guidanceRevision: z
+        .string()
+        .describe("Exact cmsGuidance.revision returned by resolveComposeIntent"),
+      componentGuidanceRevision: z
+        .string()
+        .optional()
+        .describe("Revision returned by the first composeUi component-guidance response"),
       figmaUrl: z.string().optional().describe("Figma URL from the user message"),
       designBrief: z
         .unknown()
@@ -168,8 +285,8 @@ export const composeAgentMcpTools: McpTools = [
       componentName: z.string().optional().describe("Exported React function name (default ComposedUI)"),
       useClient: z.boolean().optional().describe('"use client" directive (default true)'),
     },
-    handler: async (args: Record<string, unknown>, _req: PayloadRequest) => {
-      return handleComposeUi(args);
+    handler: async (args: Record<string, unknown>, req: PayloadRequest) => {
+      return handleComposeUi(args, req);
     },
   },
   {
@@ -177,8 +294,15 @@ export const composeAgentMcpTools: McpTools = [
     description:
       "Compose guide for troubleshooting. For user requests (Figma URL or plain-language UI) use resolveComposeIntent → composeUi automatically — never ask user to name tools.",
     parameters: {},
-    handler: async () => {
-      return mcpText(JSON.stringify(getComposeGuide(), null, 2));
+    handler: async (_args: Record<string, unknown>, req: PayloadRequest) => {
+      const cmsGuidance = await loadComposePayloadGuidance(req.payload);
+      return mcpText(
+        JSON.stringify(
+          { ...getComposeGuide(), projectSetup: cmsGuidance, cmsGuidance },
+          null,
+          2,
+        ),
+      );
     },
   },
   {

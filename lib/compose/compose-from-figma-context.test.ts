@@ -51,6 +51,6 @@ describe("getMcpAgentInstructions", () => {
   it("names composeUi as primary tool", () => {
     const info = getMcpAgentInstructions();
     assert.equal(info.primaryTool, "composeUi");
-    assert.match(info.instructions, /design-system-portal/);
+    assert.match(info.instructions, /finam-design-system/);
   });
 });

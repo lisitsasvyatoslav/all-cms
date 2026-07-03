@@ -9,7 +9,7 @@ import {
 
 const CANONICAL_FIGMA_PROMPT = `https://www.figma.com/design/4Ja381GLnRb9WGULIpKhlV/Figma-to-Code?node-id=1-25110
 Собери макет.
-Через design-system-portal`;
+Через finam-design-system`;
 
 describe("resolveComposeIntent", () => {
   it("detects figma URL + plain «собери макет»", () => {
@@ -23,7 +23,7 @@ describe("resolveComposeIntent", () => {
     assert.ok(result.warningIfMissingAnchor);
   });
 
-  it("canonical prompt: figma + собери макет + design-system-portal", () => {
+  it("canonical prompt: figma + собери макет + finam-design-system", () => {
     const result = resolveComposeIntent(CANONICAL_FIGMA_PROMPT);
 
     assert.equal(result.shouldCompose, true);
@@ -32,7 +32,7 @@ describe("resolveComposeIntent", () => {
     assert.ok(result.forbiddenApproaches.length > 0);
     assert.equal(result.warningIfMissingAnchor, undefined);
     assert.equal(result.primaryTool, "composeUi");
-    assert.equal(result.mcpServer, "design-system-portal");
+    assert.equal(result.mcpServer, "finam-design-system");
   });
 
   it("detects text-only registration form request", () => {
@@ -46,12 +46,12 @@ describe("resolveComposeIntent", () => {
 });
 
 describe("buildRecommendedComposePrompt", () => {
-  it("includes minimal design-system-portal anchor", () => {
+  it("includes minimal finam-design-system anchor", () => {
     const prompt = buildRecommendedComposePrompt({
       figmaUrl: "https://www.figma.com/design/x/y?node-id=1-2",
       task: "Собери макет.",
     });
-    assert.match(prompt, /Через design-system-portal/);
+    assert.match(prompt, /Через finam-design-system/);
     assert.doesNotMatch(prompt, /compose — только/);
   });
 
@@ -66,8 +66,14 @@ describe("buildRecommendedComposePrompt", () => {
 });
 
 describe("messageRequiresMcpCompose", () => {
-  it("matches design-system-portal anchor only", () => {
+  it("matches Finam design-system aliases and the legacy server name", () => {
+    assert.equal(messageRequiresMcpCompose("Собери UI через дизайн систему Финама"), true);
+    assert.equal(messageRequiresMcpCompose("Use Finam Design System"), true);
     assert.equal(messageRequiresMcpCompose("через design-system-portal"), true);
+  });
+
+  it("matches finam-design-system anchor only", () => {
+    assert.equal(messageRequiresMcpCompose("через finam-design-system"), true);
     assert.equal(messageRequiresMcpCompose(CANONICAL_FIGMA_PROMPT), true);
     assert.equal(messageRequiresMcpCompose("Собери макет"), false);
   });

@@ -24,6 +24,12 @@ export type { DesignBrief, BriefPlanResult, BriefPlanIssue } from "./design-brie
 export { parseCompositionDocument, compositionDocumentSchema } from "./schema";
 export { validateComposition, assertValidComposition } from "./validate";
 export { renderComposition } from "./render";
+export { loadComposePayloadGuidance } from "./payload-guidance";
+export { loadCompositionComponentGuidance } from "./component-guidelines";
+export {
+  auditAndCorrectGlossary,
+  loadComposeGlossaryGuidance,
+} from "./glossary-guidance";
 export { composeFromFigmaContext } from "./compose-from-figma-context";
 export { resolveComposeIntent, COMPOSE_TRIGGER_PHRASES } from "./resolve-compose-intent";
 export {

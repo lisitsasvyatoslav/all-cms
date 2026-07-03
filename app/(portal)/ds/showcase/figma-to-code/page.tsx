@@ -29,7 +29,7 @@ export default function FigmaToCodeShowcasePage() {
           Figma-to-Code — Ai Test flow
         </Heading>
         <Text size="2" color="gray" mb="4" as="p">
-          Собрано через design-system-portal из макета Figma (@radix-ui/themes).
+          Собрано через finam-design-system из макета Figma (@radix-ui/themes).
         </Text>
 
         <FigmaComposeSetupActions />

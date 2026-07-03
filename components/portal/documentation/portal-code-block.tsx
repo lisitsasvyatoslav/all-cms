@@ -1,5 +1,6 @@
-import { Box, Card, Code, Separator, Text } from "@radix-ui/themes";
+import { Box, Card, Separator, Text } from "@radix-ui/themes";
 
+import { highlightCodeLine } from "@/lib/portal/documentation/highlight-code-line";
 import { portalClass } from "@/lib/portal/core/classes";
 
 export function PortalCodeBlock({
@@ -9,6 +10,8 @@ export function PortalCodeBlock({
   title?: string;
   code: string;
 }) {
+  const lines = code.trim().split("\n");
+
   return (
     <Card size="2" variant="surface">
       {title ? (
@@ -21,10 +24,23 @@ export function PortalCodeBlock({
           <Separator size="4" />
         </>
       ) : null}
-      <Box p="3">
-        <Code size="2" variant="ghost" className={portalClass.textPreWrap}>
-          {code.trim()}
-        </Code>
+      <Box className={portalClass.codeExampleCode}>
+        <div className={portalClass.codeExamplePreWrap}>
+          <pre className={portalClass.codeExamplePre}>
+            <code className={portalClass.codeExamplePreInner}>
+              {lines.map((line, index) => (
+                <span key={`${index}-${line}`} className={portalClass.codeExampleLine}>
+                  <span className={portalClass.codeExampleLineNo} aria-hidden>
+                    {index + 1}
+                  </span>
+                  <span className={portalClass.codeExampleLineContent}>
+                    {highlightCodeLine(line)}
+                  </span>
+                </span>
+              ))}
+            </code>
+          </pre>
+        </div>
       </Box>
     </Card>
   );

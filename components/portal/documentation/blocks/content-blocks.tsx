@@ -114,50 +114,46 @@ export function DoDontBlock({
       ) : null}
       <Grid columns={{ initial: "1", sm: "2" }} gap="4">
         {dos.length ? (
-          <CardColumn>
-            <DoDontImageSection
-              image={dos[0]?.image}
-              separatorClassName="portal-do-dont-separator-green"
-            />
-            <Box p="3" className="portal-do-dont-panel-green">
-              <Flex gap="2" align="center" mb="2">
-                <DoDontHeaderIcon variant="do" />
-                <Text size="2" weight="bold" as="div">
-                  Do
-                </Text>
-              </Flex>
-              <Flex direction="column" gap="2">
-                {dos.map((row, i) => (
-                  <Text key={i} size="2">
-                    {row.text}
-                  </Text>
-                ))}
-              </Flex>
-            </Box>
-          </CardColumn>
+          <Flex direction="column" gap="3">
+            {dos.map((row, index) => (
+              <CardColumn key={row.id ?? index}>
+                <DoDontImageSection
+                  image={row.image}
+                  separatorClassName="portal-do-dont-separator-green"
+                />
+                <Box p="3" className="portal-do-dont-panel-green">
+                  <Flex gap="2" align="center" mb="2">
+                    <DoDontHeaderIcon variant="do" />
+                    <Text size="2" weight="bold" as="div">
+                      Do
+                    </Text>
+                  </Flex>
+                  <Text size="2">{row.text}</Text>
+                </Box>
+              </CardColumn>
+            ))}
+          </Flex>
         ) : null}
         {donts.length ? (
-          <CardColumn>
-            <DoDontImageSection
-              image={donts[0]?.image}
-              separatorClassName="portal-do-dont-separator-red"
-            />
-            <Box p="3" className="portal-do-dont-panel-red">
-              <Flex gap="2" align="center" mb="2">
-                <DoDontHeaderIcon variant="dont" />
-                <Text size="2" weight="bold" as="div">
-                  Don&apos;t
-                </Text>
-              </Flex>
-              <Flex direction="column" gap="2">
-                {donts.map((row, i) => (
-                  <Text key={i} size="2">
-                    {row.text}
-                  </Text>
-                ))}
-              </Flex>
-            </Box>
-          </CardColumn>
+          <Flex direction="column" gap="3">
+            {donts.map((row, index) => (
+              <CardColumn key={row.id ?? index}>
+                <DoDontImageSection
+                  image={row.image}
+                  separatorClassName="portal-do-dont-separator-red"
+                />
+                <Box p="3" className="portal-do-dont-panel-red">
+                  <Flex gap="2" align="center" mb="2">
+                    <DoDontHeaderIcon variant="dont" />
+                    <Text size="2" weight="bold" as="div">
+                      Don&apos;t
+                    </Text>
+                  </Flex>
+                  <Text size="2">{row.text}</Text>
+                </Box>
+              </CardColumn>
+            ))}
+          </Flex>
         ) : null}
       </Grid>
     </Box>

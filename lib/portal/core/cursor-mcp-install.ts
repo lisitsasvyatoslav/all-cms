@@ -1,7 +1,7 @@
 import { componentWebMarkdownPath, componentWebPagePath } from "@/lib/portal/components/routes";
 
 /** Имя MCP-сервера в Cursor (query `name` deeplink). */
-export const CURSOR_MCP_SERVER_NAME = "design-system-portal";
+export const CURSOR_MCP_SERVER_NAME = "finam-design-system";
 
 export const PAYLOAD_MCP_API_KEY_STORAGE_KEY = "portal:payload-mcp-api-key";
 

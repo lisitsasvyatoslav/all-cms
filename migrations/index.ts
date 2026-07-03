@@ -17,6 +17,13 @@ import * as migration_20260626_120000_compose_mcp_tools from './20260626_120000_
 import * as migration_20260626_140000_figma_compose_mcp_tools from './20260626_140000_figma_compose_mcp_tools';
 import * as migration_20260626_160000_compose_from_figma_context_tool from './20260626_160000_compose_from_figma_context_tool';
 import * as migration_20260626_180000_compose_ui_intent_tools from './20260626_180000_compose_ui_intent_tools';
+import * as migration_20260630_130000_repair_compose_mcp_tool_columns from './20260630_130000_repair_compose_mcp_tool_columns';
+import * as migration_20260630_150000_ds_overview_getting_started from './20260630_150000_ds_overview_getting_started';
+import * as migration_20260630_160000_seed_ds_overview_guidance from './20260630_160000_seed_ds_overview_guidance';
+import * as migration_20260630_170000_rename_mcp_server_in_ds_guidance from './20260630_170000_rename_mcp_server_in_ds_guidance';
+import * as migration_20260701_120000_modal_do_dont_guidelines from './20260701_120000_modal_do_dont_guidelines';
+import * as migration_20260702_120000_ds_layout_guide from './20260702_120000_ds_layout_guide';
+import * as migration_20260703_120000_button_do_dont_guidelines from './20260703_120000_button_do_dont_guidelines';
 
 export const migrations = [
   {
@@ -113,5 +120,40 @@ export const migrations = [
     up: migration_20260626_180000_compose_ui_intent_tools.up,
     down: migration_20260626_180000_compose_ui_intent_tools.down,
     name: '20260626_180000_compose_ui_intent_tools',
+  },
+  {
+    up: migration_20260630_130000_repair_compose_mcp_tool_columns.up,
+    down: migration_20260630_130000_repair_compose_mcp_tool_columns.down,
+    name: '20260630_130000_repair_compose_mcp_tool_columns',
+  },
+  {
+    up: migration_20260630_150000_ds_overview_getting_started.up,
+    down: migration_20260630_150000_ds_overview_getting_started.down,
+    name: '20260630_150000_ds_overview_getting_started',
+  },
+  {
+    up: migration_20260630_160000_seed_ds_overview_guidance.up,
+    down: migration_20260630_160000_seed_ds_overview_guidance.down,
+    name: '20260630_160000_seed_ds_overview_guidance',
+  },
+  {
+    up: migration_20260630_170000_rename_mcp_server_in_ds_guidance.up,
+    down: migration_20260630_170000_rename_mcp_server_in_ds_guidance.down,
+    name: '20260630_170000_rename_mcp_server_in_ds_guidance',
+  },
+  {
+    up: migration_20260701_120000_modal_do_dont_guidelines.up,
+    down: migration_20260701_120000_modal_do_dont_guidelines.down,
+    name: '20260701_120000_modal_do_dont_guidelines',
+  },
+  {
+    up: migration_20260702_120000_ds_layout_guide.up,
+    down: migration_20260702_120000_ds_layout_guide.down,
+    name: '20260702_120000_ds_layout_guide',
+  },
+  {
+    up: migration_20260703_120000_button_do_dont_guidelines.up,
+    down: migration_20260703_120000_button_do_dont_guidelines.down,
+    name: '20260703_120000_button_do_dont_guidelines',
   },
 ];

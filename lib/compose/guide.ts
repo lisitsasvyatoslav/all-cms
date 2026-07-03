@@ -129,16 +129,22 @@ export function getComposeGuide() {
         step: 0,
         tool: "resolveComposeIntent",
         action:
-          "User mentions design-system-portal or «Через design-system-portal» (Figma URL, «собери макет», form text) — call with full user message. Server name implies Radix compose; do not ask for tool names.",
+          "Mandatory first call. Pass the full user message, read cmsGuidance from /ds, and apply every principle while building the Design Brief. Keep cmsGuidance.revision for composeUi.",
       },
       {
         step: 1,
         tool: "composeUi",
         action:
-          "After Design Brief is ready (from Figma MCP or user text): pass designBrief (+ figmaUrl if any) → TSX in one call.",
+          "After the CMS-aware Design Brief is ready: pass designBrief, guidanceRevision (+ figmaUrl if any) → TSX.",
       },
       {
         step: 2,
+        tool: "composeUi",
+        action:
+          "Review every Do/Don't rule and glossary correction returned from Payload, revise the brief, and repeat with componentGuidanceRevision. Report component-rule violations and wording corrections to the user; do not invent them.",
+      },
+      {
+        step: 3,
         tool: "getComposeGuide",
         action: "Troubleshooting or text-only compose reference.",
       },
@@ -175,9 +181,9 @@ export function getComposeGuide() {
     },
     mcpTools: {
       resolveComposeIntent:
-        "FIRST for plain-language user requests: pass userMessage → pipeline + workflow. Never ask user to name tools.",
+        "MANDATORY FIRST: returns pipeline plus current /ds CMS guidance and revision. Apply all principles before planning.",
       composeUi:
-        "PRIMARY: Design Brief → validate → render TSX in one call. Use after Figma analysis or text description.",
+        "PRIMARY: CMS-aware Design Brief + guidanceRevision → validate → render TSX. Rejects missing or stale guidance.",
       composeFromFigmaContext: "Alias of composeUi.",
       getComposeGuide: "Troubleshooting or advanced text-only compose.",
       getFigmaComposeWorkflow: "Figma URL parsing + kind mapping reference.",

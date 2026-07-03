@@ -3,13 +3,14 @@ import { Fragment, type ReactNode } from "react";
 import { portalClass } from "@/lib/portal/core/classes";
 
 const TSX_LINE_RE =
-  /("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|`(?:[^`\\]|\\.)*`)|(\b(?:import|export|from|function|return|const|let|var|type|interface)\b)|(<\/?[A-Za-z][\w.-]*)|(\{|\})/g;
+  /("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|`(?:[^`\\]|\\.)*`)|(\b(?:import|export|from|function|return|const|let|var|type|interface|npm|npx|pnpm|yarn|bun)\b)|(<\/?[A-Za-z][\w.-]*)|(\{|\})|(@[\w.-]+\/[\w.-]+|--[\w-]+)/g;
 
 function tokenClass(match: RegExpExecArray): string {
   if (match[1]) return portalClass.codeTokenString;
   if (match[2]) return portalClass.codeTokenKeyword;
   if (match[3]) return portalClass.codeTokenTag;
   if (match[4]) return portalClass.codeTokenPunct;
+  if (match[5]) return portalClass.codeTokenString;
   return portalClass.codeTokenPlain;
 }
 

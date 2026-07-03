@@ -2,7 +2,9 @@ import { Badge, Box, Card, Flex, Heading, Link, Text } from "@radix-ui/themes";
 import NextLink from "next/link";
 
 import { SourceLinkIcon } from "@/components/portal/sources/source-link-icons";
+import { PortalCodeBlock } from "@/components/portal/documentation/portal-code-block";
 import { PortalPageContainer } from "@/components/portal/layout/portal-shell";
+import { PortalMarkdown } from "@/components/portal/documentation/portal-markdown";
 import type { NormalizedDsOverviewPage } from "@/lib/portal/components/load-ds-overview";
 import { portalClass } from "@/lib/portal/core/classes";
 
@@ -24,6 +26,29 @@ export function DsHomePageView({ page }: Props) {
           <Text as="p" size="4" color="gray" mt="3" className={portalClass.lead}>
             {page.lead}
           </Text>
+
+          {page.installationHeading ? <Box id="getting-started" mt="7" className={portalClass.scrollTarget}>
+            <Heading as="h2" size="5" mb="2">
+              {page.installationHeading}
+            </Heading>
+            <Text as="p" size="2" color="gray" mb="4" className={portalClass.lead}>
+              {page.installationIntro}
+            </Text>
+            <Flex direction="column" gap="3">
+              {page.installCommands.length ? (
+                <PortalCodeBlock title="Установка" code={page.installCommands.join("\n")} />
+              ) : null}
+              {page.setupCode ? (
+                <PortalCodeBlock title="Стили и Theme provider" code={page.setupCode} />
+              ) : null}
+            </Flex>
+          </Box> : null}
+
+          {page.usageGuideMarkdown ? (
+            <Box id="usage-guide" mt="7" className={portalClass.scrollTarget}>
+              <PortalMarkdown markdown={page.usageGuideMarkdown} />
+            </Box>
+          ) : null}
 
           {page.capabilities.length ? (
             <Box mt="6">

@@ -1,16 +1,24 @@
 /**
  * Промпты для пользователей: якорь = только имя MCP-сервера.
- * Инструменты design-system-portal сами подразумевают compose → @radix-ui/themes.
+ * Инструменты finam-design-system сами подразумевают compose → @radix-ui/themes.
  */
 
 /** Минимальный якорь — достаточно для внешнего чата. */
-export const COMPOSE_CHARTER_LINE = "Через design-system-portal";
+export const COMPOSE_CHARTER_LINE = "Через finam-design-system";
 
 /** Синонимы в тексте → обязательно MCP compose, запрет hand-code. */
 export const COMPOSE_CHARTER_TRIGGERS = [
+  "finam-design-system",
+  "finam design system",
+  "дизайн-система финама",
+  "дизайн система финама",
+  "дизайн-систему финама",
+  "дизайн систему финама",
+  "дизайн-система finam",
+  "дизайн система finam",
   "design-system-portal",
   "design system portal",
-  "через design-system-portal",
+  "через finam-design-system",
   "через design-system",
   "через портал",
   "portal compose",
@@ -32,7 +40,7 @@ export const COMPOSE_CHARTER_SHORT = COMPOSE_CHARTER_LINE;
 export type BuildUserPromptOptions = {
   figmaUrl?: string;
   task?: string;
-  /** default: include «Через design-system-portal» */
+  /** default: include «Через finam-design-system» */
   includeAnchor?: boolean;
 };
 
@@ -55,11 +63,11 @@ export function messageRequiresMcpCompose(message: string): boolean {
 export function getComposeUserPromptGuide() {
   return {
     summary:
-      "Достаточно упомянуть MCP design-system-portal. Слово compose и перечень tools не нужны — сервер отдаёт composeUi и registry Radix Themes.",
+      "Достаточно упомянуть MCP finam-design-system. Слово compose и перечень tools не нужны — сервер отдаёт composeUi и registry Radix Themes.",
     whyPlainPromptFailsOutsideRepo:
-      "«Собери макет» + Figma URL без «design-system-portal» → агент часто пишет HTML вручную. Добавьте строку «Через design-system-portal» и подключите MCP.",
+      "«Собери макет» + Figma URL без «finam-design-system» → агент часто пишет HTML вручную. Добавьте строку «Через finam-design-system» и подключите MCP.",
     prerequisites: [
-      "Cursor Settings → MCP → design-system-portal (зелёный)",
+      "Cursor Settings → MCP → finam-design-system (зелёный)",
       "Figma URL → также Figma MCP",
       "localhost MCP → dev-сервер портала запущен",
     ],
@@ -80,9 +88,9 @@ export function getComposeUserPromptGuide() {
       "getComponentRegistry → допустимые Radix-компоненты",
       "resolveComposeIntent → pipeline figma/text",
     ],
-    copyPasteUserRule: `Если пользователь упоминает design-system-portal или «Через design-system-portal» — используй только MCP этого сервера (composeUi). Не пиши HTML/Tailwind вручную. Radix Themes подразумевается инструментами MCP.`,
+    copyPasteUserRule: `Если пользователь упоминает finam-design-system или «Через finam-design-system» — используй только MCP этого сервера (composeUi). Не пиши HTML/Tailwind вручную. Radix Themes подразумевается инструментами MCP.`,
     doNotUseAlone: [
-      "Только «Собери макет» + URL без design-system-portal",
+      "Только «Собери макет» + URL без finam-design-system",
       "Перечисление имён MCP tools (composeUi, validateComposition, …)",
     ],
   };

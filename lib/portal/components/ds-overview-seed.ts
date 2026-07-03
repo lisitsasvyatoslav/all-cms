@@ -2,6 +2,7 @@ import {
   PORTAL_COMPONENTS_WEB_PATH,
   PORTAL_SHOWCASE_DOCUMENTATION_BLOCKS_PATH,
 } from "@/lib/portal/components/routes";
+import { COMPOSE_USAGE_PRINCIPLES_SEED } from "@/lib/compose/usage-principles";
 export type DsOverviewSourceIcon = "figma" | "github" | "storybook" | "docs" | "markdown" | "link";
 
 export type DsOverviewSourceItemSeed = {
@@ -18,6 +19,23 @@ export const DS_OVERVIEW_PAGE_SEED = {
   lead:
     "Внутренний прототип портала документации дизайн-системы. Контент редактируется в Payload; компоненты и превью — на базе Radix Themes и Storybook. Данные на странице — демо для проверки архитектуры, не финальные продуктовые гайды.",
   capabilitiesHeading: "Что уже работает",
+  installationHeading: "Getting started",
+  installationIntro:
+    "Временно compose использует @radix-ui/themes. Установите пакет, подключите стили и оберните приложение в Theme — сгенерированные MCP-компоненты рассчитаны на эту среду.",
+  packageName: "@radix-ui/themes",
+  packageVersion: "3.3.0",
+  installCommands: [{ command: "npm install @radix-ui/themes react react-dom" }],
+  setupCode: `import "@radix-ui/themes/styles.css";
+
+import { Theme } from "@radix-ui/themes";
+
+export function AppProviders({ children }: { children: React.ReactNode }) {
+  return <Theme accentColor="indigo">{children}</Theme>;
+}`,
+  principlesHeading: "Общие принципы использования компонентов",
+  principlesIntro:
+    "Эти правила обязательны и для разработчиков, и для ИИ-агента при сборке интерфейса через finam-design-system.",
+  principles: COMPOSE_USAGE_PRINCIPLES_SEED.map((principle) => ({ ...principle })),
   capabilities: [
     {
       text: "Каталог компонентов Web с документацией, Storybook-превью и props из ui-kit.",

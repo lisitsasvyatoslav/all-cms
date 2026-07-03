@@ -65,6 +65,13 @@ async function dsHomeToMarkdown(): Promise<string> {
     mdHeading(1, page.title),
     page.eyebrow ? mdParagraph(page.eyebrow) : null,
     mdParagraph(page.lead),
+    page.installationHeading ? mdHeading(2, page.installationHeading) : null,
+    page.installationIntro ? mdParagraph(page.installationIntro) : null,
+    page.installCommands.length
+      ? mdParagraph(`Установка: ${page.installCommands.join("; ")}`)
+      : null,
+    page.setupCode ? mdParagraph(`Настройка:\n\n${page.setupCode}`) : null,
+    page.usageGuideMarkdown || null,
     page.capabilities.length
       ? mdJoin([mdHeading(2, page.capabilitiesHeading), mdBulletList(page.capabilities)])
       : null,

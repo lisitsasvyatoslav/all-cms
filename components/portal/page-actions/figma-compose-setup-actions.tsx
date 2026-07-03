@@ -78,7 +78,7 @@ export function FigmaComposeSetupActions({ figmaUrl = FIGMA_COMPOSE_EXAMPLE_URL 
       <Text as="p" size="2" color="gray">
         One-click onboarding для промпта «ссылка Figma + собери макет». Нужны{" "}
         <Text as="span" weight="medium">
-          design-system-portal
+          finam-design-system
         </Text>{" "}
         и{" "}
         <Text as="span" weight="medium">

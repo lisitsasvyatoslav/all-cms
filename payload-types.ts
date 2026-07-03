@@ -1435,19 +1435,19 @@ export interface PayloadMcpApiKey {
      */
     listComponentsFull?: boolean | null;
     /**
-     * For humans/docs: minimal user prompts — only «Через design-system-portal» anchor, no MCP tool names. Call when user asks what to paste in a new Cursor chat.
+     * For humans/docs: minimal user prompts — only «Через finam-design-system» anchor, no MCP tool names. Call when user asks what to paste in a new Cursor chat.
      */
     getComposeUserPromptGuide?: boolean | null;
     /**
-     * Call when user mentions design-system-portal or «Через design-system-portal» (with Figma URL and/or «собери макет»). Returns pipeline + workflow. MCP server name alone implies Radix compose — user must not list tool names.
+     * MANDATORY FIRST CALL when user asks to build UI through finam-design-system. Returns the current /ds CMS usage guide and guidanceRevision. Read and apply it before creating Design Brief and calling composeUi.
      */
     resolveComposeIntent?: boolean | null;
     /**
-     * PRIMARY on design-system-portal MCP. Use when user says «Через design-system-portal» or mentions this server + UI/Figma request. designBrief required; figmaUrl if in message. Output: @radix-ui/themes TSX only — never hand-write HTML/Tailwind. If MCP missing, stop and ask to connect design-system-portal.
+     * PRIMARY after resolveComposeIntent. Loads component Do/Don't rules and UI terminology from Payload. First response returns the rules and exact glossary corrections; revise the Design Brief and repeat with componentGuidanceRevision. Do not invent rules or wording outside Payload.
      */
     composeUi?: boolean | null;
     /**
-     * Alias of composeUi — prefer composeUi. Same parameters and behavior.
+     * Alias of composeUi — prefer composeUi. Uses the same two-pass guidance loaded from Payload documentation Do/Don't blocks.
      */
     composeFromFigmaContext?: boolean | null;
     /**
@@ -2781,6 +2781,21 @@ export interface DsOverview {
   title?: string | null;
   lead?: string | null;
   capabilitiesHeading?: string | null;
+  installationHeading?: string | null;
+  installationIntro?: string | null;
+  packageName?: string | null;
+  packageVersion?: string | null;
+  installCommands?:
+    | {
+        command: string;
+        id?: string | null;
+      }[]
+    | null;
+  setupCode?: string | null;
+  /**
+   * Markdown отображается на /ds и передаётся ИИ-агенту через finam-design-system MCP.
+   */
+  usageGuideMarkdown?: string | null;
   capabilities?:
     | {
         text: string;
@@ -2898,6 +2913,18 @@ export interface DsOverviewSelect<T extends boolean = true> {
   title?: T;
   lead?: T;
   capabilitiesHeading?: T;
+  installationHeading?: T;
+  installationIntro?: T;
+  packageName?: T;
+  packageVersion?: T;
+  installCommands?:
+    | T
+    | {
+        command?: T;
+        id?: T;
+      };
+  setupCode?: T;
+  usageGuideMarkdown?: T;
   capabilities?:
     | T
     | {

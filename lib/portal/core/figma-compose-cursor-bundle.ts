@@ -33,7 +33,7 @@ export function buildFigmaComposeSetupChecklist(): string {
   return [
     "Design-system compose: one-time setup in Cursor",
     "",
-    "1. Install design-system-portal MCP (Add to Cursor on portal or deeplink).",
+    "1. Install finam-design-system MCP (Add to Cursor on portal or deeplink).",
     "2. For Figma mockups: enable Figma MCP in Cursor Settings.",
     "3. Cursor Settings → Rules: paste User Rule from buildCursorUserRuleForFigmaCompose() — REQUIRED outside this repo.",
     "4. Optional: project rule .cursor/rules/design-system-compose.mdc (only when repo is open).",

@@ -60,6 +60,55 @@ export const DsOverviewGlobal: GlobalConfig = {
               defaultValue: "Что уже работает",
             },
             {
+              name: "installationHeading",
+              type: "text",
+              label: "Заголовок установки",
+            },
+            {
+              name: "installationIntro",
+              type: "textarea",
+              label: "Описание установки",
+            },
+            {
+              name: "packageName",
+              type: "text",
+              label: "Имя npm-пакета",
+            },
+            {
+              name: "packageVersion",
+              type: "text",
+              label: "Версия пакета",
+            },
+            {
+              name: "installCommands",
+              type: "array",
+              label: "Команды установки",
+              fields: [
+                {
+                  name: "command",
+                  type: "text",
+                  required: true,
+                  label: "Команда",
+                },
+              ],
+            },
+            {
+              name: "setupCode",
+              type: "code",
+              label: "Подключение стилей и provider",
+              admin: { language: "tsx" },
+            },
+            {
+              name: "usageGuideMarkdown",
+              type: "code",
+              label: "Гайд по использованию компонентов",
+              admin: {
+                language: "markdown",
+                description:
+                  "Markdown отображается на /ds и передаётся ИИ-агенту через finam-design-system MCP.",
+              },
+            },
+            {
               name: "capabilities",
               type: "array",
               label: "Что уже работает",

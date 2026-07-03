@@ -1,7 +1,7 @@
 ---
 name: ui-kit-compose
 description: >-
-  Build UI via design-system-portal MCP from Figma URLs or plain-language requests.
+  Build UI via finam-design-system MCP from Figma URLs or plain-language requests.
   Prefer skill design-system-compose — automatic pipeline, no tool names for users.
 ---
 

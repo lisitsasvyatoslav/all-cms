@@ -93,6 +93,52 @@ html:has(.radix-themes-portal) body {
   line-height: 1.6;
 }
 
+.portal-markdown {
+  max-width: 54rem;
+  color: var(--gray-12);
+  line-height: 1.65;
+}
+
+.portal-markdown h2 {
+  margin: var(--space-7) 0 var(--space-2);
+  font-size: var(--font-size-6);
+  line-height: 1.2;
+}
+
+.portal-markdown h3 {
+  margin: var(--space-6) 0 var(--space-2);
+  font-size: var(--font-size-5);
+  line-height: 1.25;
+}
+
+.portal-markdown h4 {
+  margin: var(--space-5) 0 var(--space-2);
+  font-size: var(--font-size-3);
+}
+
+.portal-markdown p,
+.portal-markdown ul {
+  margin: 0 0 var(--space-4);
+}
+
+.portal-markdown li + li {
+  margin-top: var(--space-2);
+}
+
+.portal-markdown code:not(pre code) {
+  padding: 0.12em 0.35em;
+  border-radius: var(--radius-2);
+  background: var(--gray-a3);
+  font-family: var(--code-font-family);
+  font-size: 0.9em;
+}
+
+.portal-markdown a {
+  color: var(--accent-11);
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+
 .portal-text-pre-wrap {
   white-space: pre-wrap;
 }

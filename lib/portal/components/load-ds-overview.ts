@@ -23,6 +23,13 @@ export type NormalizedDsOverviewPage = {
   eyebrow: string;
   title: string;
   lead: string;
+  installationHeading: string;
+  installationIntro: string;
+  packageName: string;
+  packageVersion: string;
+  installCommands: string[];
+  setupCode: string;
+  usageGuideMarkdown: string;
   capabilitiesHeading: string;
   capabilities: string[];
   stackHeading: string;
@@ -115,6 +122,16 @@ function normalizePage(doc: DsOverview | null | undefined): NormalizedDsOverview
     eyebrow: trimOrNull(doc?.eyebrow) ?? DS_OVERVIEW_PAGE_SEED.eyebrow,
     title: trimOrNull(doc?.title) ?? DS_OVERVIEW_PAGE_SEED.title,
     lead: trimOrNull(doc?.lead) ?? DS_OVERVIEW_PAGE_SEED.lead,
+    installationHeading: trimOrNull(doc?.installationHeading) ?? "",
+    installationIntro: trimOrNull(doc?.installationIntro) ?? "",
+    packageName: trimOrNull(doc?.packageName) ?? "",
+    packageVersion: trimOrNull(doc?.packageVersion) ?? "",
+    installCommands:
+      doc?.installCommands
+        ?.map((item) => trimOrNull(item.command))
+        .filter((command): command is string => Boolean(command)) ?? [],
+    setupCode: trimOrNull(doc?.setupCode) ?? "",
+    usageGuideMarkdown: trimOrNull(doc?.usageGuideMarkdown) ?? "",
     capabilitiesHeading:
       trimOrNull(doc?.capabilitiesHeading) ?? DS_OVERVIEW_PAGE_SEED.capabilitiesHeading,
     capabilities: normalizeStringList(doc?.capabilities, DS_OVERVIEW_PAGE_SEED.capabilities.map((c) => c.text)),

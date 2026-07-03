@@ -197,6 +197,7 @@ export const portalClass = {
   dsSourceCardTitle: "portal-ds-source-card__title",
   dsSourceCardDescription: "portal-ds-source-card__description",
   dsOverviewList: "portal-ds-overview-list",
+  markdown: "portal-markdown",
   brandOverviewGrid: "portal-brand-overview-grid",
   brandOverviewCardLink: "portal-brand-overview-card-link",
   brandOverviewCard: "portal-brand-overview-card",

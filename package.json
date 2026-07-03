@@ -24,6 +24,8 @@
     "sync:text-glossary": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/sync-text-glossary.ts",
     "sync:brand-pages": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/sync-brand-pages.ts",
     "sync:ds-overview": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/sync-ds-overview.ts",
+    "sync:modal-do-dont": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/sync-modal-do-dont.ts",
+    "sync:button-do-dont": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/sync-button-do-dont.ts",
     "sync:mcp-demo-key": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/sync-portal-mcp-demo-key.ts",
     "sync:storybook-urls": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/sync-storybook-urls.ts",
     "capture:related-previews": "tsx scripts/capture-related-previews.ts",

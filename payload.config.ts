@@ -626,7 +626,7 @@ export default buildConfig({
       collections: {
         components: {
           description:
-            "Radix Themes UI compose. User says «Через design-system-portal» or Figma URL + «собери макет» with this server → agent uses composeUi (Radix only). No manual HTML. Docs → getComponent / listComponentsFull.",
+            "Radix Themes UI compose. User says «Через finam-design-system» or Figma URL + «собери макет» with this server → agent uses composeUi (Radix only). No manual HTML. Docs → getComponent / listComponentsFull.",
           enabled: { find: false, create: false, update: false, delete: false },
         },
         colors: {

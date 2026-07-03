@@ -1,8 +1,8 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-
 import {
   COMPOSITION_VERSION,
+  auditAndCorrectGlossary,
   getComposeGuide,
   getComposeProjectSetup,
   getRegistrySummary,
@@ -189,5 +189,63 @@ describe("renderComposition", () => {
     assert.match(tsx, /import \{ Tabs \}/);
     assert.match(tsx, /<Tabs\.Root defaultValue="one">/);
     assert.match(tsx, /<Tabs\.Trigger value="one">/);
+  });
+});
+
+describe("Payload glossary audit", () => {
+  const guidance = {
+    revision: "test",
+    terms: [
+      { id: 1, preferred: "Email", avoid: ["E-mail", "Имейл"] },
+      { id: 2, preferred: "Электронная почта", avoid: ["Почта"] },
+      { id: 3, preferred: "Войти", avoid: ["Авторизация"] },
+      { id: 4, preferred: "Вход", avoid: ["Авторизация"] },
+    ],
+  };
+
+  it("corrects visible UI wording from Payload terms", () => {
+    const result = auditAndCorrectGlossary(
+      {
+        version: COMPOSITION_VERSION,
+        root: {
+          component: "Flex",
+          children: [
+            { component: "Heading", text: "Введите Имейл" },
+            { component: "TextField.Root", props: { placeholder: "Ваш E-mail" } },
+          ],
+        },
+      },
+      guidance,
+    );
+
+    assert.equal(result.composition.root.children?.[0]?.text, "Введите Email");
+    assert.equal(result.composition.root.children?.[1]?.props?.placeholder, "Ваш Email");
+    assert.equal(result.corrections.length, 2);
+  });
+
+  it("does not replace an avoid word inside an already preferred phrase", () => {
+    const result = auditAndCorrectGlossary(
+      {
+        version: COMPOSITION_VERSION,
+        root: { component: "Text", text: "Укажите электронную почту" },
+      },
+      guidance,
+    );
+
+    assert.equal(result.composition.root.text, "Укажите электронную почту");
+    assert.equal(result.corrections.length, 0);
+  });
+
+  it("reports ambiguous glossary variants without guessing", () => {
+    const result = auditAndCorrectGlossary(
+      {
+        version: COMPOSITION_VERSION,
+        root: { component: "Heading", text: "Авторизация" },
+      },
+      guidance,
+    );
+
+    assert.equal(result.composition.root.text, "Авторизация");
+    assert.deepEqual(result.ambiguousMatches[0]?.preferredCandidates, ["Войти", "Вход"]);
   });
 });

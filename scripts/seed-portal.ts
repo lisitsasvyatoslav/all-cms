@@ -17,6 +17,7 @@ import {
   RADIX_THEMES_CATALOG,
 } from "../lib/portal/bootstrap";
 import { COMPONENT_FOLDER_ORDER } from "../lib/portal/components/folders";
+import { MODAL_DO_DONT_SEED } from "../lib/portal/components/modal-do-dont-seed";
 import { syncBrandPages } from "../lib/payload/sync-brand-pages";
 import { syncDesignChecklistOnAllComponents } from "../lib/payload/sync-component-design-checklist";
 import { syncDsOverview } from "../lib/payload/sync-ds-overview";
@@ -833,7 +834,7 @@ function buildCheckboxDocumentation(relatedComponentIds: number[]) {
 }
 
 function buildModalDocumentation(relatedComponentIds: number[]) {
-  return [
+  const documentation: NonNullable<Component["documentation"]> = [
     ...modalLivePreviewSeed,
     {
       blockType: "section" as const,
@@ -906,6 +907,11 @@ function buildModalDocumentation(relatedComponentIds: number[]) {
     },
     relComponentsDocumentationBlock(relatedComponentIds),
   ];
+
+  const doDontIndex = documentation.findIndex((block) => block.blockType === "doDont");
+  if (doDontIndex >= 0) documentation[doDontIndex] = MODAL_DO_DONT_SEED;
+
+  return documentation;
 }
 
 function buildAlertDocumentation(relatedComponentIds: number[]) {

@@ -17,6 +17,23 @@ export async function syncDsOverview(
   payload: Payload,
   sources?: PortalSourcesDoc,
 ): Promise<void> {
+  // Getting started and agent principles are CMS-authored. Do not overwrite
+  // them during routine source/overview synchronization.
+  const overviewSeed = {
+    eyebrow: DS_OVERVIEW_PAGE_SEED.eyebrow,
+    title: DS_OVERVIEW_PAGE_SEED.title,
+    lead: DS_OVERVIEW_PAGE_SEED.lead,
+    capabilitiesHeading: DS_OVERVIEW_PAGE_SEED.capabilitiesHeading,
+    capabilities: DS_OVERVIEW_PAGE_SEED.capabilities,
+    stackHeading: DS_OVERVIEW_PAGE_SEED.stackHeading,
+    stackItems: DS_OVERVIEW_PAGE_SEED.stackItems,
+    navigationNote: DS_OVERVIEW_PAGE_SEED.navigationNote,
+    roadmapHeading: DS_OVERVIEW_PAGE_SEED.roadmapHeading,
+    roadmap: DS_OVERVIEW_PAGE_SEED.roadmap,
+    sourcesHeading: DS_OVERVIEW_PAGE_SEED.sourcesHeading,
+    sourcesIntro: DS_OVERVIEW_PAGE_SEED.sourcesIntro,
+  };
+
   const portalSources =
     sources ??
     (await payload.findGlobal({
@@ -38,7 +55,7 @@ export async function syncDsOverview(
   await payload.updateGlobal({
     slug: "ds-overview",
     data: {
-      ...DS_OVERVIEW_PAGE_SEED,
+      ...overviewSeed,
       sourceItems: buildDsOverviewSourceItemsSeed({
         figmaLibraryUrl,
         storybookUrl,

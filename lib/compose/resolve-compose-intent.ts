@@ -27,14 +27,14 @@ export type ComposeIntentPipeline = "figma" | "text";
 
 export type ComposeIntent = {
   shouldCompose: boolean;
-  /** Пользователь явно потребовал MCP compose (якорь design-system-portal / compose). */
+  /** Пользователь явно потребовал MCP compose (якорь finam-design-system / compose). */
   requiresMcpCompose: boolean;
   pipeline: ComposeIntentPipeline;
   figmaUrl?: string;
   figmaUrlParsing?: ReturnType<typeof parseFigmaUrl>;
   userRequest: string;
   primaryTool: string;
-  mcpServer: "design-system-portal";
+  mcpServer: "finam-design-system";
   forbiddenApproaches: string[];
   agentWorkflow: string[];
   userPromptExamples: string[];
@@ -96,27 +96,28 @@ export function resolveComposeIntent(userMessage: string): ComposeIntent {
   const forbiddenApproaches = requiresMcp
     ? [
         "Hand-written HTML/CSS/Tailwind JSX",
-        "Generic React components not from design-system-portal composeUi output",
+        "Generic React components not from finam-design-system composeUi output",
       ]
     : [];
 
   const warningIfMissingAnchor =
     shouldCompose && !requiresMcp
-      ? "Prompt has no design-system-portal anchor. Outside this repo the agent may hand-code UI. Recommend appending: «Через design-system-portal»."
+      ? "Prompt has no finam-design-system anchor. Outside this repo the agent may hand-code UI. Recommend appending: «Через finam-design-system»."
       : undefined;
 
   const agentWorkflow =
     pipeline === "figma"
       ? [
-          "REQUIRED: design-system-portal MCP must be connected",
+          "REQUIRED: finam-design-system MCP must be connected",
+          "Read cmsGuidance from this resolveComposeIntent response and apply every /ds principle",
           "Figma MCP: read mockup (fileKey + nodeId from URL)",
-          `design-system-portal ${info.primaryTool}: figmaUrl + designBrief → TSX (@radix-ui/themes)`,
+          `finam-design-system ${info.primaryTool}: guidanceRevision + figmaUrl + CMS-aware designBrief → TSX`,
           "NEVER substitute with hand-written HTML/Tailwind",
         ]
       : [
-          "REQUIRED: design-system-portal MCP must be connected",
-          "Map user text to Design Brief",
-          `design-system-portal ${info.primaryTool}: designBrief → TSX (@radix-ui/themes)`,
+          "REQUIRED: finam-design-system MCP must be connected",
+          "Read cmsGuidance from this response, then map user text to a Design Brief that follows every /ds principle",
+          `finam-design-system ${info.primaryTool}: guidanceRevision + CMS-aware designBrief → TSX`,
           "NEVER substitute with hand-written HTML/Tailwind",
         ];
 
@@ -128,7 +129,7 @@ export function resolveComposeIntent(userMessage: string): ComposeIntent {
     figmaUrlParsing,
     userRequest: trimmed,
     primaryTool: info.primaryTool,
-    mcpServer: "design-system-portal",
+    mcpServer: "finam-design-system",
     forbiddenApproaches,
     agentWorkflow,
     userPromptExamples: info.userPromptExamples,

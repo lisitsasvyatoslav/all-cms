@@ -41,7 +41,7 @@ export function getFigmaComposeWorkflow(figmaUrl?: string) {
     prerequisites: {
       mcpServers: [
         "Figma MCP (plugin-figma / user-Figma) — get_design_context, get_screenshot",
-        "design-system-portal — getFigmaComposeWorkflow, planCompositionFromBrief, validateComposition, renderComposition",
+        "finam-design-system — getFigmaComposeWorkflow, planCompositionFromBrief, validateComposition, renderComposition",
       ],
     },
     workflow: [

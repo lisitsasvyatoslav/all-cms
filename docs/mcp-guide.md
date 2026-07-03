@@ -40,7 +40,7 @@ npm run dev:local
 
   "mcpServers": {
 
-    "design-system-portal": {
+    "finam-design-system": {
 
       "command": "npx",
 
@@ -92,7 +92,7 @@ npm run dev:local
 
   "mcpServers": {
 
-    "design-system-portal": {
+    "finam-design-system": {
 
       "command": "npx",
 
@@ -159,8 +159,8 @@ npm run dev:local
 
 Нужно **два условия**:
 
-1. **MCP `design-system-portal` подключён** (Cursor Settings → MCP, статус зелёный).
-2. **Якорная строка** — только имя сервера: `Через design-system-portal`. Слово compose и список tools не нужны.
+1. **MCP `finam-design-system` подключён** (Cursor Settings → MCP, статус зелёный).
+2. **Якорная строка** — только имя сервера: `Через finam-design-system`. Слово compose и список tools не нужны.
 
 **Рекомендуемый промпт (Figma):**
 
@@ -169,7 +169,7 @@ https://www.figma.com/design/4Ja381GLnRb9WGULIpKhlV/Figma-to-Code?node-id=1-2511
 
 Собери макет.
 
-Через design-system-portal
+Через finam-design-system
 ```
 
 **Текстом (без Figma):**
@@ -177,13 +177,13 @@ https://www.figma.com/design/4Ja381GLnRb9WGULIpKhlV/Figma-to-Code?node-id=1-2511
 ```
 Собери форму регистрации: email, пароль, primary «Регистрация», secondary «Войти».
 
-Через design-system-portal
+Через finam-design-system
 ```
 
 **Один раз в Cursor Settings → Rules** (любой проект):
 
 ```
-Если пользователь упоминает design-system-portal или «Через design-system-portal» —
+Если пользователь упоминает finam-design-system или «Через finam-design-system» —
 используй только MCP этого сервера (composeUi), не пиши HTML/Tailwind вручную. Radix Themes подразумевается инструментами MCP.
 ```
 
@@ -205,11 +205,11 @@ MCP tool `getComposeUserPromptGuide` — полный текст примеро�
 
 
 
-Figma URL и скриншоты — Figma MCP; compose и TSX — design-system-portal.
+Figma URL и скриншоты — Figma MCP; compose и TSX — finam-design-system.
 
 ### Figma → compose (dual MCP) — внутренний workflow для агента
 
-Нужны **оба** MCP: Figma + `design-system-portal`.
+Нужны **оба** MCP: Figma + `finam-design-system`.
 
 1. `resolveComposeIntent(userMessage)` или эвристика по URL
 2. Figma MCP: read mockup (если URL)
