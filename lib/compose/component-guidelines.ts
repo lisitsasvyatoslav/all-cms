@@ -26,6 +26,9 @@ export type ComponentDoDontGuideline = {
 export type CompositionComponentGuidance = {
   revision: string;
   usedComponentIds: string[];
+  requestedSlugs: string[];
+  loadedSlugs: string[];
+  slugsWithoutDoDont: string[];
   guidelines: ComponentDoDontGuideline[];
 };
 
@@ -52,7 +55,14 @@ export async function loadCompositionComponentGuidance(
 
   const slugs = [...idsBySlug.keys()].sort();
   if (!slugs.length) {
-    return { revision: "empty", usedComponentIds, guidelines: [] };
+    return {
+      revision: "empty",
+      usedComponentIds,
+      requestedSlugs: [],
+      loadedSlugs: [],
+      slugsWithoutDoDont: [],
+      guidelines: [],
+    };
   }
 
   const result = await payload.find({
@@ -64,9 +74,12 @@ export async function loadCompositionComponentGuidance(
   });
 
   const guidelines: ComponentDoDontGuideline[] = [];
+  const loadedSlugs = result.docs.map((doc) => doc.slug).sort();
+  const slugsWithDoDont = new Set<string>();
   for (const doc of result.docs) {
     for (const block of doc.documentation ?? []) {
       if (block.blockType !== "doDont" || block.showLLM === false) continue;
+      slugsWithDoDont.add(doc.slug);
       guidelines.push({
         componentIds: idsBySlug.get(doc.slug) ?? [],
         slug: doc.slug,
@@ -78,11 +91,19 @@ export async function loadCompositionComponentGuidance(
     }
   }
   guidelines.sort((a, b) => a.slug.localeCompare(b.slug));
+  const slugsWithoutDoDont = loadedSlugs.filter((slug) => !slugsWithDoDont.has(slug));
 
   const revision = createHash("sha256")
-    .update(JSON.stringify({ usedComponentIds, guidelines }))
+    .update(JSON.stringify({ usedComponentIds, slugs, loadedSlugs, slugsWithoutDoDont, guidelines }))
     .digest("hex")
     .slice(0, 16);
 
-  return { revision, usedComponentIds, guidelines };
+  return {
+    revision,
+    usedComponentIds,
+    requestedSlugs: slugs,
+    loadedSlugs,
+    slugsWithoutDoDont,
+    guidelines,
+  };
 }

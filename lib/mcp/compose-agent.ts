@@ -22,6 +22,43 @@ import {
 
 type McpTools = NonNullable<NonNullable<MCPPluginConfig["mcp"]>["tools"]>;
 
+const componentAuditFindingSchema = z.object({
+  ruleComponentId: z
+    .string()
+    .min(1)
+    .describe("Component id whose Payload Do/Don't rule was applied, e.g. Dialog.Root"),
+  changedComponentId: z
+    .string()
+    .min(1)
+    .describe("Concrete component that was changed, e.g. Button"),
+  path: z.string().min(1).describe("Path of the changed component in the composition"),
+  rule: z.string().min(1).describe("Exact Do/Don't rule returned in componentGuidance"),
+  detected: z.string().min(1).describe("Concrete anti-pattern found in the original mockup"),
+  before: z.string().min(1).describe("Original component or props, e.g. Button variant=solid"),
+  after: z.string().min(1).describe("Corrected component or props, e.g. Button variant=ghost"),
+  correction: z.string().min(1).describe("Why and how the component was corrected"),
+});
+
+const componentAuditSchema = z.object({
+  reviewed: z.literal(true).describe("Confirms that every returned Do/Don't rule was reviewed"),
+  ruleReviews: z
+    .array(
+      z.object({
+        guidelineSlug: z.string().min(1).describe("Slug from componentGuidance.guidelines"),
+        ruleType: z.enum(["do", "dont"]),
+        rule: z.string().min(1).describe("Exact rule text returned by Payload"),
+        outcome: z.enum(["compliant", "violation", "not-applicable"]),
+        evidence: z.string().min(1).describe("Concrete evidence from the original mockup"),
+      }),
+    )
+    .describe("Exactly one review for every Do and Don't rule returned by Payload"),
+  findings: z
+    .array(componentAuditFindingSchema)
+    .describe("One item for every component correction made because of a Do/Don't rule"),
+});
+
+type ComponentAudit = z.infer<typeof componentAuditSchema>;
+
 function mcpText(text: string) {
   return {
     content: [{ type: "text" as const, text }],
@@ -48,6 +85,88 @@ function parseJsonArg(value: unknown, label: string):
   }
 
   return { success: false, error: `${label} must be a JSON object or JSON string.` };
+}
+
+export function validateComponentAudit(
+  value: unknown,
+  componentGuidance: Awaited<ReturnType<typeof loadCompositionComponentGuidance>>,
+): { success: true; audit: ComponentAudit } | { success: false; errors: string[] } {
+  const parsed = componentAuditSchema.safeParse(value);
+  if (!parsed.success) {
+    return {
+      success: false,
+      errors: parsed.error.issues.map((issue) => `${issue.path.join(".")}: ${issue.message}`),
+    };
+  }
+
+  const rulesByComponent = new Map<string, Set<string>>();
+  for (const guideline of componentGuidance.guidelines) {
+    const rules = [...guideline.dos, ...guideline.donts];
+    for (const componentId of guideline.componentIds) {
+      const bucket = rulesByComponent.get(componentId) ?? new Set<string>();
+      rules.forEach((rule) => bucket.add(rule));
+      rulesByComponent.set(componentId, bucket);
+    }
+  }
+  const usedComponentIds = new Set(componentGuidance.usedComponentIds);
+  const errors: string[] = [];
+
+  const expectedReviews = new Map<string, { slug: string; type: "do" | "dont"; rule: string }>();
+  for (const guideline of componentGuidance.guidelines) {
+    guideline.dos.forEach((rule) =>
+      expectedReviews.set(`${guideline.slug}\u0000do\u0000${rule}`, {
+        slug: guideline.slug,
+        type: "do",
+        rule,
+      }),
+    );
+    guideline.donts.forEach((rule) =>
+      expectedReviews.set(`${guideline.slug}\u0000dont\u0000${rule}`, {
+        slug: guideline.slug,
+        type: "dont",
+        rule,
+      }),
+    );
+  }
+
+  const receivedReviewKeys = new Set<string>();
+  parsed.data.ruleReviews.forEach((review, index) => {
+    const key = `${review.guidelineSlug}\u0000${review.ruleType}\u0000${review.rule}`;
+    if (!expectedReviews.has(key)) {
+      errors.push(`ruleReviews[${index}]: rule is not present in Payload componentGuidance`);
+      return;
+    }
+    if (receivedReviewKeys.has(key)) {
+      errors.push(`ruleReviews[${index}]: duplicate review`);
+    }
+    receivedReviewKeys.add(key);
+    if (
+      review.outcome === "violation" &&
+      !parsed.data.findings.some((finding) => finding.rule === review.rule)
+    ) {
+      errors.push(`ruleReviews[${index}]: violation requires a matching correction in findings`);
+    }
+  });
+  for (const [key, expected] of expectedReviews) {
+    if (!receivedReviewKeys.has(key)) {
+      errors.push(`ruleReviews: missing ${expected.type} rule for ${expected.slug}: ${expected.rule}`);
+    }
+  }
+
+  parsed.data.findings.forEach((finding, index) => {
+    if (!usedComponentIds.has(finding.changedComponentId)) {
+      errors.push(
+        `findings[${index}].changedComponentId: ${finding.changedComponentId} is not used in the composition`,
+      );
+    }
+    if (!rulesByComponent.get(finding.ruleComponentId)?.has(finding.rule)) {
+      errors.push(
+        `findings[${index}].rule: rule is not present in Payload guidance for ${finding.ruleComponentId}`,
+      );
+    }
+  });
+
+  return errors.length ? { success: false, errors } : { success: true, audit: parsed.data };
 }
 
 async function handleComposeUi(args: Record<string, unknown>, req: PayloadRequest) {
@@ -138,7 +257,7 @@ async function handleComposeUi(args: Record<string, unknown>, req: PayloadReques
           message:
             "Review the Payload do/don't rules for every component selected by the preliminary composition.",
           retryHint:
-            "Apply componentGuidance.guidelines to the Design Brief, then call composeUi again with componentGuidanceRevision.",
+            "Apply componentGuidance.guidelines to the Design Brief, correcting any Figma anti-patterns instead of reproducing them, then call composeUi again with componentGuidanceRevision.",
           preliminaryComposition: glossaryAudit.composition,
           componentGuidance,
           glossaryAudit: {
@@ -149,6 +268,35 @@ async function handleComposeUi(args: Record<string, unknown>, req: PayloadReques
             responseInstruction:
               "Apply glossary corrections to the revised Design Brief. Resolve ambiguous matches from context using only preferredCandidates. Tell the user exactly which UI words were corrected.",
           },
+          componentAuditRequirements: {
+            requiredOnNextCall: true,
+            instruction:
+              "Add exactly one ruleReviews entry for every returned Do and Don't rule, based on the original mockup. Mark each compliant, violation, or not-applicable and provide concrete evidence. Payload Do/Don't rules override Figma fidelity: if the mockup violates a rule, do not reproduce the anti-pattern; revise the Design Brief and build the corrected UI immediately. Every violation must have a matching finding with the exact component, before and after values, correction, and Payload rule.",
+            example: {
+              reviewed: true,
+              ruleReviews: [
+                {
+                  guidelineSlug: "modal",
+                  ruleType: "dont",
+                  rule: "Exact rule from componentGuidance",
+                  outcome: "violation",
+                  evidence: "The original modal has two visually primary buttons.",
+                },
+              ],
+              findings: [
+                {
+                  ruleComponentId: "Dialog.Root",
+                  changedComponentId: "Button",
+                  path: "root.children[1].children[2]",
+                  rule: "Exact rule from componentGuidance",
+                  detected: "The modal contained two primary actions.",
+                  before: "Button variant=solid",
+                  after: "Button variant=ghost",
+                  correction: "Kept one primary action and reduced the second action's emphasis.",
+                },
+              ],
+            },
+          },
           cmsGuidance,
         },
         null,
@@ -156,6 +304,32 @@ async function handleComposeUi(args: Record<string, unknown>, req: PayloadReques
       ),
     );
   }
+
+  const componentAuditResult = validateComponentAudit(args.componentAudit, componentGuidance);
+  if (!componentAuditResult.success) {
+    return mcpText(
+      JSON.stringify(
+        {
+          success: false,
+          stage: "component-audit",
+          message:
+            "Review every Payload Do/Don't rule against the original mockup and report every component correction.",
+          errors: componentAuditResult.errors,
+          retryHint:
+            "Call composeUi again with one ruleReviews item per returned rule and one finding per violation. Do not preserve a known anti-pattern for Figma fidelity. findings=[] is valid only when every rule review is compliant or not-applicable.",
+          componentGuidanceRevision: componentGuidance.revision,
+        },
+        null,
+        2,
+      ),
+    );
+  }
+
+  const componentAudit = componentAuditResult.audit;
+  const componentCorrectionReport = componentAudit.findings.map(
+    (finding) =>
+      `${finding.changedComponentId} (${finding.path}): ${finding.before} → ${finding.after}. ${finding.correction}`,
+  );
 
   const rendered = renderComposition(glossaryAudit.composition, { componentName, useClient });
 
@@ -169,6 +343,13 @@ async function handleComposeUi(args: Record<string, unknown>, req: PayloadReques
         projectSetup: cmsGuidance,
         cmsGuidance,
         componentGuidance,
+        componentAudit: {
+          ...componentAudit,
+          changed: componentAudit.findings.length > 0,
+          reportLines: componentCorrectionReport,
+          responseInstruction:
+            "MANDATORY: include a separate final-response section listing every reportLines item. Name the exact component and state what it was changed from and to. Do not replace this with a generic statement about applying guidelines.",
+        },
         glossaryAudit: {
           source: "Payload glossary-terms",
           revision: glossaryGuidance.revision,
@@ -182,7 +363,7 @@ async function handleComposeUi(args: Record<string, unknown>, req: PayloadReques
           source: "Payload components.documentation doDont blocks",
           rules: componentGuidance.guidelines,
           responseInstruction:
-            "Compare the original Figma design with every returned Do/Don't rule. Explicitly tell the user which anti-patterns you found and how your revised Design Brief corrected them. Do not infer rules that are absent from componentGuidance.",
+            "Compare the original Figma design with every returned Do/Don't rule. Payload Do/Don't rules override Figma fidelity: build the corrected UI, not the violating mockup. Explicitly tell the user which anti-patterns you found and how your revised Design Brief corrected them. Do not infer rules that are absent from componentGuidance.",
         },
       },
       null,
@@ -204,7 +385,7 @@ export const composeAgentMcpTools: McpTools = [
   {
     name: "resolveComposeIntent",
     description:
-        "MANDATORY FIRST CALL when user asks to build UI through finam-design-system. Returns the current /ds CMS usage guide and guidanceRevision. Read and apply it before creating Design Brief and calling composeUi.",
+        "MANDATORY FIRST CALL when user asks to build UI through finam-design-system. Returns the current /ds CMS usage guide, planningPolicy, and guidanceRevision. Apply planningPolicy before showing any plan: never promise to reproduce a detected or suspected anti-pattern as-is; say the UI will be corrected through Payload Do/Don't rules. Read and apply guidance before creating Design Brief and calling composeUi.",
     parameters: {
       userMessage: z
         .string()
@@ -231,7 +412,7 @@ export const composeAgentMcpTools: McpTools = [
   {
     name: "composeUi",
     description:
-      "PRIMARY after resolveComposeIntent. Loads component Do/Don't rules and UI terminology from Payload. First response returns the rules and exact glossary corrections; revise the Design Brief and repeat with componentGuidanceRevision. Do not invent rules or wording outside Payload.",
+      "PRIMARY after resolveComposeIntent. Loads component Do/Don't rules and UI terminology from Payload. First response returns rules; revise the Design Brief, correcting Figma anti-patterns instead of reproducing them, then repeat with componentGuidanceRevision and mandatory componentAudit describing every corrected component as before → after. Final report lines must be disclosed to the user.",
     parameters: {
       guidanceRevision: z
         .string()
@@ -240,6 +421,9 @@ export const composeAgentMcpTools: McpTools = [
         .string()
         .optional()
         .describe("Revision returned by the first composeUi component-guidance response"),
+      componentAudit: componentAuditSchema
+        .optional()
+        .describe("Required on the second call: exact report of components corrected by Do/Don't rules"),
       figmaUrl: z
         .string()
         .optional()
@@ -263,7 +447,7 @@ export const composeAgentMcpTools: McpTools = [
   {
     name: "composeFromFigmaContext",
     description:
-      "Alias of composeUi — prefer composeUi. Uses the same two-pass guidance loaded from Payload documentation Do/Don't blocks.",
+      "Alias of composeUi — prefer composeUi. Uses the same two-pass Payload guidance, corrects Figma anti-patterns instead of reproducing them, and requires mandatory componentAudit report.",
     parameters: {
       guidanceRevision: z
         .string()
@@ -272,6 +456,9 @@ export const composeAgentMcpTools: McpTools = [
         .string()
         .optional()
         .describe("Revision returned by the first composeUi component-guidance response"),
+      componentAudit: componentAuditSchema
+        .optional()
+        .describe("Required on the second call: exact report of components corrected by Do/Don't rules"),
       figmaUrl: z.string().optional().describe("Figma URL from the user message"),
       designBrief: z
         .unknown()

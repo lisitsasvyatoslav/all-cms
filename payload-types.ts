@@ -1439,15 +1439,15 @@ export interface PayloadMcpApiKey {
      */
     getComposeUserPromptGuide?: boolean | null;
     /**
-     * MANDATORY FIRST CALL when user asks to build UI through finam-design-system. Returns the current /ds CMS usage guide and guidanceRevision. Read and apply it before creating Design Brief and calling composeUi.
+     * MANDATORY FIRST CALL when user asks to build UI through finam-design-system. Returns the current /ds CMS usage guide, planningPolicy, and guidanceRevision. Apply planningPolicy before showing any plan: never promise to reproduce a detected or suspected anti-pattern as-is; say the UI will be corrected through Payload Do/Don't rules. Read and apply guidance before creating Design Brief and calling composeUi.
      */
     resolveComposeIntent?: boolean | null;
     /**
-     * PRIMARY after resolveComposeIntent. Loads component Do/Don't rules and UI terminology from Payload. First response returns the rules and exact glossary corrections; revise the Design Brief and repeat with componentGuidanceRevision. Do not invent rules or wording outside Payload.
+     * PRIMARY after resolveComposeIntent. Loads component Do/Don't rules and UI terminology from Payload. First response returns rules; revise the Design Brief, correcting Figma anti-patterns instead of reproducing them, then repeat with componentGuidanceRevision and mandatory componentAudit describing every corrected component as before → after. Final report lines must be disclosed to the user.
      */
     composeUi?: boolean | null;
     /**
-     * Alias of composeUi — prefer composeUi. Uses the same two-pass guidance loaded from Payload documentation Do/Don't blocks.
+     * Alias of composeUi — prefer composeUi. Uses the same two-pass Payload guidance, corrects Figma anti-patterns instead of reproducing them, and requires mandatory componentAudit report.
      */
     composeFromFigmaContext?: boolean | null;
     /**

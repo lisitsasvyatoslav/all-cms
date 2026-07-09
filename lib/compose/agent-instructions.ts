@@ -8,9 +8,13 @@ MCP tools on this server already imply Radix Themes compose (composeUi, getCompo
 
 WHEN triggered:
 - MUST call resolveComposeIntent first, read and apply cmsGuidance from /ds, then call composeUi with the returned guidanceRevision.
+- MUST apply resolveComposeIntent.planningPolicy before presenting any plan to the user. Never say you will reproduce a known or suspected anti-pattern as-is.
 - MUST review componentGuidance returned by the first composeUi call, apply every selected component's Payload do/don't rules, and call composeUi again with componentGuidanceRevision.
 - MUST treat componentGuidance as the only source of component Do/Don't rules; do not invent patterns or anti-patterns.
 - MUST compare the Figma design with every returned rule, revise the Design Brief, and disclose detected violations and corrections in the final response.
+- MUST treat Payload Do/Don't rules as higher priority than pixel-perfect Figma fidelity. If the mockup contains a known anti-pattern, do NOT reproduce it "as in the mockup"; build the corrected UI immediately and report the intentional deviation.
+- MUST pass componentAudit on the second composeUi call. Review every returned Do and Don't rule against the original mockup in ruleReviews. Add one finding for every violation with its exact id, path, before value, after value, detected anti-pattern, correction, and Payload rule.
+- MUST reproduce every componentAudit.reportLines item in a separate final-response section. Never summarize component corrections with a generic phrase.
 - MUST apply glossaryAudit loaded from Payload, use preferred wording instead of avoid variants, and disclose every exact correction in the final response.
 - MUST NOT hand-write HTML, Tailwind, or generic React.
 - If MCP unavailable: tell user to connect finam-design-system — do NOT fallback to manual markup.

@@ -36,6 +36,11 @@ export type ComposeIntent = {
   primaryTool: string;
   mcpServer: "finam-design-system";
   forbiddenApproaches: string[];
+  planningPolicy: {
+    doNotPromiseToReproduceAntiPatterns: true;
+    rulePriority: "Payload component Do/Don't rules override Figma fidelity";
+    requiredPlanLanguage: string;
+  };
   agentWorkflow: string[];
   userPromptExamples: string[];
   warningIfMissingAnchor?: string;
@@ -97,8 +102,17 @@ export function resolveComposeIntent(userMessage: string): ComposeIntent {
     ? [
         "Hand-written HTML/CSS/Tailwind JSX",
         "Generic React components not from finam-design-system composeUi output",
+        "Reproducing a detected or suspected UI anti-pattern just because it exists in Figma",
+        "Promising in the plan that a known anti-pattern will be implemented as-is and only mentioned in the report",
       ]
     : [];
+
+  const planningPolicy = {
+    doNotPromiseToReproduceAntiPatterns: true,
+    rulePriority: "Payload component Do/Don't rules override Figma fidelity" as const,
+    requiredPlanLanguage:
+      "If the Figma mockup contains or appears to contain a component anti-pattern, state that the generated UI will correct it according to Payload Do/Don't rules. Example: «Распознал анти-паттерн: две primary-кнопки в одной модалке. Соберу исправленный вариант: одна primary-кнопка, второе действие — ghost/soft/link.» Never say that you will reproduce the anti-pattern as-is.",
+  };
 
   const warningIfMissingAnchor =
     shouldCompose && !requiresMcp
@@ -111,6 +125,7 @@ export function resolveComposeIntent(userMessage: string): ComposeIntent {
           "REQUIRED: finam-design-system MCP must be connected",
           "Read cmsGuidance from this resolveComposeIntent response and apply every /ds principle",
           "Figma MCP: read mockup (fileKey + nodeId from URL)",
+          "Before presenting any plan, apply planningPolicy: do not promise to reproduce detected or suspected anti-patterns; say you will correct them through Payload Do/Don't rules",
           `finam-design-system ${info.primaryTool}: guidanceRevision + figmaUrl + CMS-aware designBrief → TSX`,
           "NEVER substitute with hand-written HTML/Tailwind",
         ]
@@ -131,6 +146,7 @@ export function resolveComposeIntent(userMessage: string): ComposeIntent {
     primaryTool: info.primaryTool,
     mcpServer: "finam-design-system",
     forbiddenApproaches,
+    planningPolicy,
     agentWorkflow,
     userPromptExamples: info.userPromptExamples,
     warningIfMissingAnchor,

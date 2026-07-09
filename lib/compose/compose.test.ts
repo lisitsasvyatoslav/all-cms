@@ -9,6 +9,7 @@ import {
   renderComposition,
   validateComposition,
 } from "./index";
+import { validateComponentAudit } from "../mcp/compose-agent";
 
 const loginCard = {
   version: COMPOSITION_VERSION,
@@ -189,6 +190,66 @@ describe("renderComposition", () => {
     assert.match(tsx, /import \{ Tabs \}/);
     assert.match(tsx, /<Tabs\.Root defaultValue="one">/);
     assert.match(tsx, /<Tabs\.Trigger value="one">/);
+  });
+});
+
+describe("Payload component rule audit", () => {
+  const guidance = {
+    revision: "rules-v1",
+    usedComponentIds: ["Button"],
+    requestedSlugs: ["button"],
+    loadedSlugs: ["button"],
+    slugsWithoutDoDont: [],
+    guidelines: [
+      {
+        componentIds: ["Button"],
+        slug: "button",
+        heading: "Button guidelines",
+        intro: "",
+        dos: ["Use one primary action."],
+        donts: ["Don't use multiple primary actions."],
+      },
+    ],
+  };
+
+  it("rejects a blanket reviewed flag when individual CMS rules were skipped", () => {
+    const result = validateComponentAudit(
+      { reviewed: true, ruleReviews: [], findings: [] },
+      guidance,
+    );
+    assert.equal(result.success, false);
+    if (result.success) return;
+    assert.equal(result.errors.length, 2);
+    assert.match(result.errors[0] ?? "", /missing/);
+  });
+
+  it("requires a concrete correction for a detected violation", () => {
+    const result = validateComponentAudit(
+      {
+        reviewed: true,
+        ruleReviews: [
+          {
+            guidelineSlug: "button",
+            ruleType: "do",
+            rule: "Use one primary action.",
+            outcome: "compliant",
+            evidence: "Only one primary action is present.",
+          },
+          {
+            guidelineSlug: "button",
+            ruleType: "dont",
+            rule: "Don't use multiple primary actions.",
+            outcome: "violation",
+            evidence: "Two primary buttons are present.",
+          },
+        ],
+        findings: [],
+      },
+      guidance,
+    );
+    assert.equal(result.success, false);
+    if (result.success) return;
+    assert.match(result.errors.join("\n"), /requires a matching correction/);
   });
 });
 
