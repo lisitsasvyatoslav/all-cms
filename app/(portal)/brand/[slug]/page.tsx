@@ -10,11 +10,10 @@ import {
 import { brandPath } from "@/lib/portal/core/portal-base-path";
 import { buildCustomPortalShareMetadata } from "@/lib/portal/seo/resolve-metadata";
 import { loadPortalSeo } from "@/lib/portal/seo/load";
-import { PORTAL_PAGE_REVALIDATE_SECONDS } from "@/lib/portal/cache/page-revalidate";
 
 import { BrandSlugPageBody } from "./brand-slug-page-body";
 
-export const revalidate = PORTAL_PAGE_REVALIDATE_SECONDS;
+export const revalidate = 60;
 
 type PageProps = {
   params: Promise<{ slug: string }>;

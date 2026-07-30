@@ -5,11 +5,9 @@ import { loadBrandOverview } from "@/lib/portal/brand/load-pages";
 import { buildCustomPortalShareMetadata } from "@/lib/portal/seo/resolve-metadata";
 import { loadPortalSeo } from "@/lib/portal/seo/load";
 import { PORTAL_BRAND_PATH } from "@/lib/portal/core/portal-base-path";
-import { PORTAL_PAGE_REVALIDATE_SECONDS } from "@/lib/portal/cache/page-revalidate";
-
 import { BrandOverviewPageBody } from "./brand-overview-page-body";
 
-export const revalidate = PORTAL_PAGE_REVALIDATE_SECONDS;
+export const revalidate = 60;
 
 export async function generateMetadata(): Promise<Metadata> {
   const [seo, overview] = await Promise.all([loadPortalSeo(), loadBrandOverview()]);

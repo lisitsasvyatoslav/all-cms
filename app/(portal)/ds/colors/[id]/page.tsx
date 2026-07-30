@@ -2,13 +2,12 @@ import { buildColorPageOpenGraphMetadata } from "@/lib/portal/components/open-gr
 import { colorPagePath } from "@/lib/portal/components/routes";
 import { PortalPageSuspense } from "@/components/portal/layout/portal-page-suspense";
 import { loadColorById } from "@/lib/portal/colors/load-color";
-import { PORTAL_PAGE_REVALIDATE_SECONDS } from "@/lib/portal/cache/page-revalidate";
 
 import { ColorPageBody } from "./color-page-body";
 
 type Props = { params: Promise<{ id: string }> };
 
-export const revalidate = PORTAL_PAGE_REVALIDATE_SECONDS;
+export const revalidate = 60;
 
 export async function generateMetadata({ params }: Props) {
   const { id } = await params;

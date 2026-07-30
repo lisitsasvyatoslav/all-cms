@@ -7,13 +7,12 @@ import {
 } from "@/lib/markdown/load-component-document";
 import { parseComponentRouteSlug } from "@/lib/markdown/parse-component-route-slug";
 import { buildComponentOpenGraphMetadata } from "@/lib/portal/components/open-graph";
-import { PORTAL_PAGE_REVALIDATE_SECONDS } from "@/lib/portal/cache/page-revalidate";
 
 import { ComponentPageBody } from "./component-page-body";
 
 type Props = { params: Promise<{ slug: string }> };
 
-export const revalidate = PORTAL_PAGE_REVALIDATE_SECONDS;
+export const revalidate = 60;
 
 export async function generateStaticParams() {
   try {

@@ -6,9 +6,7 @@ import { buildCustomPortalShareMetadata } from "@/lib/portal/seo/resolve-metadat
 import { loadPortalSeo } from "@/lib/portal/seo/load";
 import { PORTAL_TEXT_PATH } from "@/lib/portal/core/portal-base-path";
 
-import { PORTAL_PAGE_REVALIDATE_SECONDS } from "@/lib/portal/cache/page-revalidate";
-
-export const revalidate = PORTAL_PAGE_REVALIDATE_SECONDS;
+export const revalidate = 60;
 
 export async function generateMetadata(): Promise<Metadata> {
   const seo = await loadPortalSeo();

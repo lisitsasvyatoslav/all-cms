@@ -6,10 +6,9 @@ import { AuthStartPoint } from "@/components/compose/figma-to-code/auth-start-po
 import { LoginModalForm } from "@/components/compose/figma-to-code/login-modal-form";
 import { FigmaComposeSetupActions } from "@/components/portal/page-actions/figma-compose-setup-actions";
 import { PortalPageContainer, PortalSection } from "@/components/portal/layout/portal-shell";
-import { PORTAL_PAGE_REVALIDATE_SECONDS } from "@/lib/portal/cache/page-revalidate";
 import { portalClass } from "@/lib/portal/core/classes";
 
-export const revalidate = PORTAL_PAGE_REVALIDATE_SECONDS;
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "Figma-to-Code — Ai Test flow",

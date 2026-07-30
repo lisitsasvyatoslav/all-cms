@@ -5,11 +5,10 @@ import { loadTextGlossaryContent } from "@/lib/portal/glossary/load";
 import { loadPortalSeo } from "@/lib/portal/seo/load";
 import { PORTAL_TEXT_GLOSSARY_PATH } from "@/lib/portal/core/portal-base-path";
 import { buildCustomPortalShareMetadata } from "@/lib/portal/seo/resolve-metadata";
-import { PORTAL_PAGE_REVALIDATE_SECONDS } from "@/lib/portal/cache/page-revalidate";
 
 import { TextGlossaryPageBody } from "./text-glossary-page-body";
 
-export const revalidate = PORTAL_PAGE_REVALIDATE_SECONDS;
+export const revalidate = 60;
 
 export async function generateMetadata(): Promise<Metadata> {
   const [seo, { page }] = await Promise.all([loadPortalSeo(), loadTextGlossaryContent()]);

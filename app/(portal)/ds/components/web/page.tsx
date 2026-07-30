@@ -2,11 +2,10 @@ import type { Metadata } from "next";
 
 import { PortalPageSuspense } from "@/components/portal/layout/portal-page-suspense";
 import { buildComponentsCatalogOpenGraphMetadata } from "@/lib/portal/components/open-graph";
-import { PORTAL_PAGE_REVALIDATE_SECONDS } from "@/lib/portal/cache/page-revalidate";
 
 import { ComponentsCatalogPageBody } from "./components-catalog-page-body";
 
-export const revalidate = PORTAL_PAGE_REVALIDATE_SECONDS;
+export const revalidate = 60;
 
 export async function generateMetadata(): Promise<Metadata> {
   return buildComponentsCatalogOpenGraphMetadata();
