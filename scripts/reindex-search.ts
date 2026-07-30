@@ -43,11 +43,11 @@ async function main() {
 
       const data: Record<string, unknown> = {};
       if (collection === "components" || collection === "colors") {
-        data.name = doc.name;
+        data.name = (doc as { name?: string }).name;
       } else if (collection === "glossary-terms") {
-        data.preferred = doc.preferred;
+        data.preferred = (doc as { preferred?: string }).preferred;
       } else {
-        data.title = doc.title;
+        data.title = (doc as { title?: string }).title;
       }
 
       await touchDoc(payload, collection, doc.id, data);

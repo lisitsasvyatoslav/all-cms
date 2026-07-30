@@ -30,12 +30,12 @@ export async function DsPageBody(props: Props) {
       <PortalSection>
         <PortalBreadcrumbs items={page.breadcrumbs} />
         <PortalHeaderDivider />
-        <Box className={portalClass.pageHeader}>
-          <Heading size="8" mb="2">
+        <Box>
+          <Heading size="8" weight="medium" mb="2">
             {page.title}
           </Heading>
           {page.description ? (
-            <Text size="3" color="gray" as="p">
+            <Text as="p" size="4" color="gray" className={portalClass.lead}>
               {page.description}
             </Text>
           ) : null}

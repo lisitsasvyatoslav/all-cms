@@ -6,7 +6,6 @@ import { PortalAppShell } from "@/components/portal/layout/portal-shell";
 import { PortalHeaderSkeleton } from "@/components/portal/layout/portal-header-skeleton";
 import { PortalSidebarSkeleton } from "@/components/portal/layout/portal-sidebar-skeleton";
 import { PortalThemeProvider } from "@/components/providers/portal-theme-provider";
-import { PORTAL_PAGE_REVALIDATE_SECONDS } from "@/lib/portal/cache/page-revalidate";
 import { portalFontClassName } from "@/lib/portal/core/portal-fonts";
 import { portalAppearanceInitScript } from "@/lib/radix/portal-appearance";
 
@@ -19,7 +18,7 @@ import "@radix-ui/themes/styles.css";
 import "../globals.css";
 import "../radix-themes.css";
 
-export const revalidate = PORTAL_PAGE_REVALIDATE_SECONDS;
+export const revalidate = 60;
 
 export async function generateMetadata(): Promise<Metadata> {
   return buildPortalLayoutMetadataFromCms();

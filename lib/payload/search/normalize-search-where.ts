@@ -43,7 +43,7 @@ function normalizeWhereClause(where: Where): Where {
 
 /** Admin list search: SQLite `like` чувствителен к регистру кириллицы — нормализуем значения. */
 export const normalizePortalSearchWhere: CollectionBeforeOperationHook = ({ args, operation }) => {
-  if (operation !== "read" || !args.where) {
+  if (operation !== "read" || !("where" in args) || !args.where) {
     return args;
   }
 

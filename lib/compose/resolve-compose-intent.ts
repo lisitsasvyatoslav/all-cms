@@ -107,9 +107,9 @@ export function resolveComposeIntent(userMessage: string): ComposeIntent {
       ]
     : [];
 
-  const planningPolicy = {
+  const planningPolicy: ComposeIntent["planningPolicy"] = {
     doNotPromiseToReproduceAntiPatterns: true,
-    rulePriority: "Payload component Do/Don't rules override Figma fidelity" as const,
+    rulePriority: "Payload component Do/Don't rules override Figma fidelity",
     requiredPlanLanguage:
       "If the Figma mockup contains or appears to contain a component anti-pattern, state that the generated UI will correct it according to Payload Do/Don't rules. Example: «Распознал анти-паттерн: две primary-кнопки в одной модалке. Соберу исправленный вариант: одна primary-кнопка, второе действие — ghost/soft/link.» Never say that you will reproduce the anti-pattern as-is.",
   };

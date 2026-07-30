@@ -30,19 +30,15 @@ export const DESIGN_BRIEF_KINDS = [
 
 export type DesignBriefKind = (typeof DESIGN_BRIEF_KINDS)[number];
 
-const designBriefNodeSchema: z.ZodType<{
+type DesignBriefNode = {
   kind: string;
   props?: Record<string, unknown>;
   text?: string;
   figmaName?: string;
-  children?: Array<{
-    kind: string;
-    props?: Record<string, unknown>;
-    text?: string;
-    figmaName?: string;
-    children?: unknown[];
-  }>;
-}> = z.lazy(() =>
+  children?: DesignBriefNode[];
+};
+
+const designBriefNodeSchema: z.ZodType<DesignBriefNode> = z.lazy(() =>
   z.object({
     kind: z.string().min(1),
     props: z.record(z.unknown()).optional(),
@@ -317,7 +313,7 @@ function expandAlertNode(
 }
 
 function briefNodeToComposition(
-  node: z.infer<typeof designBriefNodeSchema>,
+  node: DesignBriefNode,
   path: string,
   issues: BriefPlanIssue[],
   warnings: string[],

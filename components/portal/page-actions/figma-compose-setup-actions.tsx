@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Flex, Link, Text } from "@radix-ui/themes";
+import { Button, Code, Flex, Link, Text } from "@radix-ui/themes";
 import { useCallback, useState } from "react";
 
 import { CursorMcpSetupDialog } from "@/components/portal/page-actions/cursor-mcp-setup-dialog";
@@ -108,9 +108,9 @@ export function FigmaComposeSetupActions({ figmaUrl = FIGMA_COMPOSE_EXAMPLE_URL 
           Cursor Settings → MCP → Figma
         </Link>
         . Skill:{" "}
-        <Text as="span" family="code" size="1">
+        <Code size="1" variant="ghost">
           .cursor/skills/figma-to-radix-compose
-        </Text>
+        </Code>
       </Text>
 
       <details>
@@ -119,9 +119,9 @@ export function FigmaComposeSetupActions({ figmaUrl = FIGMA_COMPOSE_EXAMPLE_URL 
             Setup checklist
           </Text>
         </summary>
-        <Text as="pre" size="1" style={{ whiteSpace: "pre-wrap", marginTop: 8 }}>
+        <pre style={{ whiteSpace: "pre-wrap", marginTop: 8, fontSize: "var(--font-size-1)" }}>
           {buildFigmaComposeSetupChecklist()}
-        </Text>
+        </pre>
       </details>
 
       {hint ? (

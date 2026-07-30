@@ -1,18 +1,8 @@
 import { z } from "zod";
 
-import { COMPOSITION_VERSION } from "./types";
+import { COMPOSITION_VERSION, type CompositionNode } from "./types";
 
-const compositionNodeSchema: z.ZodType<{
-  component: string;
-  props?: Record<string, unknown>;
-  text?: string;
-  children?: Array<{
-    component: string;
-    props?: Record<string, unknown>;
-    text?: string;
-    children?: unknown[];
-  }>;
-}> = z.lazy(() =>
+const compositionNodeSchema: z.ZodType<CompositionNode> = z.lazy(() =>
   z.object({
     component: z
       .string()

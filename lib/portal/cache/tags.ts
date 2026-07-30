@@ -16,5 +16,6 @@ export const PORTAL_CACHE_TAGS = {
   glossaryTerms: "portal:glossary-terms",
   designChecklist: "portal:design-checklist",
   portalSources: "portal:portal-sources",
+  portalSeo: "portal:portal-seo",
   dsPages: "portal:ds-pages",
 } as const;

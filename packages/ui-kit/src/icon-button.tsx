@@ -17,7 +17,7 @@ type IconButtonRadixProps = WithoutRadixLayout<
 
 export interface IconButtonProps extends Pick<
   IconButtonRadixProps,
-  "asChild" | "className" | "disabled" | "highContrast" | "loading" | "radius" | "title" | "type" | "value" | "variant"
+  "asChild" | "className" | "disabled" | "highContrast" | "loading" | "onClick" | "radius" | "title" | "type" | "value" | "variant"
 > {
   /** Размер: sm, md, lg. */
   size?: IconButtonSize;

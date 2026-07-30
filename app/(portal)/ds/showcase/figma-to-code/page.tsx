@@ -7,7 +7,6 @@ import { LoginModalForm } from "@/components/compose/figma-to-code/login-modal-f
 import { FigmaComposeSetupActions } from "@/components/portal/page-actions/figma-compose-setup-actions";
 import { PortalPageContainer, PortalSection } from "@/components/portal/layout/portal-shell";
 import { PORTAL_PAGE_REVALIDATE_SECONDS } from "@/lib/portal/cache/page-revalidate";
-import { PORTAL_SHOWCASE_FIGMA_TO_CODE_PATH } from "@/lib/portal/components/routes";
 import { portalClass } from "@/lib/portal/core/classes";
 
 export const revalidate = PORTAL_PAGE_REVALIDATE_SECONDS;
@@ -17,7 +16,7 @@ export const metadata: Metadata = {
   description:
     "Демо экранов из макета Figma, собранных через compose workflow (@radix-ui/themes).",
   alternates: {
-    canonical: PORTAL_SHOWCASE_FIGMA_TO_CODE_PATH,
+    canonical: "/ds/showcase/figma-to-code",
   },
 };
 
