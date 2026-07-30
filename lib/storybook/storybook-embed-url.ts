@@ -1,4 +1,11 @@
+import type { PortalAppearance } from "@/lib/radix/portal-appearance";
 import { defaultStorybookBaseUrl } from "@/lib/storybook/portal-preview-config";
+import {
+  parseStorybookGlobals,
+  readPinnedPortalAppearance,
+  serializeStorybookGlobals,
+  withPortalAppearanceGlobal,
+} from "@/lib/storybook/portal-appearance-global";
 import { rewriteStorybookDocumentUrl } from "@/lib/storybook/rewrite-storybook-url";
 
 const DEFAULT_STORYBOOK_ORIGIN = "http://127.0.0.1:6006";
@@ -20,11 +27,21 @@ export function isAllowedStorybookOrigin(origin: string): boolean {
 export type StorybookIframeOptions = {
   /** Центрирование и прозрачный фон для live preview на портале. */
   portalEmbed?: boolean;
+  /** Тема Radix в iframe; по умолчанию светлая. На портале — из переключателя темы. */
+  appearance?: PortalAppearance;
 };
 
-function appendGlobals(existing: string | null, fragment: string): string {
-  if (!existing?.trim()) return fragment;
-  return `${existing};${fragment}`;
+function buildPortalEmbedGlobals(
+  globals: string | null,
+  appearance: PortalAppearance,
+): string {
+  const pinned = readPinnedPortalAppearance(globals);
+  const resolvedAppearance = pinned ?? appearance;
+
+  const map = parseStorybookGlobals(globals);
+  map.set("backgrounds.value", "transparent");
+  map.set("portalAppearance", resolvedAppearance);
+  return serializeStorybookGlobals(map);
 }
 
 /**
@@ -35,7 +52,8 @@ export function storybookUrlToIframeSrc(
   input: string,
   options?: StorybookIframeOptions,
 ): string | null {
-  const trimmed = rewriteStorybookDocumentUrl(input).trim();  if (!trimmed) return null;
+  const trimmed = rewriteStorybookDocumentUrl(input).trim();
+  if (!trimmed) return null;
 
   let parsed: URL;
   try {
@@ -46,13 +64,14 @@ export function storybookUrlToIframeSrc(
 
   if (!isAllowedStorybookOrigin(parsed.origin)) return null;
 
+  const embedAppearance = options?.appearance ?? "light";
+
   if (parsed.pathname.endsWith("/iframe.html")) {
     if (options?.portalEmbed) {
-      const globals = appendGlobals(
-        parsed.searchParams.get("globals"),
-        "backgrounds.value:transparent",
+      parsed.searchParams.set(
+        "globals",
+        buildPortalEmbedGlobals(parsed.searchParams.get("globals"), embedAppearance),
       );
-      parsed.searchParams.set("globals", globals);
     }
     return parsed.toString();
   }
@@ -72,13 +91,15 @@ export function storybookUrlToIframeSrc(
   let globals = parsed.searchParams.get("globals");
 
   if (options?.portalEmbed) {
-    globals = appendGlobals(globals, "backgrounds.value:transparent");
+    iframe.searchParams.set("globals", buildPortalEmbedGlobals(globals, embedAppearance));
+  } else if (globals) {
+    iframe.searchParams.set("globals", globals);
   }
-
-  if (globals) iframe.searchParams.set("globals", globals);
 
   const args = parsed.searchParams.get("args");
   if (args) iframe.searchParams.set("args", args);
 
   return iframe.toString();
 }
+
+export { withPortalAppearanceGlobal };

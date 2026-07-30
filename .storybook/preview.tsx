@@ -12,6 +12,22 @@ import "../app/radix-themes.css";
 import "./portal-embed.css";
 
 const preview: Preview = {
+  globalTypes: {
+    portalAppearance: {
+      name: "Portal appearance",
+      description: "Radix Theme light/dark — синхронизируется с порталом в embed",
+      defaultValue: "light",
+      toolbar: {
+        title: "Appearance",
+        icon: "circlehollow",
+        items: [
+          { value: "light", title: "Light", icon: "sun" },
+          { value: "dark", title: "Dark", icon: "moon" },
+        ],
+        dynamicTitle: true,
+      },
+    },
+  },
   parameters: {
     layout: "padded",
     controls: {
@@ -24,7 +40,7 @@ const preview: Preview = {
       default: "light",
       values: [
         { name: "light", value: "#ffffff" },
-        { name: "dark", value: "#0a0a0a" },
+        { name: "dark", value: "#111113" },
         { name: "transparent", value: "transparent" },
       ],
     },
@@ -32,18 +48,36 @@ const preview: Preview = {
   decorators: [
     (Story, context) => {
       const bg = context.globals.backgrounds?.value;
-      const isDark = bg === "#0a0a0a";
+      const portalAppearanceGlobal = context.globals.portalAppearance;
       const isTransparent = bg === "transparent";
       const isPortalEmbed = isPortalStorybookEmbed();
+      const fromPortalGlobal = portalAppearanceGlobal === "dark" ? "dark" : "light";
+      const fromBackground =
+        bg === "#111113" || bg === "#0a0a0a"
+          ? "dark"
+          : bg === "#ffffff"
+            ? "light"
+            : null;
+      const appearance =
+        isPortalEmbed || isTransparent
+          ? fromPortalGlobal
+          : (fromBackground ?? fromPortalGlobal);
 
       return (
         <Theme
           {...portalRadixThemeProps}
-          appearance={isDark ? "dark" : "light"}
+          appearance={appearance}
+          hasBackground={isPortalEmbed ? false : portalRadixThemeProps.hasBackground}
           className="radix-themes-portal"
           style={{
-            ...(isTransparent ? { background: "transparent" } : null),
-            ...(isPortalEmbed ? { height: "100%", overflow: "hidden" } : null),
+            ...(isTransparent && !isPortalEmbed ? { background: "transparent" } : null),
+            ...(isPortalEmbed
+              ? {
+                  height: "100%",
+                  overflow: "hidden",
+                  background: "transparent",
+                }
+              : null),
           }}
         >
           {isPortalEmbed ? (

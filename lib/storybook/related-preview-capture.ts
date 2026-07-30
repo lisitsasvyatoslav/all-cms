@@ -21,7 +21,7 @@ export const RELATED_PREVIEW_CAPTURE = {
   maxScale: 8,
   themes: {
     light: "backgrounds.value:!hex(ffffff)",
-    dark: "backgrounds.value:!hex(0a0a0a)",
+    dark: "backgrounds.value:!hex(111113)",
   } satisfies Record<RelatedPreviewTheme, string>,
 } as const;
 

@@ -357,7 +357,7 @@ export interface Component {
             showLLM?: boolean | null;
             title: string;
             /**
-             * Story с args: ?path=/story/design-system-button--default&args=variant:secondary
+             * Story с args: ?path=/story/design-system-button--default&args=variant:secondary. Тема на портале синхронизируется с переключателем; чтобы зафиксировать — добавьте &globals=portalAppearance:dark или :light.
              */
             storybookUrl: string;
             frameHeight?: number | null;
@@ -372,7 +372,7 @@ export interface Component {
             showLLM?: boolean | null;
             title?: string | null;
             /**
-             * Опциональный iframe над кодом — как на HeroUI.
+             * Опциональный iframe над кодом — как на HeroUI. Тема синхронизируется с порталом.
              */
             previewStorybookUrl?: string | null;
             previewHeight?: number | null;
@@ -1052,7 +1052,7 @@ export interface DsPage {
             showLLM?: boolean | null;
             title: string;
             /**
-             * Story с args: ?path=/story/design-system-button--default&args=variant:secondary
+             * Story с args: ?path=/story/design-system-button--default&args=variant:secondary. Тема на портале синхронизируется с переключателем; чтобы зафиксировать — добавьте &globals=portalAppearance:dark или :light.
              */
             storybookUrl: string;
             frameHeight?: number | null;
@@ -1067,7 +1067,7 @@ export interface DsPage {
             showLLM?: boolean | null;
             title?: string | null;
             /**
-             * Опциональный iframe над кодом — как на HeroUI.
+             * Опциональный iframe над кодом — как на HeroUI. Тема синхронизируется с порталом.
              */
             previewStorybookUrl?: string | null;
             previewHeight?: number | null;
@@ -1355,7 +1355,7 @@ export interface Color {
             showLLM?: boolean | null;
             title?: string | null;
             /**
-             * Опциональный iframe над кодом — как на HeroUI.
+             * Опциональный iframe над кодом — как на HeroUI. Тема синхронизируется с порталом.
              */
             previewStorybookUrl?: string | null;
             previewHeight?: number | null;

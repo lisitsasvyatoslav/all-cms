@@ -5,6 +5,7 @@ import { Box, Text } from "@radix-ui/themes";
 
 import { CheckIcon, CopyMarkdownIcon } from "@/components/portal/page-actions/page-action-icons";
 import { PortalStorybookPreviewFrame } from "@/components/portal/storybook/portal-storybook-preview-frame";
+import { usePortalTheme } from "@/components/providers/portal-theme-provider";
 import { highlightCodeLine } from "@/lib/portal/documentation/highlight-code-line";
 import { portalClass } from "@/lib/portal/core/classes";
 import { storybookUrlToIframeSrc } from "@/lib/storybook/storybook-embed-url";
@@ -24,13 +25,14 @@ export function PortalCollapsibleCodeBlock({
   previewHeight,
   defaultCollapsed,
 }: Props) {
+  const { appearance } = usePortalTheme();
   const [collapsed, setCollapsed] = useState(defaultCollapsed !== false);
   const [copied, setCopied] = useState(false);
   const trimmed = code.trim();
   const lines = trimmed.split("\n");
   const previewUrl = previewStorybookUrl?.trim();
   const iframeSrc = previewUrl
-    ? storybookUrlToIframeSrc(previewUrl, { portalEmbed: true })
+    ? storybookUrlToIframeSrc(previewUrl, { portalEmbed: true, appearance })
     : null;
   const height = previewHeight ?? 350;
 
@@ -55,6 +57,7 @@ export function PortalCollapsibleCodeBlock({
       <div className={portalClass.codeExample}>
         {iframeSrc ? (
           <PortalStorybookPreviewFrame
+            key={iframeSrc}
             title={title ?? "Превью кода"}
             iframeSrc={iframeSrc}
             height={height}

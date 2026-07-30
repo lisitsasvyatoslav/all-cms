@@ -129,7 +129,7 @@ const allDocumentationBlocks: Block[] = [
         label: "URL Storybook",
         admin: {
           description:
-            "Story с args: ?path=/story/design-system-button--default&args=variant:secondary",
+            "Story с args: ?path=/story/design-system-button--default&args=variant:secondary. Тема на портале синхронизируется с переключателем; чтобы зафиксировать — добавьте &globals=portalAppearance:dark или :light.",
         },
       },
       {
@@ -152,7 +152,7 @@ const allDocumentationBlocks: Block[] = [
         name: "previewStorybookUrl",
         type: "text",
         label: "Превью (URL Storybook, необяз.)",
-        admin: { description: "Опциональный iframe над кодом — как на HeroUI." },
+        admin: { description: "Опциональный iframe над кодом — как на HeroUI. Тема синхронизируется с порталом." },
       },
       {
         name: "previewHeight",
