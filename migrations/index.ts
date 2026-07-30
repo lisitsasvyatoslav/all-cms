@@ -24,6 +24,9 @@ import * as migration_20260630_170000_rename_mcp_server_in_ds_guidance from './2
 import * as migration_20260701_120000_modal_do_dont_guidelines from './20260701_120000_modal_do_dont_guidelines';
 import * as migration_20260702_120000_ds_layout_guide from './20260702_120000_ds_layout_guide';
 import * as migration_20260703_120000_button_do_dont_guidelines from './20260703_120000_button_do_dont_guidelines';
+import * as migration_20260710_092152_ds_pages_nested_tree from './20260710_092152_ds_pages_nested_tree';
+import * as migration_20260713_072209_portal_search_plugin from './20260713_072209_portal_search_plugin';
+import * as migration_20260713_105900_search_text_normalized from './20260713_105900_search_text_normalized';
 
 export const migrations = [
   {
@@ -155,5 +158,20 @@ export const migrations = [
     up: migration_20260703_120000_button_do_dont_guidelines.up,
     down: migration_20260703_120000_button_do_dont_guidelines.down,
     name: '20260703_120000_button_do_dont_guidelines',
+  },
+  {
+    up: migration_20260710_092152_ds_pages_nested_tree.up,
+    down: migration_20260710_092152_ds_pages_nested_tree.down,
+    name: '20260710_092152_ds_pages_nested_tree',
+  },
+  {
+    up: migration_20260713_072209_portal_search_plugin.up,
+    down: migration_20260713_072209_portal_search_plugin.down,
+    name: '20260713_072209_portal_search_plugin'
+  },
+  {
+    up: migration_20260713_105900_search_text_normalized.up,
+    down: migration_20260713_105900_search_text_normalized.down,
+    name: '20260713_105900_search_text_normalized',
   },
 ];

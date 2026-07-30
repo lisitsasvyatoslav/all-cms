@@ -10,6 +10,7 @@ import {
   revalidatePortalComponentCaches,
   revalidatePortalDesignChecklistCache,
   revalidatePortalDsOverviewCache,
+  revalidatePortalDsPagesCache,
   revalidatePortalGlossaryCaches,
   revalidatePortalGlossaryTermsCache,
   revalidatePortalSeoCache,
@@ -48,6 +49,16 @@ export const revalidatePortalGlossaryTermsAfterDelete: CollectionAfterDeleteHook
 
 export const revalidatePortalSourcesAfterChange: GlobalAfterChangeHook = () => {
   revalidatePortalSourcesCache();
+};
+
+export const revalidatePortalDsPagesAfterChange: CollectionAfterChangeHook = ({ context }) => {
+  if (context?.skipPortalRevalidate) return;
+  revalidatePortalDsPagesCache();
+};
+
+export const revalidatePortalDsPagesAfterDelete: CollectionAfterDeleteHook = ({ context }) => {
+  if (context?.skipPortalRevalidate) return;
+  revalidatePortalDsPagesCache();
 };
 
 export const revalidatePortalSeoAfterChange: GlobalAfterChangeHook = () => {

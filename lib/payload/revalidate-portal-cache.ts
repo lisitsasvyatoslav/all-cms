@@ -73,6 +73,10 @@ export function revalidatePortalSourcesCache(): void {
   safeRevalidateTag(PORTAL_CACHE_TAGS.portalSources);
 }
 
+export function revalidatePortalDsPagesCache(): void {
+  safeRevalidateTag(PORTAL_CACHE_TAGS.dsPages);
+}
+
 export function revalidatePortalSeoCache(): void {
   safeRevalidateTag(PORTAL_CACHE_TAGS.portalSeo);
 }

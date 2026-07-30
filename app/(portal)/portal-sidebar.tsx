@@ -3,7 +3,7 @@
 import { Box, Flex } from "@radix-ui/themes";
 import type { PortalComponentNavGroup } from "@/lib/portal/components/load-nav-groups";
 import NextLink from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 
 import { PortalAppearanceToggle } from "@/components/providers/portal-theme-provider";
@@ -13,17 +13,16 @@ import { PortalSidebarLink } from "@/components/portal/navigation/portal-nav-ite
 import { portalClass } from "@/lib/portal/core/classes";
 import {
   portalAreaFromPathname,
-  portalHomeHash,
   PORTAL_BRAND_PATH,
   PORTAL_TEXT_GLOSSARY_PATH,
   PORTAL_TEXT_PATH,
 } from "@/lib/portal/core/portal-base-path";
 import type { BrandNavItem } from "@/lib/portal/brand/nav";
+import type { DsPageNavItem } from "@/lib/portal/ds-pages/load-pages";
 import {
   componentSlugFromWebPathname,
   componentWebPagePath,
   PORTAL_COMPONENTS_WEB_PATH,
-  PORTAL_HOME_PATH,
   PORTAL_SHOWCASE_DOCUMENTATION_BLOCKS_PATH,
   PORTAL_SHOWCASE_FIGMA_TO_CODE_PATH,
 } from "@/lib/portal/components/routes";
@@ -37,23 +36,14 @@ export type SidebarComponent = {
 type Props = {
   componentGroups: PortalComponentNavGroup[];
   brandNavItems: BrandNavItem[];
+  dsPageNavItems: DsPageNavItem[];
 };
 
 const SIDEBAR_SCROLLBAR_HIDE_MS = 700;
 
-export function PortalSidebar({ componentGroups, brandNavItems }: Props) {
+export function PortalSidebar({ componentGroups, brandNavItems, dsPageNavItems }: Props) {
   const pathname = usePathname();
-  const [hash, setHash] = useState("#overview");
   const scrollRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const sync = () => {
-      setHash(window.location.hash || "#overview");
-    };
-    sync();
-    window.addEventListener("hashchange", sync);
-    return () => window.removeEventListener("hashchange", sync);
-  }, []);
 
   useEffect(() => {
     const node = scrollRef.current;
@@ -76,7 +66,6 @@ export function PortalSidebar({ componentGroups, brandNavItems }: Props) {
     };
   }, []);
 
-  const onHome = pathname === PORTAL_HOME_PATH;
   const onComponentsWeb = pathname === PORTAL_COMPONENTS_WEB_PATH;
   const activeComponentSlug = componentSlugFromWebPathname(pathname) ?? "";
   const area = portalAreaFromPathname(pathname);
@@ -97,15 +86,18 @@ export function PortalSidebar({ componentGroups, brandNavItems }: Props) {
         <nav className={portalClass.sidebarNav}>
           {area === "ds" ? (
             <>
-              <PortalSidebarLink
-                href={portalHomeHash("#overview")}
-                active={onHome && (hash === "#overview" || hash === "")}
-              >
-                Обзор
-              </PortalSidebarLink>
-              <PortalSidebarLink href={portalHomeHash("#sources")} active={onHome && hash === "#sources"}>
-                Источники
-              </PortalSidebarLink>
+              {dsPageNavItems.length > 0 ? (
+                <>
+                  <SidebarSectionLabel>Обзор</SidebarSectionLabel>
+                  {dsPageNavItems.map((item) => (
+                    <Box key={item.id} pl={`${3 + item.depth * 2}`}>
+                      <PortalSidebarLink href={item.href} active={pathname === item.href}>
+                        {item.title}
+                      </PortalSidebarLink>
+                    </Box>
+                  ))}
+                </>
+              ) : null}
 
               <SidebarSectionLabel>Компоненты</SidebarSectionLabel>
               <PortalSidebarLink href={PORTAL_COMPONENTS_WEB_PATH} active={onComponentsWeb}>
