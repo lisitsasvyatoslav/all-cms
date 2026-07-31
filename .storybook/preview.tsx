@@ -1,9 +1,10 @@
 import type { Preview } from "@storybook/react";
-import { Box, Flex, Theme } from "@radix-ui/themes";
+import { Box, Theme } from "@radix-ui/themes";
 
 import { portalRadixThemeProps } from "../lib/radix/portal-theme-config";
 import { isPortalStorybookEmbed } from "../lib/storybook/portal-embed-mode";
 
+import { PortalEmbedReadyNotifier } from "./portal-embed-ready-notifier";
 import { PortalEmbedShell } from "./portal-embed-shell";
 
 import "@radix-ui/themes/styles.css";
@@ -12,6 +13,13 @@ import "../app/radix-themes.css";
 import "./portal-embed.css";
 
 const preview: Preview = {
+  globalTypes: {
+    portalAppearance: {
+      name: "Portal appearance",
+      description: "Radix Theme light/dark — synced from the portal embed URL",
+      defaultValue: "light",
+    },
+  },
   parameters: {
     layout: "padded",
     controls: {
@@ -24,7 +32,7 @@ const preview: Preview = {
       default: "light",
       values: [
         { name: "light", value: "#ffffff" },
-        { name: "dark", value: "#0a0a0a" },
+        { name: "dark", value: "#111113" },
         { name: "transparent", value: "transparent" },
       ],
     },
@@ -32,23 +40,42 @@ const preview: Preview = {
   decorators: [
     (Story, context) => {
       const bg = context.globals.backgrounds?.value;
-      const isDark = bg === "#0a0a0a";
+      const portalAppearanceGlobal = context.globals.portalAppearance;
       const isTransparent = bg === "transparent";
       const isPortalEmbed = isPortalStorybookEmbed();
+      const fromPortalGlobal = portalAppearanceGlobal === "dark" ? "dark" : "light";
+      const fromBackground =
+        bg === "#111113" || bg === "#0a0a0a"
+          ? "dark"
+          : bg === "#ffffff"
+            ? "light"
+            : null;
+      const appearance =
+        isPortalEmbed || isTransparent
+          ? fromPortalGlobal
+          : (fromBackground ?? fromPortalGlobal);
 
       return (
         <Theme
           {...portalRadixThemeProps}
-          appearance={isDark ? "dark" : "light"}
+          appearance={appearance}
+          hasBackground={isPortalEmbed ? false : portalRadixThemeProps.hasBackground}
           className="radix-themes-portal"
           style={{
-            ...(isTransparent ? { background: "transparent" } : null),
-            ...(isPortalEmbed ? { height: "100%", overflow: "hidden" } : null),
+            ...(isTransparent && !isPortalEmbed ? { background: "transparent" } : null),
+            ...(isPortalEmbed
+              ? {
+                  height: "100%",
+                  overflow: "hidden",
+                  background: "transparent",
+                }
+              : null),
           }}
         >
           {isPortalEmbed ? (
-            <PortalEmbedShell>
+            <PortalEmbedShell appearance={appearance}>
               <Story />
+              <PortalEmbedReadyNotifier />
             </PortalEmbedShell>
           ) : (
             <Box p="4" minHeight="4rem">

@@ -1,16 +1,46 @@
-/* Только при встраивании на портал (класс ставится в preview.tsx). */
+/* Applied when embedded in the portal iframe (class set in portal-embed-shell.tsx). */
 html.portal-storybook-embed,
-html.portal-storybook-embed body {
+html.portal-storybook-embed body,
+html.portal-storybook-embed #storybook-root,
+html.portal-storybook-embed .sb-show-main {
   height: 100%;
   margin: 0;
   overflow: hidden;
+  background: transparent !important;
 }
 
-html.portal-storybook-embed #storybook-root {
-  height: 100%;
+html.portal-storybook-embed .portal-embed-shell {
+  padding: 0 !important;
 }
 
-/* Related preview capture: полный кадр 1200×630 без отступов и max-width. */
+html.portal-storybook-embed .sb-main-padded {
+  padding: 0 !important;
+}
+
+html.portal-storybook-embed .radix-themes-portal {
+  background: transparent !important;
+}
+
+/* Portal shows Radix Skeleton — hide Storybook's default preparing loader. */
+html.portal-storybook-embed .sb-preparing-story,
+html.portal-storybook-embed .sb-preparing-docs {
+  background: transparent !important;
+}
+
+html.portal-storybook-embed .sb-loader {
+  display: none !important;
+}
+
+/* Related preview capture: solid canvas for OG screenshots. */
+html.portal-storybook-embed:has(.portal-related-preview-capture) .radix-themes-portal {
+  background-color: var(--gray-1) !important;
+}
+
+html.portal-storybook-embed:has(.portal-related-preview-capture)[data-portal-appearance="light"]
+  .radix-themes-portal {
+  background-color: #ffffff !important;
+}
+
 html.portal-storybook-embed:has(.portal-related-preview-capture) .portal-embed-shell {
   padding: 0 !important;
 }
