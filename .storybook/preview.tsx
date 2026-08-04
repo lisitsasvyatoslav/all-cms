@@ -4,6 +4,7 @@ import { Box, Theme } from "@radix-ui/themes";
 import { portalRadixThemeProps } from "../lib/radix/portal-theme-config";
 import { isPortalStorybookEmbed } from "../lib/storybook/portal-embed-mode";
 
+import { PortalEmbedOverlayNotifier } from "./portal-embed-overlay-notifier";
 import { PortalEmbedReadyNotifier } from "./portal-embed-ready-notifier";
 import { PortalEmbedShell } from "./portal-embed-shell";
 
@@ -75,7 +76,8 @@ const preview: Preview = {
           {isPortalEmbed ? (
             <PortalEmbedShell appearance={appearance}>
               <Story />
-              <PortalEmbedReadyNotifier />
+              <PortalEmbedReadyNotifier storyId={context.id} />
+              <PortalEmbedOverlayNotifier />
             </PortalEmbedShell>
           ) : (
             <Box p="4" minHeight="4rem">

@@ -1,51 +1,49 @@
-"use client";
-
 import { useEffect } from "react";
 
-export const PORTAL_STORYBOOK_EMBED_READY_MESSAGE = "portal-storybook-embed-ready";
+import {
+  isStorybookEmbeddedInParent,
+  notifyPortalStorybookEmbedReady,
+  PORTAL_STORYBOOK_EMBED_READY_MESSAGE,
+} from "../lib/storybook/portal-embed-messages";
 
-function isStoryCanvasReady(): boolean {
-  return document.body.classList.contains("sb-show-main");
+export { PORTAL_STORYBOOK_EMBED_READY_MESSAGE };
+
+type PortalEmbedReadyNotifierProps = {
+  /** Re-notify when SPA navigation changes story without remounting the iframe. */
+  storyId?: string;
+};
+
+/** Double rAF ≈ after layout + paint of the mounted story (not iframe.html load). */
+function afterPaint(callback: () => void): () => void {
+  let raf2 = 0;
+  const raf1 = window.requestAnimationFrame(() => {
+    raf2 = window.requestAnimationFrame(callback);
+  });
+  return () => {
+    window.cancelAnimationFrame(raf1);
+    if (raf2) window.cancelAnimationFrame(raf2);
+  };
 }
 
 /**
- * Notifies the portal parent when Storybook has finished preparing the story canvas.
+ * Notifies the portal parent when the story canvas has painted.
  * Event-driven only — no timeouts; the portal keeps Skeleton until this fires.
  */
-export function PortalEmbedReadyNotifier() {
+export function PortalEmbedReadyNotifier({ storyId }: PortalEmbedReadyNotifierProps) {
   useEffect(() => {
+    if (!isStorybookEmbeddedInParent()) return;
+
     let cancelled = false;
-    let notified = false;
-
-    const notifyReady = () => {
-      if (cancelled || notified) return;
-      notified = true;
-      window.parent.postMessage({ type: PORTAL_STORYBOOK_EMBED_READY_MESSAGE }, "*");
-    };
-
-    if (isStoryCanvasReady()) {
-      notifyReady();
-      return () => {
-        cancelled = true;
-      };
-    }
-
-    const observer = new MutationObserver(() => {
-      if (!isStoryCanvasReady()) return;
-      observer.disconnect();
-      notifyReady();
-    });
-
-    observer.observe(document.body, {
-      attributes: true,
-      attributeFilter: ["class"],
+    const cancelPaint = afterPaint(() => {
+      if (cancelled) return;
+      notifyPortalStorybookEmbedReady();
     });
 
     return () => {
       cancelled = true;
-      observer.disconnect();
+      cancelPaint();
     };
-  }, []);
+  }, [storyId]);
 
   return null;
 }
